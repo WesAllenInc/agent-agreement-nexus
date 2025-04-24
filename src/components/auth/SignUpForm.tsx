@@ -53,6 +53,10 @@ export default function SignUpForm() {
         provider,
         options: {
           redirectTo: `${window.location.origin}/agent/agreement`,
+          queryParams: provider === 'google' ? {
+            access_type: 'offline',
+            prompt: 'consent',
+          } : undefined,
         },
       });
 
