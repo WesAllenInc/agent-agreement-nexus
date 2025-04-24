@@ -18,6 +18,9 @@ export default {
       }
     },
     extend: {
+      fontFamily: {
+        sans: ['Poppins', 'system-ui', 'sans-serif'],
+      },
       colors: {
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',
@@ -25,8 +28,18 @@ export default {
         background: 'hsl(var(--background))',
         foreground: 'hsl(var(--foreground))',
         primary: {
-          DEFAULT: 'hsl(var(--primary))',
-          foreground: 'hsl(var(--primary-foreground))'
+          DEFAULT: '#1ac073',
+          foreground: 'hsl(0 0% 98%)',
+          50: '#e6f5f0',
+          100: '#b3e6d1',
+          200: '#80d6b3',
+          300: '#4dc695',
+          400: '#1ac073',
+          500: '#169461',
+          600: '#12784f',
+          700: '#0e5c3d',
+          800: '#0a402b',
+          900: '#062419'
         },
         secondary: {
           DEFAULT: 'hsl(var(--secondary))',
