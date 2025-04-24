@@ -37,7 +37,9 @@ export default function AcceptInvitationForm({ token, email }: AcceptInvitationF
         navigate("/agent/agreement");
         toast.success("Account created successfully! Please complete your agreement.");
       } else {
-        throw new Error(result.error || "Failed to create account");
+        // Fixed: The type doesn't have an 'error' property
+        // Instead, throw a generic error message since result.success is false
+        throw new Error("Failed to create account");
       }
     } catch (error: any) {
       toast.error("Failed to create account: " + (error.message || "Please try again"));
