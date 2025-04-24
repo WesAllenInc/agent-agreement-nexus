@@ -95,39 +95,30 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const createProfileIfNotExists = async (userId: string) => {
     try {
-      // Get user metadata to use for profile
+      // Get user data to use for profile
       const { data: userData } = await supabase.auth.getUser();
       
-      if (!userData?.user) return;
+      if (!userData?.user) {
+        console.error("No user data available");
+        return;
+      }
       
-      const userMeta = userData.user.user_metadata;
+      const userMeta = userData.user.user_metadata || {};
       const email = userData.user.email || '';
       
+      console.log("User metadata for profile creation:", userMeta);
+      
       // Extract name information from user metadata (structure varies by provider)
-      let firstName = userMeta?.first_name || userMeta?.given_name || '';
-      let lastName = userMeta?.last_name || userMeta?.family_name || '';
-      
-      // For some providers like Google, the name might be in a "name" field
-      if ((!firstName || !lastName) && userMeta?.name) {
-        const nameParts = userMeta.name.split(' ');
-        if (nameParts.length > 0) {
-          firstName = firstName || nameParts[0];
-          if (nameParts.length > 1) {
-            lastName = lastName || nameParts[nameParts.length - 1];
-          }
-        }
-      }
-      
-      // For some providers, names might be in full_name
-      if ((!firstName || !lastName) && userMeta?.full_name) {
-        const nameParts = userMeta.full_name.split(' ');
-        if (nameParts.length > 0) {
-          firstName = firstName || nameParts[0];
-          if (nameParts.length > 1) {
-            lastName = lastName || nameParts[nameParts.length - 1];
-          }
-        }
-      }
+      let firstName = userMeta.first_name || 
+                      userMeta.given_name || 
+                      userMeta.name?.split(' ')?.[0] || 
+                      '';
+                      
+      let lastName = userMeta.last_name || 
+                     userMeta.family_name || 
+                     (userMeta.name?.split(' ')?.length > 1 
+                      ? userMeta.name.split(' ').slice(1).join(' ') 
+                      : '');
       
       console.log("Creating profile with data:", {
         userId,
@@ -137,24 +128,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       });
       
       // Create the profile
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('profiles')
         .insert({
           id: userId,
           first_name: firstName,
           last_name: lastName,
           email: email,
-        });
+        })
+        .select();
 
       if (error) {
         console.error('Error creating profile:', error);
+        toast.error(`Failed to create profile: ${error.message}`);
         return;
       }
 
-      // Refetch the profile
-      fetchProfile(userId);
+      if (data?.[0]) {
+        console.log("Profile created successfully:", data[0]);
+        setProfile(data[0]);
+      }
     } catch (err) {
       console.error("Error in createProfileIfNotExists:", err);
+      toast.error(`Unexpected error creating profile: ${(err as Error).message}`);
     }
   };
 

@@ -49,26 +49,29 @@ export default function SignUpForm() {
       setSocialLoading(provider);
       toast.info(`Connecting to ${provider === 'google' ? 'Google' : 'LinkedIn'}...`);
       
+      // Get the current URL origin for redirect
+      const redirectTo = `${window.location.origin}/agent/agreement`;
+      console.log(`Setting redirect URL to: ${redirectTo}`);
+      
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider,
         options: {
-          redirectTo: `${window.location.origin}/agent/agreement`,
+          redirectTo,
           queryParams: provider === 'google' ? {
             access_type: 'offline',
             prompt: 'consent',
+            // Include profile scope to get more user information
+            scope: 'email profile'
           } : undefined,
         },
       });
 
       if (error) throw error;
       
-      // This message might not be seen due to the redirect
-      toast.success(`${provider === 'google' ? 'Google' : 'LinkedIn'} authentication initiated!`);
-      
       console.log("OAuth response:", data);
     } catch (error: any) {
+      console.error(`${provider === 'google' ? 'Google' : 'LinkedIn'} sign up failed:`, error);
       toast.error(`${provider === 'google' ? 'Google' : 'LinkedIn'} sign up failed: ${error.message}`);
-      console.error("OAuth error:", error);
     } finally {
       setSocialLoading(null);
     }
