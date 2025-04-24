@@ -36,9 +36,9 @@ export default function Navigation() {
   ];
 
   return (
-    <div className="hidden md:flex h-screen w-64 flex-col fixed inset-y-0 z-50 bg-sidebar border-r border-sidebar-border">
-      <div className="flex h-16 items-center border-b border-sidebar-border px-6">
-        <span className="font-bold text-xl text-brand-800">Admin Portal</span>
+    <div className="hidden md:flex h-screen w-64 flex-col fixed inset-y-0 z-50 bg-white/80 backdrop-blur-sm border-r border-gray-200">
+      <div className="flex h-16 items-center border-b border-gray-200 px-6">
+        <span className="font-bold text-xl text-primary-800">Admin Portal</span>
       </div>
       <div className="flex-1 overflow-auto py-4">
         <nav className="space-y-1 px-4">
@@ -47,13 +47,13 @@ export default function Navigation() {
               key={item.name}
               onClick={() => navigate(item.href)}
               className={cn(
-                "flex items-center w-full px-3 py-2 text-sm font-medium rounded-md",
+                "flex items-center w-full px-3 py-2 text-sm font-medium rounded-md transition-colors",
                 location.pathname === item.href
-                  ? "bg-brand-50 text-brand-700"
-                  : "text-gray-600 hover:bg-gray-100"
+                  ? "bg-primary text-white"
+                  : "text-gray-600 hover:bg-primary-50"
               )}
             >
-              <item.icon className="mr-3 h-5 w-5 flex-shrink-0 text-gray-400" />
+              <item.icon className="mr-3 h-5 w-5 flex-shrink-0" />
               {item.name}
             </button>
           ))}

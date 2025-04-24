@@ -14,13 +14,15 @@ export default function MainLayout({ children, isAdmin = false }: MainLayoutProp
   const isMobile = useIsMobile();
   
   return (
-    <div className="min-h-screen bg-background flex">
+    <div className="min-h-screen bg-gradient-to-br from-primary-50 via-primary-100 to-primary-200">
       {!isMobile && isAdmin && <Navigation />}
       
       <div className="flex-1">
         <Header isAdmin={isAdmin} />
         <main className="container mx-auto px-4 py-6">
-          {children}
+          <div className="bg-white/80 backdrop-blur-sm rounded-lg shadow-lg p-6">
+            {children}
+          </div>
         </main>
       </div>
     </div>

@@ -8,16 +8,16 @@ export default function Auth() {
   const [mode, setMode] = useState<'login' | 'signup'>('login');
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-50 via-primary-100 to-primary-200 font-sans py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full space-y-8 animate-fade-in">
         <div className="text-center">
-          <h1 className="text-3xl font-bold">IrelandPay Portal</h1>
+          <h1 className="text-3xl font-bold text-primary-800">IrelandPay Portal</h1>
           <p className="mt-2 text-sm text-gray-600">Sales Agent Agreement Portal</p>
         </div>
 
-        <Card>
+        <Card className="card-gradient">
           <CardHeader>
-            <CardTitle>{mode === 'login' ? 'Sign in' : 'Create account'}</CardTitle>
+            <CardTitle className="text-primary-800">{mode === 'login' ? 'Sign in' : 'Create account'}</CardTitle>
             <CardDescription>
               {mode === 'login' 
                 ? "Enter your credentials to access your account" 
@@ -32,7 +32,7 @@ export default function Auth() {
                   Don't have an account?{" "}
                   <button 
                     onClick={() => setMode('signup')}
-                    className="text-blue-600 hover:text-blue-500 font-medium"
+                    className="text-primary hover:text-primary-600 font-medium"
                   >
                     Sign up
                   </button>
@@ -45,7 +45,7 @@ export default function Auth() {
                   Already have an account?{" "}
                   <button 
                     onClick={() => setMode('login')}
-                    className="text-blue-600 hover:text-blue-500 font-medium"
+                    className="text-primary hover:text-primary-600 font-medium"
                   >
                     Sign in
                   </button>
