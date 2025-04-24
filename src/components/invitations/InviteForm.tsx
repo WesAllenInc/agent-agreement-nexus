@@ -29,14 +29,13 @@ export default function InviteForm() {
     setIsSending(true);
     
     try {
-      // Call the sendInviteEmail function (mock in development, real in production)
       const result = await sendInviteEmail(email);
       
       if (result.success) {
         toast.success(`Invitation sent to ${email}`);
         setEmail("");
       } else {
-        throw new Error(result.error || "Failed to send invitation");
+        throw new Error(result.message || "Failed to send invitation");
       }
     } catch (error: any) {
       toast.error("Failed to send invitation: " + (error.message || "Please try again"));
@@ -46,32 +45,39 @@ export default function InviteForm() {
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Invite New Sales Agent</CardTitle>
-        <CardDescription>
+    <Card className="border-navy-100 shadow-lg">
+      <CardHeader className="space-y-1">
+        <CardTitle className="text-2xl font-bold text-navy-600">
+          Invite New Sales Agent
+        </CardTitle>
+        <CardDescription className="text-gray-600">
           Send an email invitation to a new sales agent to join the platform.
         </CardDescription>
       </CardHeader>
       <form onSubmit={handleInvite}>
         <CardContent>
-          <div className="space-y-2">
-            <Label htmlFor="email">Email Address</Label>
-            <Input
-              id="email"
-              type="email"
-              placeholder="sales.agent@example.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="email" className="text-navy-700">
+                Email Address
+              </Label>
+              <Input
+                id="email"
+                type="email"
+                placeholder="sales.agent@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                className="border-gray-200 focus:border-brand-600 focus:ring-brand-600"
+              />
+            </div>
           </div>
         </CardContent>
         <CardFooter>
           <Button
             type="submit"
             disabled={isSending}
-            className="bg-brand-600 hover:bg-brand-700"
+            className="w-full bg-brand-600 hover:bg-brand-700 text-white transition-colors"
           >
             {isSending ? "Sending..." : "Send Invitation"}
           </Button>
