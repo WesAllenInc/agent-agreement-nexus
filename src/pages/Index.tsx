@@ -16,7 +16,7 @@ export default function Index() {
             variant="outline"
             className="border-brand-600 text-brand-600 hover:bg-brand-50"
           >
-            Sign In
+            Already have an account? Sign In
           </Button>
         </div>
       </header>
@@ -25,17 +25,17 @@ export default function Index() {
         <div className="container mx-auto px-4 py-16">
           <div className="max-w-4xl mx-auto text-center space-y-8">
             <h2 className="text-5xl font-bold text-navy-600 leading-tight">
-              Sales Agent Agreement Portal
+              Welcome to Ireland Pay's<br />Sales Agent Program
             </h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Streamline your onboarding process and manage agreements efficiently with Ireland Pay's secure platform.
+              Join our growing network of successful sales agents. Complete your onboarding in just a few simple steps and start earning with Ireland Pay.
             </p>
             <div className="pt-8">
               <Button 
                 onClick={() => navigate("/login")} 
                 className="px-8 py-6 text-lg bg-brand-600 hover:bg-brand-700 transition-colors"
               >
-                Get Started <ArrowRight className="ml-2 h-5 w-5" />
+                Start Your Application <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </div>
             
@@ -54,15 +54,13 @@ export default function Index() {
                     strokeLinejoin="round"
                     className="text-brand-600"
                   >
-                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
-                    <circle cx="9" cy="7" r="4"></circle>
-                    <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
-                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
                   </svg>
                 </div>
-                <h3 className="text-xl font-semibold text-navy-600 mb-3">Agent Onboarding</h3>
+                <h3 className="text-xl font-semibold text-navy-600 mb-3">Quick Application</h3>
                 <p className="text-gray-600">
-                  Seamless digital onboarding process for new sales agents
+                  Complete your agent application in minutes with our streamlined digital process
                 </p>
               </div>
               
@@ -81,13 +79,13 @@ export default function Index() {
                     className="text-brand-600"
                   >
                     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                    <polyline points="7 10 12 15 17 10"></polyline>
-                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                    <polyline points="17 8 12 3 7 8"></polyline>
+                    <line x1="12" y1="3" x2="12" y2="15"></line>
                   </svg>
                 </div>
-                <h3 className="text-xl font-semibold text-navy-600 mb-3">Digital Signatures</h3>
+                <h3 className="text-xl font-semibold text-navy-600 mb-3">Fast Onboarding</h3>
                 <p className="text-gray-600">
-                  Secure e-signatures for quick and legally binding agreements
+                  Get approved quickly and start selling with our comprehensive onboarding support
                 </p>
               </div>
               
@@ -105,16 +103,13 @@ export default function Index() {
                     strokeLinejoin="round"
                     className="text-brand-600"
                   >
-                    <path d="M18 8h1a4 4 0 0 1 0 8h-1"></path>
-                    <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path>
-                    <line x1="6" y1="1" x2="6" y2="4"></line>
-                    <line x1="10" y1="1" x2="10" y2="4"></line>
-                    <line x1="14" y1="1" x2="14" y2="4"></line>
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
                   </svg>
                 </div>
-                <h3 className="text-xl font-semibold text-navy-600 mb-3">Agreement Management</h3>
+                <h3 className="text-xl font-semibold text-navy-600 mb-3">Start Earning</h3>
                 <p className="text-gray-600">
-                  Centralized dashboard to track all agreements and their status
+                  Begin earning competitive commissions while helping businesses succeed with payment solutions
                 </p>
               </div>
             </div>
