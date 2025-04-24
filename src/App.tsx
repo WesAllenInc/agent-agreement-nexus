@@ -16,6 +16,7 @@ import Invitations from "@/pages/admin/Invitations";
 import Agreements from "@/pages/admin/Agreements";
 import NotFound from "@/pages/NotFound";
 import Profile from "@/pages/agent/Profile";
+import Auth from "@/pages/Auth";
 
 const queryClient = new QueryClient();
 
@@ -48,7 +49,8 @@ const App = () => (
           <Routes>
             {/* Public Routes */}
             <Route path="/" element={<Index />} />
-            <Route path="/login" element={<Login />} />
+            <Route path="/login" element={<Navigate to="/auth" />} />
+            <Route path="/auth" element={<Auth />} />
             <Route path="/accept-invitation" element={<AcceptInvitation />} />
             
             {/* Agent Routes */}
