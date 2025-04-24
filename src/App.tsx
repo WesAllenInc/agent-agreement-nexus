@@ -3,7 +3,8 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { AuthProvider } from "@/hooks/useAuth";
 
 // Pages
 import Index from "@/pages/Index";
@@ -18,33 +19,96 @@ import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient();
 
+// Protected Route Component
+const ProtectedRoute = ({ children, adminOnly = false }: { children: React.ReactNode; adminOnly?: boolean }) => {
+  const { session, loading, isAdmin } = useAuth();
+  
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+  
+  if (!session) {
+    return <Navigate to="/login" />;
+  }
+  
+  if (adminOnly && !isAdmin) {
+    return <Navigate to="/agent/agreement" />;
+  }
+  
+  return <>{children}</>;
+};
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          {/* Public Routes */}
-          <Route path="/" element={<Index />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/accept-invitation" element={<AcceptInvitation />} />
-          
-          {/* Agent Routes */}
-          <Route path="/agent/agreement" element={<Agreement />} />
-          <Route path="/agent/confirmation" element={<Confirmation />} />
-          
-          {/* Admin Routes */}
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/invitations" element={<Invitations />} />
-          <Route path="/agreements" element={<Agreements />} />
-          <Route path="/agents" element={<Agreements />} />
-          
-          {/* 404 Route */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
+    <BrowserRouter>
+      <AuthProvider>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <Routes>
+            {/* Public Routes */}
+            <Route path="/" element={<Index />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/accept-invitation" element={<AcceptInvitation />} />
+            
+            {/* Agent Routes */}
+            <Route 
+              path="/agent/agreement" 
+              element={
+                <ProtectedRoute>
+                  <Agreement />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/agent/confirmation" 
+              element={
+                <ProtectedRoute>
+                  <Confirmation />
+                </ProtectedRoute>
+              } 
+            />
+            
+            {/* Admin Routes */}
+            <Route 
+              path="/dashboard" 
+              element={
+                <ProtectedRoute adminOnly>
+                  <Dashboard />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/invitations" 
+              element={
+                <ProtectedRoute adminOnly>
+                  <Invitations />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/agreements" 
+              element={
+                <ProtectedRoute adminOnly>
+                  <Agreements />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/agents" 
+              element={
+                <ProtectedRoute adminOnly>
+                  <Agreements />
+                </ProtectedRoute>
+              } 
+            />
+            
+            {/* 404 Route */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </TooltipProvider>
+      </AuthProvider>
+    </BrowserRouter>
   </QueryClientProvider>
 );
 
