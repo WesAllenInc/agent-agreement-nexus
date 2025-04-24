@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import AcceptInvitationForm from "@/components/auth/AcceptInvitationForm";
 import { toast } from "sonner";
+import { validateToken } from "@/api/mockEdgeFunctions";
 
 export default function AcceptInvitation() {
   const [email, setEmail] = useState("");
@@ -27,27 +28,26 @@ export default function AcceptInvitation() {
     setToken(tokenParam);
     setEmail(emailParam);
     
-    // Mock token validation - would be replaced with Supabase function call
-    setTimeout(() => {
-      // For demo purposes, we'll consider most tokens valid
-      const isValidToken = !tokenParam.includes("invalid");
-      
-      if (!isValidToken) {
-        toast.error("This invitation link has expired or is invalid");
+    // Validate the token (using mock in development, real in production)
+    const checkToken = async () => {
+      try {
+        const result = await validateToken(tokenParam, emailParam);
+        
+        if (!result.valid) {
+          toast.error(result.error || "This invitation link has expired or is invalid");
+          setIsValidating(false);
+          return;
+        }
+        
+        setIsValid(true);
         setIsValidating(false);
-        return;
+      } catch (error: any) {
+        toast.error("Error validating invitation: " + (error.message || "Please try again"));
+        setIsValidating(false);
       }
-      
-      setIsValid(true);
-      setIsValidating(false);
-    }, 1000);
+    };
     
-    // In real implementation:
-    // 1. Call validateToken edge function with token
-    // 2. Function checks if token exists and isn't expired
-    // 3. If valid, show the signup form
-    // 4. If not valid, show error message
-    
+    checkToken();
   }, [location.search]);
 
   if (isValidating) {

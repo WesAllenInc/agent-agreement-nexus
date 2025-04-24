@@ -1,73 +1,57 @@
-# Welcome to your Lovable project
 
-## Project info
+# Ireland Pay Sales Agent Agreement Portal
 
-**URL**: https://lovable.dev/projects/66e41868-e7cf-4287-8e42-e49ef6b55063
+This project is a web application for managing sales agent agreements for Ireland Pay.
 
-## How can I edit this code?
+## Supabase Edge Functions
 
-There are several ways of editing your application.
+The project includes Supabase Edge Functions located in the `/supabase/functions/` directory. These functions are designed to be deployed directly to Supabase's serverless environment. They are not part of the TypeScript build process for the frontend.
 
-**Use Lovable**
+### Available Edge Functions:
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/66e41868-e7cf-4287-8e42-e49ef6b55063) and start prompting.
+- **createUserFromInvitation**: Creates a new user account from an invitation token
+- **sendInviteEmail**: Sends an invitation email to a new sales agent
+- **validateToken**: Validates an invitation token
 
-Changes made via Lovable will be committed automatically to this repo.
+## Development
 
-**Use your preferred IDE**
+For local development, the project uses mock implementations of the Edge Functions located in `src/api/mockEdgeFunctions.ts`.
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+### Deployment Steps for Edge Functions
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+When deploying to Supabase:
 
-Follow these steps:
+1. Navigate to the edge function directory:
+   ```
+   cd supabase/functions/[function-name]
+   ```
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+2. Deploy using the Supabase CLI:
+   ```
+   supabase functions deploy [function-name]
+   ```
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+3. Set required environment variables in the Supabase dashboard:
+   - SUPABASE_URL
+   - SUPABASE_SERVICE_ROLE_KEY
+   - SMTP_HOSTNAME (for sendInviteEmail)
+   - SMTP_PORT (for sendInviteEmail)
+   - SMTP_USERNAME (for sendInviteEmail)
+   - SMTP_PASSWORD (for sendInviteEmail)
+   - SMTP_FROM (for sendInviteEmail)
+   - FRONTEND_URL (for sendInviteEmail)
 
-# Step 3: Install the necessary dependencies.
-npm i
+## Features
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
+- **Authentication**: Admin and Sales Agent roles
+- **Invitation System**: Email-based invitations with secure tokens
+- **Multi-step Agreement**: Form wizard for completing sales agent agreements
+- **E-Signature**: Digital signature capture for agreements
+- **Admin Dashboard**: Overview of invitations and agreements
 
-**Edit a file directly in GitHub**
+## Tech Stack
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/66e41868-e7cf-4287-8e42-e49ef6b55063) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+- React with TypeScript
+- Tailwind CSS for styling
+- Supabase for backend services (Auth, Database, Edge Functions)
+- Shadcn UI components

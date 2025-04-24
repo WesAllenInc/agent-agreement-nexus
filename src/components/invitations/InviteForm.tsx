@@ -12,6 +12,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { sendInviteEmail } from "@/api/mockEdgeFunctions";
 
 export default function InviteForm() {
   const [email, setEmail] = useState("");
@@ -28,20 +29,18 @@ export default function InviteForm() {
     setIsSending(true);
     
     try {
-      // Mock invitation - would be replaced with Supabase function call
-      setTimeout(() => {
+      // Call the sendInviteEmail function (mock in development, real in production)
+      const result = await sendInviteEmail(email);
+      
+      if (result.success) {
         toast.success(`Invitation sent to ${email}`);
         setEmail("");
-        setIsSending(false);
-      }, 1000);
-      
-      // In real implementation with Supabase:
-      // 1. Call edge function to create invitation
-      // 2. Function generates token and sends email
-      // 3. Store invitation in database
-      
+      } else {
+        throw new Error(result.error || "Failed to send invitation");
+      }
     } catch (error: any) {
       toast.error("Failed to send invitation: " + (error.message || "Please try again"));
+    } finally {
       setIsSending(false);
     }
   };

@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
+import { createUserFromInvitation } from "@/api/mockEdgeFunctions";
 
 interface AcceptInvitationFormProps {
   token: string;
@@ -29,22 +30,18 @@ export default function AcceptInvitationForm({ token, email }: AcceptInvitationF
     setIsLoading(true);
     
     try {
-      // Mock signup logic - would be replaced with Supabase auth
-      // This is just for demo purposes
-      setTimeout(() => {
+      // Call the createUserFromInvitation function (mock in development, real in production)
+      const result = await createUserFromInvitation(token, email, password);
+      
+      if (result.success) {
         navigate("/agent/agreement");
-        setIsLoading(false);
         toast.success("Account created successfully! Please complete your agreement.");
-      }, 1000);
-      
-      // In real implementation with Supabase:
-      // 1. Validate the token
-      // 2. Create the user account
-      // 3. Update invitation status
-      // 4. Redirect to agreement form
-      
+      } else {
+        throw new Error(result.error || "Failed to create account");
+      }
     } catch (error: any) {
       toast.error("Failed to create account: " + (error.message || "Please try again"));
+    } finally {
       setIsLoading(false);
     }
   };
