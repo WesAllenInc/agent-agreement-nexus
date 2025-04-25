@@ -40,7 +40,7 @@ export default function Auth() {
       <div className="max-w-md w-full space-y-8 animate-fade-in">
         <div className="text-center flex flex-col items-center">
           <img 
-            src="/placeholder.svg" 
+            src="/lovable-uploads/692c0e22-35ce-4558-9822-df60e105764d.png" 
             alt="Ireland Pay Logo" 
             className="h-12 mb-4"
           />

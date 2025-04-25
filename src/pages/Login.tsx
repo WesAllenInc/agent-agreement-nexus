@@ -7,7 +7,7 @@ export default function Login() {
       <div className="w-full max-w-md space-y-8">
         <div className="text-center flex flex-col items-center">
           <img 
-            src="/placeholder.svg" 
+            src="/lovable-uploads/692c0e22-35ce-4558-9822-df60e105764d.png" 
             alt="Ireland Pay Logo" 
             className="h-12 mb-4"
           />

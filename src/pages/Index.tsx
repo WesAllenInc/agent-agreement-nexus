@@ -12,7 +12,7 @@ export default function Index() {
         <div className="text-center space-y-8">
           <div className="space-y-4 flex flex-col items-center">
             <img 
-              src="/placeholder.svg" 
+              src="/lovable-uploads/692c0e22-35ce-4558-9822-df60e105764d.png" 
               alt="Ireland Pay Logo" 
               className="h-16 mb-4"
             />
