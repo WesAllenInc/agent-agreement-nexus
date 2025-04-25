@@ -10,6 +10,7 @@ import { Eye, EyeOff, Loader2, Mail, Lock, User } from "lucide-react";
 import { useFormValidation } from "@/hooks/useFormValidation";
 import PasswordStrengthMeter from "./PasswordStrengthMeter";
 import { motion, AnimatePresence } from "framer-motion";
+import { Provider } from "@supabase/supabase-js";
 
 export default function SignUpForm() {
   const [email, setEmail] = useState("");
@@ -86,7 +87,7 @@ export default function SignUpForm() {
     }
   };
 
-  const handleSocialSignUp = async (provider: 'google' | 'microsoft') => {
+  const handleSocialSignUp = async (provider: Provider) => {
     try {
       const { error } = await supabase.auth.signInWithOAuth({
         provider,
@@ -270,7 +271,7 @@ export default function SignUpForm() {
             <Button
               type="button"
               variant="outline"
-              onClick={() => handleSocialSignUp('google')}
+              onClick={() => handleSocialSignUp("google" as Provider)}
               className="transition-all duration-200 hover:bg-gray-50"
             >
               <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
@@ -296,7 +297,7 @@ export default function SignUpForm() {
             <Button
               type="button"
               variant="outline"
-              onClick={() => handleSocialSignUp('microsoft')}
+              onClick={() => handleSocialSignUp("azure" as Provider)}
               className="transition-all duration-200 hover:bg-gray-50"
             >
               <svg className="mr-2 h-4 w-4" fill="currentColor" viewBox="0 0 24 24">

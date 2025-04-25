@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -11,6 +10,7 @@ import { toast } from "sonner";
 import { Eye, EyeOff, Loader2, Mail, Lock } from "lucide-react";
 import { useFormValidation } from "@/hooks/useFormValidation";
 import { motion, AnimatePresence } from "framer-motion";
+import { Provider } from "@supabase/supabase-js";
 
 export default function LoginForm() {
   const [email, setEmail] = useState("");
@@ -51,7 +51,7 @@ export default function LoginForm() {
     }
   };
 
-  const handleSocialLogin = async (provider: 'google' | 'microsoft') => {
+  const handleSocialLogin = async (provider: Provider) => {
     try {
       const { error } = await supabase.auth.signInWithOAuth({
         provider,
@@ -176,7 +176,7 @@ export default function LoginForm() {
             <Button
               type="button"
               variant="outline"
-              onClick={() => handleSocialLogin('google')}
+              onClick={() => handleSocialLogin("google" as Provider)}
               className="transition-all duration-200 hover:bg-gray-50"
             >
               <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
@@ -202,7 +202,7 @@ export default function LoginForm() {
             <Button
               type="button"
               variant="outline"
-              onClick={() => handleSocialLogin('microsoft')}
+              onClick={() => handleSocialLogin("azure" as Provider)}
               className="transition-all duration-200 hover:bg-gray-50"
             >
               <svg className="mr-2 h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
