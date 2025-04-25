@@ -40,9 +40,9 @@ export default function Auth() {
       <div className="max-w-md w-full space-y-8 animate-fade-in">
         <div className="text-center flex flex-col items-center">
           <img 
-            src="/ireland-pay-logo.png" 
+            src="/placeholder.svg" 
             alt="Ireland Pay Logo" 
-            className="h-12 mb-4"  // Reduced from h-16 to h-12
+            className="h-12 mb-4"
           />
           <p className="mt-2 text-sm text-gray-600">Sales Agent Portal</p>
         </div>

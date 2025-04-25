@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -28,7 +29,7 @@ export default function Header({ isAdmin }: HeaderProps) {
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
         <div className="flex items-center">
           <img 
-            src="/ireland-pay-logo.png" 
+            src="/placeholder.svg" 
             alt="Ireland Pay Logo" 
             className="h-8 mr-4"
           />

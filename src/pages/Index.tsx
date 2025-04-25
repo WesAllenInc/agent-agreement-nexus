@@ -12,9 +12,9 @@ export default function Index() {
         <div className="text-center space-y-8">
           <div className="space-y-4 flex flex-col items-center">
             <img 
-              src="/ireland-pay-logo.png" 
+              src="/placeholder.svg" 
               alt="Ireland Pay Logo" 
-              className="h-16 mb-4"  // Kept slightly larger for the landing page
+              className="h-16 mb-4"
             />
             <p className="text-xl text-gray-700 leading-relaxed">
               Join our network of sales agents and start earning today
