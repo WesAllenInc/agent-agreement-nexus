@@ -14,7 +14,7 @@ export default function Index() {
             <img 
               src="/ireland-pay-logo.png" 
               alt="Ireland Pay Logo" 
-              className="h-20 mb-4"
+              className="h-16 mb-4"  // Kept slightly larger for the landing page
             />
             <p className="text-xl text-gray-700 leading-relaxed">
               Join our network of sales agents and start earning today
