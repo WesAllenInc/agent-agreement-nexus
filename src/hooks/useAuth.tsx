@@ -27,8 +27,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               fetchProfile(session.user.id);
             }, 0);
           }
-        } else if (event === 'SIGNED_OUT') {
-          setProfile(null);
         }
       }
     );
