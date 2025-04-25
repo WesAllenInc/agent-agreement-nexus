@@ -36,6 +36,42 @@ export type Database = {
         }
         Relationships: []
       }
+      executed_agreements: {
+        Row: {
+          created_at: string
+          document_data: Json
+          document_type: string
+          id: string
+          signed_at: string | null
+          status: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          document_data: Json
+          document_type: string
+          id?: string
+          signed_at?: string | null
+          status: string
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          document_data?: Json
+          document_type?: string
+          id?: string
+          signed_at?: string | null
+          status?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string | null
