@@ -3,7 +3,7 @@ import { useWizard } from "../WizardContext";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 export default function AgreementText() {
-  const { formData } = useWizard();
+  const { formData, setFormData } = useWizard();
   const { partner_info } = formData;
 
   // Get current date for the agreement
@@ -12,6 +12,22 @@ export default function AgreementText() {
   const day = currentDate.getDate();
   const year = currentDate.getFullYear();
   const formattedDate = `${month} ${day}, ${year}`;
+
+  const handleTableChange = (tableType: 'offices' | 'agents', rowIndex: number, field: string, value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      schedule_b: {
+        ...prev.schedule_b || {},
+        [tableType]: {
+          ...(prev.schedule_b?.[tableType] || {}),
+          [rowIndex]: {
+            ...(prev.schedule_b?.[tableType]?.[rowIndex] || {}),
+            [field]: value
+          }
+        }
+      }
+    }));
+  };
 
   return (
     <ScrollArea className="h-[70vh] w-full rounded-md border p-4 overflow-y-auto">
@@ -325,9 +341,30 @@ export default function AgreementText() {
               <tbody>
                 {[...Array(5)].map((_, i) => (
                   <tr key={i}>
-                    <td className="border p-2">&nbsp;</td>
-                    <td className="border p-2">&nbsp;</td>
-                    <td className="border p-2">&nbsp;</td>
+                    <td className="border p-2">
+                      <input
+                        type="text"
+                        className="w-full p-1 bg-transparent"
+                        value={formData.schedule_b?.offices?.[i]?.name || ''}
+                        onChange={(e) => handleTableChange('offices', i, 'name', e.target.value)}
+                      />
+                    </td>
+                    <td className="border p-2">
+                      <input
+                        type="text"
+                        className="w-full p-1 bg-transparent"
+                        value={formData.schedule_b?.offices?.[i]?.address || ''}
+                        onChange={(e) => handleTableChange('offices', i, 'address', e.target.value)}
+                      />
+                    </td>
+                    <td className="border p-2">
+                      <input
+                        type="tel"
+                        className="w-full p-1 bg-transparent"
+                        value={formData.schedule_b?.offices?.[i]?.phone || ''}
+                        onChange={(e) => handleTableChange('offices', i, 'phone', e.target.value)}
+                      />
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -344,9 +381,31 @@ export default function AgreementText() {
               <tbody>
                 {[...Array(5)].map((_, i) => (
                   <tr key={i}>
-                    <td className="border p-2">&nbsp;</td>
-                    <td className="border p-2">&nbsp;</td>
-                    <td className="border p-2">&nbsp;</td>
+                    <td className="border p-2">
+                      <input
+                        type="text"
+                        className="w-full p-1 bg-transparent"
+                        value={formData.schedule_b?.agents?.[i]?.name || ''}
+                        onChange={(e) => handleTableChange('agents', i, 'name', e.target.value)}
+                      />
+                    </td>
+                    <td className="border p-2">
+                      <input
+                        type="text"
+                        className="w-full p-1 bg-transparent"
+                        value={formData.schedule_b?.agents?.[i]?.address || ''}
+                        onChange={(e) => handleTableChange('agents', i, 'address', e.target.value)}
+                      />
+                    </td>
+                    <td className="border p-2">
+                      <input
+                        type="text"
+                        className="w-full p-1 bg-transparent"
+                        value={formData.schedule_b?.agents?.[i]?.ssn || ''}
+                        onChange={(e) => handleTableChange('agents', i, 'ssn', e.target.value)}
+                        placeholder="XXX-XX-XXXX"
+                      />
+                    </td>
                   </tr>
                 ))}
               </tbody>
