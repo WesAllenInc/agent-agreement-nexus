@@ -45,7 +45,9 @@ export default function DocumentsList({ documents }: DocumentsListProps) {
           <TableRow key={doc.id}>
             <TableCell>{doc.title}</TableCell>
             <TableCell>
-              <Badge variant={doc.status === 'signed' ? 'success' : 'default'}>
+              <Badge 
+                variant={doc.status === 'signed' ? 'secondary' : 'default'}
+              >
                 {doc.status}
               </Badge>
             </TableCell>
