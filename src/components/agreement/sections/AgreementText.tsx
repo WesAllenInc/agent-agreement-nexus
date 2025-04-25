@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useWizard } from "../WizardContext";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -12,6 +11,7 @@ export default function AgreementText() {
   const month = currentDate.toLocaleString('default', { month: 'long' });
   const day = currentDate.getDate();
   const year = currentDate.getFullYear();
+  const formattedDate = `${month} ${day}, ${year}`;
 
   return (
     <ScrollArea className="h-[70vh] w-full rounded-md border p-4 overflow-y-auto">
@@ -19,7 +19,7 @@ export default function AgreementText() {
         <h1 className="text-2xl font-bold text-center mb-6">Sales Agent Agreement</h1>
         
         <p>
-          This Sales Agent Agreement ("Agreement") is made on _________________ ("Effective Date") by and among WLJ Innovations, LLC, a Florida limited liability company d/b/a Ireland Pay with offices at 5000 SW 75th Avenue, Suite 131, Miami, FL 33155 ("Ireland Pay") and,
+          This Sales Agent Agreement ("Agreement") is made on {formattedDate} ("Effective Date") by and among WLJ Innovations, LLC, a Florida limited liability company d/b/a Ireland Pay with offices at 5000 SW 75th Avenue, Suite 131, Miami, FL 33155 ("Ireland Pay") and,
         </p>
 
         <div className="text-center my-4">
@@ -133,7 +133,7 @@ export default function AgreementText() {
             A. Sales Locations. Sales Agent has disclosed to Ireland Pay on the attached Schedule B the identity and location of all of its sales locations. Schedule B will be revised and submitted to Ireland Pay prior to any change in the identity or location of any of its sales locations. Sales Agent will not delegate any of its rights or obligations under this Agreement to any other person or entity except to the extent that Sales Agent has offices that sell the Services offered by Ireland Pay.
           </p>
           <p>
-            B. Rules. In the event of any inconsistency between this Agreement and any Rules, the Rules will apply. Sales Agent acknowledges that it has received and understands, and that it agrees to comply with the Rules, including but not limited to Visa's Cardholder Information Security Program, MasterCard's Site Data Protection program requirements, and with the PCI Security Standards Council, LLC's Payment Card Industry Data Security Standards. AH fines or fees imposed upon Ireland Pay due to noncompliance by Sales Agent with any Rule shall be set off from Residual payments. If such fines or fees exceed the amount of Residuals in any one month, Sales Agent will reimburse Ireland Pay within 5 days of Ireland Pay's written demand for such amounts.
+            B. Rules. In the event of any inconsistency between this Agreement and any Rules, the Rules will apply. Sales Agent acknowledges that it has received and understood, and that it agrees to comply with the Rules, including but not limited to Visa's Cardholder Information Security Program, MasterCard's Site Data Protection program requirements, and with the PCI Security Standards Council, LLC's Payment Card Industry Data Security Standards. AH fines or fees imposed upon Ireland Pay due to noncompliance by Sales Agent with any Rule shall be set off from Residual payments. If such fines or fees exceed the amount of Residuals in any one month, Sales Agent will reimburse Ireland Pay within 5 days of Ireland Pay's written demand for such amounts.
           </p>
           <p>
             C. Disclosures. All Merchant fees must be clearly and conspicuously disclosed to the Merchant in writing on the Merchant application prior to any payment or application. Upon request, Sales Agent will provide records containing Merchant information to Ireland Pay, Sponsor, any Card Organization, or any regulatory agency as soon as possible but no later than 5 days from Sales Agent's receipt of a request for such information.
