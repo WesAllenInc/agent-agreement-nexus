@@ -5,13 +5,14 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useAuth } from './useAuth';
 import { AgreementData } from '@/types';
+import { Json } from '@/integrations/supabase/types';
 
 // Define the draft table structure based on Supabase's generated types
 type AgreementDraft = {
   id: string;
   user_id: string;
   form_key: string;
-  form_data: AgreementData;
+  form_data: Json;
   created_at: string;
   updated_at: string;
 }
@@ -40,8 +41,16 @@ export function useAutoSave(formKey: string) {
         }
         
         if (data?.form_data) {
-          setFormData(data.form_data as AgreementData);
-          toast.info('Loaded saved progress');
+          // Use type assertion with validation to ensure proper typing
+          const savedData = data.form_data as Record<string, any>;
+          
+          // Verify that the saved data has the expected structure
+          if (savedData.partner_info && savedData.bank_info) {
+            setFormData(savedData as AgreementData);
+            toast.info('Loaded saved progress');
+          } else {
+            console.error('Saved form data is missing required properties');
+          }
         }
       } catch (error) {
         console.error('Error loading saved data:', error);
@@ -66,7 +75,7 @@ export function useAutoSave(formKey: string) {
           .upsert({
             user_id: user.id,
             form_key: formKey,
-            form_data: formData,
+            form_data: formData as unknown as Json,
             updated_at: new Date().toISOString(),
           });
 
