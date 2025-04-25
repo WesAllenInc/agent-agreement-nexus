@@ -4,9 +4,9 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import { createUserFromInvitation } from "@/api/mockEdgeFunctions";
+import { Loader2 } from "lucide-react";
 
 interface AcceptInvitationFormProps {
   token: string;
@@ -22,6 +22,11 @@ export default function AcceptInvitationForm({ token, email }: AcceptInvitationF
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    if (password.length < 8) {
+      toast.error("Password must be at least 8 characters long");
+      return;
+    }
+    
     if (password !== confirmPassword) {
       toast.error("Passwords don't match");
       return;
@@ -30,15 +35,12 @@ export default function AcceptInvitationForm({ token, email }: AcceptInvitationF
     setIsLoading(true);
     
     try {
-      // Call the createUserFromInvitation function (mock in development, real in production)
       const result = await createUserFromInvitation(token, email, password);
       
       if (result.success) {
+        toast.success("Account created successfully!");
         navigate("/agent/agreement");
-        toast.success("Account created successfully! Please complete your agreement.");
       } else {
-        // Fixed: The type doesn't have an 'error' property
-        // Instead, throw a generic error message since result.success is false
         throw new Error("Failed to create account");
       }
     } catch (error: any) {
@@ -49,57 +51,57 @@ export default function AcceptInvitationForm({ token, email }: AcceptInvitationF
   };
 
   return (
-    <Card className="w-full max-w-md mx-auto shadow-lg">
-      <CardHeader className="space-y-1">
-        <CardTitle className="text-2xl font-bold text-center">Accept Invitation</CardTitle>
-        <CardDescription className="text-center">
-          Create your account to get started with Ireland Pay
-        </CardDescription>
-      </CardHeader>
-      <form onSubmit={handleSubmit}>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              type="email"
-              value={email}
-              disabled
-              className="bg-muted"
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
-            <Input
-              id="password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              minLength={8}
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="confirm-password">Confirm Password</Label>
-            <Input
-              id="confirm-password"
-              type="password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              required
-            />
-          </div>
-        </CardContent>
-        <CardFooter>
-          <Button
-            type="submit"
-            className="w-full bg-brand-600 hover:bg-brand-700"
-            disabled={isLoading}
-          >
-            {isLoading ? "Creating account..." : "Create Account"}
-          </Button>
-        </CardFooter>
-      </form>
-    </Card>
+    <form onSubmit={handleSubmit} className="space-y-6">
+      <div className="space-y-2">
+        <Label htmlFor="email">Email</Label>
+        <Input
+          id="email"
+          type="email"
+          value={email}
+          disabled
+          className="bg-muted"
+        />
+      </div>
+      
+      <div className="space-y-2">
+        <Label htmlFor="password">Password</Label>
+        <Input
+          id="password"
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          placeholder="Create a secure password"
+          required
+          minLength={8}
+        />
+      </div>
+      
+      <div className="space-y-2">
+        <Label htmlFor="confirm-password">Confirm Password</Label>
+        <Input
+          id="confirm-password"
+          type="password"
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
+          placeholder="Confirm your password"
+          required
+        />
+      </div>
+      
+      <Button
+        type="submit"
+        className="w-full"
+        disabled={isLoading}
+      >
+        {isLoading ? (
+          <>
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            Creating Account...
+          </>
+        ) : (
+          "Create Account"
+        )}
+      </Button>
+    </form>
   );
 }

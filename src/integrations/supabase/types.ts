@@ -9,6 +9,47 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      activity_log: {
+        Row: {
+          agreement_id: string | null
+          created_at: string
+          description: string | null
+          id: string
+          invitation_id: string | null
+          title: string
+          type: string
+          user_id: string | null
+        }
+        Insert: {
+          agreement_id?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          invitation_id?: string | null
+          title: string
+          type: string
+          user_id?: string | null
+        }
+        Update: {
+          agreement_id?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          invitation_id?: string | null
+          title?: string
+          type?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "activity_log_invitation_id_fkey"
+            columns: ["invitation_id"]
+            isOneToOne: false
+            referencedRelation: "invitations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       agreement_drafts: {
         Row: {
           created_at: string
@@ -69,6 +110,36 @@ export type Database = {
           title?: string
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      invitations: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          email: string
+          expires_at: string
+          id: string
+          status: string
+          token: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          email: string
+          expires_at: string
+          id?: string
+          status?: string
+          token: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          email?: string
+          expires_at?: string
+          id?: string
+          status?: string
+          token?: string
         }
         Relationships: []
       }
