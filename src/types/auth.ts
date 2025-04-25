@@ -5,4 +5,5 @@ export interface Profile {
   last_name: string;
   email: string;
   phone: string;
+  role?: string;
 }
