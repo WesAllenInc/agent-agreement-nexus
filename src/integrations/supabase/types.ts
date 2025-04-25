@@ -72,6 +72,50 @@ export type Database = {
         }
         Relationships: []
       }
+      personal_guarantees: {
+        Row: {
+          agreement_id: string | null
+          created_at: string | null
+          guarantor_address: string
+          guarantor_city: string
+          guarantor_name: string
+          guarantor_state: string
+          guarantor_zip: string
+          id: string
+          updated_at: string | null
+        }
+        Insert: {
+          agreement_id?: string | null
+          created_at?: string | null
+          guarantor_address: string
+          guarantor_city: string
+          guarantor_name: string
+          guarantor_state: string
+          guarantor_zip: string
+          id?: string
+          updated_at?: string | null
+        }
+        Update: {
+          agreement_id?: string | null
+          created_at?: string | null
+          guarantor_address?: string
+          guarantor_city?: string
+          guarantor_name?: string
+          guarantor_state?: string
+          guarantor_zip?: string
+          id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "personal_guarantees_agreement_id_fkey"
+            columns: ["agreement_id"]
+            isOneToOne: false
+            referencedRelation: "executed_agreements"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           created_at: string | null
@@ -80,6 +124,7 @@ export type Database = {
           id: string
           last_name: string | null
           phone: string | null
+          role: string | null
           updated_at: string | null
         }
         Insert: {
@@ -89,6 +134,7 @@ export type Database = {
           id: string
           last_name?: string | null
           phone?: string | null
+          role?: string | null
           updated_at?: string | null
         }
         Update: {
@@ -98,9 +144,104 @@ export type Database = {
           id?: string
           last_name?: string | null
           phone?: string | null
+          role?: string | null
           updated_at?: string | null
         }
         Relationships: []
+      }
+      sub_agents: {
+        Row: {
+          agent_address: string
+          agent_city: string
+          agent_name: string
+          agent_ssn: string
+          agent_state: string
+          agent_zip: string
+          agreement_id: string | null
+          created_at: string | null
+          id: string
+          updated_at: string | null
+        }
+        Insert: {
+          agent_address: string
+          agent_city: string
+          agent_name: string
+          agent_ssn: string
+          agent_state: string
+          agent_zip: string
+          agreement_id?: string | null
+          created_at?: string | null
+          id?: string
+          updated_at?: string | null
+        }
+        Update: {
+          agent_address?: string
+          agent_city?: string
+          agent_name?: string
+          agent_ssn?: string
+          agent_state?: string
+          agent_zip?: string
+          agreement_id?: string | null
+          created_at?: string | null
+          id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sub_agents_agreement_id_fkey"
+            columns: ["agreement_id"]
+            isOneToOne: false
+            referencedRelation: "executed_agreements"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sub_offices: {
+        Row: {
+          agreement_id: string | null
+          created_at: string | null
+          id: string
+          office_address: string
+          office_city: string
+          office_name: string
+          office_phone: string | null
+          office_state: string
+          office_zip: string
+          updated_at: string | null
+        }
+        Insert: {
+          agreement_id?: string | null
+          created_at?: string | null
+          id?: string
+          office_address: string
+          office_city: string
+          office_name: string
+          office_phone?: string | null
+          office_state: string
+          office_zip: string
+          updated_at?: string | null
+        }
+        Update: {
+          agreement_id?: string | null
+          created_at?: string | null
+          id?: string
+          office_address?: string
+          office_city?: string
+          office_name?: string
+          office_phone?: string | null
+          office_state?: string
+          office_zip?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sub_offices_agreement_id_fkey"
+            columns: ["agreement_id"]
+            isOneToOne: false
+            referencedRelation: "executed_agreements"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {

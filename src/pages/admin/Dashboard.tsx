@@ -1,120 +1,150 @@
 
-import { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 import MainLayout from "@/components/layout/MainLayout";
-import DashboardStatsCards from "@/components/dashboard/DashboardStats";
-import InvitationChart from "@/components/dashboard/InvitationChart";
-import AgreementStatusChart from "@/components/dashboard/AgreementStatusChart";
-import RecentActivity from "@/components/dashboard/RecentActivity";
-import { DashboardStats, ChartData, TimelineEvent } from "@/types";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import DocumentsList from "@/components/agent/documents/DocumentsList";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { toast } from "sonner";
 
-// Sample data
-const sampleStats: DashboardStats = {
-  totalAgents: 24,
-  pendingInvitations: 7,
-  submittedAgreements: 18,
-  signedAgreements: 15,
-  recentActivity: [
-    {
-      id: "1",
-      title: "New agent signed up",
-      description: "John Smith accepted invitation and created account",
-      timestamp: new Date(Date.now() - 35 * 60 * 1000).toISOString(),
-      type: "invitation",
-    },
-    {
-      id: "2",
-      title: "Agreement submitted",
-      description: "Maria Garcia completed and signed her agreement",
-      timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-      type: "signature",
-    },
-    {
-      id: "3",
-      title: "Agreement started",
-      description: "William Chen started filling out agreement forms",
-      timestamp: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
-      type: "agreement",
-    },
-    {
-      id: "4",
-      title: "Invitation sent",
-      description: "New invitation sent to samantha.lee@example.com",
-      timestamp: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
-      type: "invitation",
-    },
-    {
-      id: "5",
-      title: "Agreement submitted",
-      description: "Robert Johnson completed and signed his agreement",
-      timestamp: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-      type: "signature",
-    },
-  ],
-  invitationChartData: [
-    { name: "Sent", value: 35 },
-    { name: "Accepted", value: 24 },
-    { name: "Expired", value: 4 },
-    { name: "Pending", value: 7 },
-  ],
-  agreementStatusData: [
-    { name: "Draft", value: 3 },
-    { name: "Submitted", value: 15 },
-    { name: "Signed", value: 15 },
-  ],
-};
+export default function AdminDashboard() {
+  const { data: executedAgreements, isLoading: isLoadingDocuments } = useQuery({
+    queryKey: ['executed-agreements'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('executed_agreements')
+        .select('*')
+        .order('created_at', { ascending: false });
+      
+      if (error) throw error;
+      return data;
+    }
+  });
 
-export default function Dashboard() {
-  const [stats, setStats] = useState<DashboardStats | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const { data: subOffices, isLoading: isLoadingOffices } = useQuery({
+    queryKey: ['sub-offices'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('sub_offices')
+        .select('*')
+        .order('created_at', { ascending: false });
+      
+      if (error) throw error;
+      return data;
+    }
+  });
 
-  useEffect(() => {
-    // Mock API call - would be replaced with Supabase query
-    setTimeout(() => {
-      setStats(sampleStats);
-      setIsLoading(false);
-    }, 1000);
-    
-    // In real implementation:
-    // Fetch dashboard data from Supabase tables
-    
-  }, []);
-
-  if (isLoading) {
-    return (
-      <MainLayout isAdmin>
-        <div className="flex items-center justify-center h-64">
-          <p className="text-lg">Loading dashboard data...</p>
-        </div>
-      </MainLayout>
-    );
-  }
-
-  if (!stats) {
-    return (
-      <MainLayout isAdmin>
-        <div className="text-center">
-          <p>Failed to load dashboard data. Please try again.</p>
-        </div>
-      </MainLayout>
-    );
-  }
+  const { data: subAgents, isLoading: isLoadingAgents } = useQuery({
+    queryKey: ['sub-agents'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('sub_agents')
+        .select('*')
+        .order('created_at', { ascending: false });
+      
+      if (error) throw error;
+      return data;
+    }
+  });
 
   return (
-    <MainLayout isAdmin>
-      <div className="space-y-8">
-        <div className="flex items-center justify-between">
-          <h1 className="text-3xl font-bold">Dashboard</h1>
-        </div>
+    <MainLayout>
+      <div className="space-y-6">
+        <h1 className="text-3xl font-bold">Admin Dashboard</h1>
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Recent Agreements</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {isLoadingDocuments ? (
+                <div className="flex items-center justify-center h-32 text-muted-foreground">
+                  Loading documents...
+                </div>
+              ) : (
+                <DocumentsList documents={executedAgreements || []} />
+              )}
+            </CardContent>
+          </Card>
 
-        <DashboardStatsCards stats={stats} />
+          <Card>
+            <CardHeader>
+              <CardTitle>Sub-Offices</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {isLoadingOffices ? (
+                <div className="flex items-center justify-center h-32 text-muted-foreground">
+                  Loading offices...
+                </div>
+              ) : (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Office Name</TableHead>
+                      <TableHead>Location</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {subOffices?.map((office) => (
+                      <TableRow key={office.id}>
+                        <TableCell>
+                          <div className="font-medium">{office.office_name}</div>
+                          <div className="text-sm text-muted-foreground">{office.office_phone}</div>
+                        </TableCell>
+                        <TableCell>
+                          {office.office_city}, {office.office_state}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              )}
+            </CardContent>
+          </Card>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <InvitationChart data={stats.invitationChartData} />
-          <AgreementStatusChart data={stats.agreementStatusData} />
-        </div>
-
-        <div className="grid grid-cols-1 gap-6">
-          <RecentActivity events={stats.recentActivity} />
+          <Card>
+            <CardHeader>
+              <CardTitle>Sub-Agents</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {isLoadingAgents ? (
+                <div className="flex items-center justify-center h-32 text-muted-foreground">
+                  Loading agents...
+                </div>
+              ) : (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Agent Name</TableHead>
+                      <TableHead>Location</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {subAgents?.map((agent) => (
+                      <TableRow key={agent.id}>
+                        <TableCell>
+                          <div className="font-medium">{agent.agent_name}</div>
+                        </TableCell>
+                        <TableCell>
+                          {agent.agent_city}, {agent.agent_state}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              )}
+            </CardContent>
+          </Card>
         </div>
       </div>
     </MainLayout>
