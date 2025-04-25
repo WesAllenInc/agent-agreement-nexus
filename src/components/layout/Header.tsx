@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -5,10 +6,11 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { User } from "lucide-react";
+import { User, LogOut } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useState } from "react";
+import { useAuth } from "@/hooks/useAuth";
 
 interface HeaderProps {
   isAdmin?: boolean;
@@ -18,9 +20,11 @@ export default function Header({ isAdmin }: HeaderProps) {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
   const [showMobileMenu, setShowMobileMenu] = useState(false);
+  const { signOut } = useAuth();
   
   const handleLogout = () => {
-    navigate("/login");
+    signOut();
+    navigate("/auth");  // Redirect to the authentication page after logout
   };
 
   return (
@@ -56,7 +60,13 @@ export default function Header({ isAdmin }: HeaderProps) {
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuItem onClick={() => navigate("/agent/profile")}>Profile</DropdownMenuItem>
-            <DropdownMenuItem onClick={handleLogout}>Logout</DropdownMenuItem>
+            <DropdownMenuItem 
+              onClick={handleLogout} 
+              className="text-destructive focus:text-destructive-foreground"
+            >
+              <LogOut className="mr-2 h-4 w-4" />
+              Logout
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
