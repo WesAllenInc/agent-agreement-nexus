@@ -62,9 +62,27 @@ export interface BankInfo {
   account_holder_name: string;
 }
 
+export interface ScheduleBOffice {
+  name: string;
+  address: string;
+  phone: string;
+}
+
+export interface ScheduleBAgent {
+  name: string;
+  address: string;
+  ssn: string;
+}
+
+export interface ScheduleB {
+  offices?: Record<number, ScheduleBOffice>;
+  agents?: Record<number, ScheduleBAgent>;
+}
+
 export interface AgreementData {
   partner_info: PartnerInfo;
   bank_info: BankInfo;
+  schedule_b?: ScheduleB;
   signature_data?: string;
   signature_date?: string;
 }

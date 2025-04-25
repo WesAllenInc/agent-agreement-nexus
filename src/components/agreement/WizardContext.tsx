@@ -1,4 +1,3 @@
-
 import { ReactNode, createContext, useContext, useState } from "react";
 import { AgreementData, PartnerInfo, BankInfo } from "@/types";
 
@@ -49,6 +48,10 @@ const defaultBankInfo: BankInfo = {
 const defaultFormData: AgreementData = {
   partner_info: defaultPartnerInfo,
   bank_info: defaultBankInfo,
+  schedule_b: {
+    offices: {},
+    agents: {}
+  }
 };
 
 const WizardContext = createContext<WizardContextType | undefined>(undefined);
