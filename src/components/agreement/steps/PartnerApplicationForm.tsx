@@ -1,14 +1,17 @@
-
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { useWizard } from "../WizardContext";
+import { useAutoSave } from "@/hooks/useAutoSave";
 
 export default function PartnerApplicationForm() {
   const { formData, setFormData, goToNextStep } = useWizard();
   const { partner_info } = formData;
+
+  // Enable auto-save for this form
+  useAutoSave('partner-application');
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -31,7 +34,7 @@ export default function PartnerApplicationForm() {
     });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     goToNextStep();
   };
@@ -40,7 +43,12 @@ export default function PartnerApplicationForm() {
     <form onSubmit={handleSubmit}>
       <Card>
         <CardContent className="pt-6">
-          <div className="text-2xl font-semibold mb-6">Partner Application</div>
+          <div className="flex justify-between items-center mb-6">
+            <div className="text-2xl font-semibold">Partner Application</div>
+            <div className="text-sm text-muted-foreground animate-fade-in">
+              Auto-saving...
+            </div>
+          </div>
 
           <div className="space-y-6">
             <div className="grid grid-cols-1 gap-6 md:grid-cols-3">

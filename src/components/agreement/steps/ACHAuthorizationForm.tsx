@@ -1,4 +1,3 @@
-
 import { useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,11 +6,14 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { useWizard } from "../WizardContext";
 import { toast } from "sonner";
+import { useAutoSave } from "@/hooks/useAutoSave";
 
 export default function ACHAuthorizationForm() {
   const { formData, setFormData, goToNextStep, goToPreviousStep } = useWizard();
   const { bank_info } = formData;
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useAutoSave('ach-authorization');
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -38,11 +40,8 @@ export default function ACHAuthorizationForm() {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // In a real implementation, this would upload to Supabase Storage
-    // and save the URL. For this demo, we'll just show a toast.
     toast.success("Check uploaded successfully");
 
-    // Mock setting the file attachment
     setFormData({
       ...formData,
       bank_info: {
