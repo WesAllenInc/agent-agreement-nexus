@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import MainLayout from "@/components/layout/MainLayout";
 import {
@@ -20,6 +19,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
+import { useNavigate } from "react-router-dom";
 
 interface AgreementData {
   id: string;
@@ -84,6 +84,7 @@ export default function Agreements() {
   const [agreements, setAgreements] = useState<AgreementData[]>(sampleAgreements);
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [searchTerm, setSearchTerm] = useState<string>("");
+  const navigate = useNavigate();
 
   const filteredAgreements = agreements.filter((agreement) => {
     const matchesStatus = statusFilter === "all" || agreement.status === statusFilter;
@@ -183,7 +184,11 @@ export default function Agreements() {
                     <TableCell>{format(new Date(agreement.created_at), "MMM d, yyyy")}</TableCell>
                     <TableCell>{format(new Date(agreement.updated_at), "MMM d, yyyy")}</TableCell>
                     <TableCell className="text-right">
-                      <Button variant="outline" size="sm">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => navigate(`/agreements/${agreement.id}`)}
+                      >
                         View
                       </Button>
                     </TableCell>
