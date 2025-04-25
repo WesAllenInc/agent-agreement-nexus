@@ -1,52 +1,14 @@
-import React from 'react';
-import { useWizard } from "../WizardContext";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import AgreementHeader from "./AgreementHeader";
+import AgreementScheduleB from "./AgreementScheduleB";
+import AgreementSignatures from "./AgreementSignatures";
 
 export default function AgreementText() {
-  const { formData, setFormData } = useWizard();
-  const { partner_info } = formData;
-
-  // Get current date for the agreement
-  const currentDate = new Date();
-  const month = currentDate.toLocaleString('default', { month: 'long' });
-  const day = currentDate.getDate();
-  const year = currentDate.getFullYear();
-  const formattedDate = `${month} ${day}, ${year}`;
-
-  const handleTableChange = (tableType: 'offices' | 'agents', rowIndex: number, field: string, value: string) => {
-    setFormData(prev => ({
-      ...prev,
-      schedule_b: {
-        ...prev.schedule_b || {},
-        [tableType]: {
-          ...(prev.schedule_b?.[tableType] || {}),
-          [rowIndex]: {
-            ...(prev.schedule_b?.[tableType]?.[rowIndex] || {}),
-            [field]: value
-          }
-        }
-      }
-    }));
-  };
-
   return (
     <ScrollArea className="h-[70vh] w-full rounded-md border p-4 overflow-y-auto">
       <div className="space-y-6 text-sm text-justify">
-        <h1 className="text-2xl font-bold text-center mb-6">Sales Agent Agreement</h1>
+        <AgreementHeader />
         
-        <p>
-          This Sales Agent Agreement ("Agreement") is made on {formattedDate} ("Effective Date") by and among WLJ Innovations, LLC, a Florida limited liability company d/b/a Ireland Pay with offices at 5000 SW 75th Avenue, Suite 131, Miami, FL 33155 ("Ireland Pay") and,
-        </p>
-
-        <div className="text-center my-4">
-          <p>{partner_info.first_name} {partner_info.middle_name} {partner_info.last_name}</p>
-          <p>with offices at {partner_info.business_address} ("Sales Agent")</p>
-        </div>
-
-        <p>
-          and the Guarantor(s) listed on Schedule C. Ireland Pay provides merchant credit and debit card processing, check processing, software and hardware solutions, and related services. Sales Agent desires to solicit and refer merchants to Ireland Pay for those services. Therefore, for adequate consideration, the sufficiency of which is acknowledged, the parties agree as follows:
-        </p>
-
         <section>
           <h2 className="text-xl font-semibold mb-4">I. Definitions</h2>
           <p>The following terms when used in this Agreement will have the meanings set forth in this Section:</p>
@@ -287,131 +249,8 @@ export default function AgreementText() {
           </p>
         </section>
 
-        <section className="mt-8">
-          <h2 className="text-xl font-semibold mb-4">Signatures</h2>
-          <div className="grid grid-cols-2 gap-8">
-            <div>
-              <p className="font-semibold mb-4">WLJ Innovations, LLC DBA Ireland Pay</p>
-              <div className="space-y-4">
-                <div>
-                  <p className="text-sm text-gray-600">Signature:</p>
-                  <div className="border-b border-gray-300 h-8"></div>
-                </div>
-                <div>
-                  <p className="text-sm text-gray-600">Print Name:</p>
-                  <div className="border-b border-gray-300 h-8"></div>
-                </div>
-                <div>
-                  <p className="text-sm text-gray-600">Position:</p>
-                  <div className="border-b border-gray-300 h-8"></div>
-                </div>
-              </div>
-            </div>
-            <div>
-              <p className="font-semibold mb-4">Sales Agent</p>
-              <div className="space-y-4">
-                <div>
-                  <p className="text-sm text-gray-600">Signature:</p>
-                  <div className="border-b border-gray-300 h-8"></div>
-                </div>
-                <div>
-                  <p className="text-sm text-gray-600">Print Name:</p>
-                  <div className="border-b border-gray-300 h-8"></div>
-                </div>
-                <div>
-                  <p className="text-sm text-gray-600">Position:</p>
-                  <div className="border-b border-gray-300 h-8"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section className="mt-8">
-          <h2 className="text-xl font-semibold mb-4">Schedule B - Sales Offices and Sales Agents</h2>
-          <div className="space-y-8">
-            <table className="w-full border-collapse">
-              <thead>
-                <tr>
-                  <th className="border p-2 text-left">Sales Office Name</th>
-                  <th className="border p-2 text-left">Address</th>
-                  <th className="border p-2 text-left">Phone Number</th>
-                </tr>
-              </thead>
-              <tbody>
-                {[...Array(5)].map((_, i) => (
-                  <tr key={i}>
-                    <td className="border p-2">
-                      <input
-                        type="text"
-                        className="w-full p-1 bg-transparent"
-                        value={formData.schedule_b?.offices?.[i]?.name || ''}
-                        onChange={(e) => handleTableChange('offices', i, 'name', e.target.value)}
-                      />
-                    </td>
-                    <td className="border p-2">
-                      <input
-                        type="text"
-                        className="w-full p-1 bg-transparent"
-                        value={formData.schedule_b?.offices?.[i]?.address || ''}
-                        onChange={(e) => handleTableChange('offices', i, 'address', e.target.value)}
-                      />
-                    </td>
-                    <td className="border p-2">
-                      <input
-                        type="tel"
-                        className="w-full p-1 bg-transparent"
-                        value={formData.schedule_b?.offices?.[i]?.phone || ''}
-                        onChange={(e) => handleTableChange('offices', i, 'phone', e.target.value)}
-                      />
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-
-            <table className="w-full border-collapse">
-              <thead>
-                <tr>
-                  <th className="border p-2 text-left">Sales Agent Name</th>
-                  <th className="border p-2 text-left">Address</th>
-                  <th className="border p-2 text-left">Social Security Number</th>
-                </tr>
-              </thead>
-              <tbody>
-                {[...Array(5)].map((_, i) => (
-                  <tr key={i}>
-                    <td className="border p-2">
-                      <input
-                        type="text"
-                        className="w-full p-1 bg-transparent"
-                        value={formData.schedule_b?.agents?.[i]?.name || ''}
-                        onChange={(e) => handleTableChange('agents', i, 'name', e.target.value)}
-                      />
-                    </td>
-                    <td className="border p-2">
-                      <input
-                        type="text"
-                        className="w-full p-1 bg-transparent"
-                        value={formData.schedule_b?.agents?.[i]?.address || ''}
-                        onChange={(e) => handleTableChange('agents', i, 'address', e.target.value)}
-                      />
-                    </td>
-                    <td className="border p-2">
-                      <input
-                        type="text"
-                        className="w-full p-1 bg-transparent"
-                        value={formData.schedule_b?.agents?.[i]?.ssn || ''}
-                        onChange={(e) => handleTableChange('agents', i, 'ssn', e.target.value)}
-                        placeholder="XXX-XX-XXXX"
-                      />
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </section>
+        <AgreementSignatures />
+        <AgreementScheduleB />
       </div>
     </ScrollArea>
   );
