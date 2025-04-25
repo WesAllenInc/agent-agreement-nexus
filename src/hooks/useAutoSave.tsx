@@ -4,6 +4,16 @@ import { useWizard } from '@/components/agreement/WizardContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useAuth } from './useAuth';
+import { AgreementData } from '@/types';
+
+type AgreementDraft = {
+  id: string;
+  user_id: string;
+  form_key: string;
+  form_data: AgreementData;
+  created_at: string;
+  updated_at: string;
+}
 
 export function useAutoSave(formKey: string) {
   const { formData, setFormData } = useWizard();
@@ -17,13 +27,16 @@ export function useAutoSave(formKey: string) {
       
       try {
         const { data, error } = await supabase
-          .from('agreement_drafts')
-          .select('form_data')
+          .from<'agreement_drafts', AgreementDraft>('agreement_drafts')
+          .select()
           .eq('user_id', user.id)
           .eq('form_key', formKey)
           .maybeSingle();
           
-        if (error) throw error;
+        if (error) {
+          console.error('Error loading saved data:', error);
+          return;
+        }
         
         if (data?.form_data) {
           setFormData(data.form_data);
@@ -35,7 +48,7 @@ export function useAutoSave(formKey: string) {
     };
     
     loadSavedData();
-  }, [user?.id, formKey]);
+  }, [user?.id, formKey, setFormData]);
 
   // Auto-save when form data changes
   useEffect(() => {
@@ -48,7 +61,7 @@ export function useAutoSave(formKey: string) {
     saveTimeoutRef.current = setTimeout(async () => {
       try {
         const { error } = await supabase
-          .from('agreement_drafts')
+          .from<'agreement_drafts', AgreementDraft>('agreement_drafts')
           .upsert({
             user_id: user.id,
             form_key: formKey,
@@ -56,11 +69,14 @@ export function useAutoSave(formKey: string) {
             updated_at: new Date().toISOString(),
           });
 
-        if (error) throw error;
+        if (error) {
+          console.error('Error saving draft:', error);
+          return;
+        }
       } catch (error) {
         console.error('Error saving draft:', error);
       }
-    }, 2000); // Save after 2 seconds of no changes
+    }, 2000);
 
     return () => {
       if (saveTimeoutRef.current) {
