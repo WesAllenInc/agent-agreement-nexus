@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import LoginForm from "@/components/auth/LoginForm";
 import SignUpForm from "@/components/auth/SignUpForm";
@@ -39,37 +39,34 @@ export default function Auth() {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-50 via-primary-100 to-primary-200 font-sans py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8 animate-fade-in">
         <div className="text-center">
-          <h1 className="text-3xl font-bold text-primary-800">IrelandPay Portal</h1>
-          <p className="mt-2 text-sm text-gray-600">Sales Agent Agreement Portal</p>
+          <h1 className="text-3xl font-bold text-primary-800">IrelandPay</h1>
+          <p className="mt-2 text-sm text-gray-600">Sales Agent Portal</p>
         </div>
 
-        <Card className="card-gradient">
-          <CardHeader>
-            <CardTitle className="text-primary-800">{mode === 'login' ? 'Sign in' : 'Create account'}</CardTitle>
-            <CardDescription>
-              {mode === 'login' 
-                ? "Enter your credentials to access your account" 
-                : "Sign up to join IrelandPay as a sales agent"}
-            </CardDescription>
+        <Card className="card-gradient shadow-lg">
+          <CardHeader className="text-center">
+            <CardTitle className="text-2xl text-primary-800">
+              {mode === 'login' ? 'Welcome Back' : 'Create Your Account'}
+            </CardTitle>
           </CardHeader>
           <CardContent>
             {mode === 'login' ? (
               <div className="space-y-4">
                 <LoginForm />
-                <p className="text-center text-sm">
-                  Don't have an account?{" "}
+                <div className="text-center text-sm">
+                  New to IrelandPay?{" "}
                   <button 
                     onClick={() => setMode('signup')}
                     className="text-primary hover:text-primary-600 font-medium"
                   >
                     Sign up
                   </button>
-                </p>
+                </div>
               </div>
             ) : (
               <div className="space-y-4">
                 <SignUpForm />
-                <p className="text-center text-sm">
+                <div className="text-center text-sm">
                   Already have an account?{" "}
                   <button 
                     onClick={() => setMode('login')}
@@ -77,7 +74,7 @@ export default function Auth() {
                   >
                     Sign in
                   </button>
-                </p>
+                </div>
               </div>
             )}
           </CardContent>
