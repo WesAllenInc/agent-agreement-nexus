@@ -6,6 +6,7 @@ import {
   Users,
   FileText,
   MailPlus,
+  UserPlus,
 } from "lucide-react";
 
 export default function Navigation() {
@@ -17,6 +18,11 @@ export default function Navigation() {
       name: "Dashboard",
       href: "/dashboard",
       icon: LayoutDashboard,
+    },
+    {
+      name: "Users",
+      href: "/users",
+      icon: UserPlus,
     },
     {
       name: "Invitations",

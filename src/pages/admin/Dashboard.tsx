@@ -2,9 +2,12 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import MainLayout from "@/components/layout/MainLayout";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import DocumentsList from "@/components/agent/documents/DocumentsList";
 import DashboardStats from "@/components/admin/DashboardStats";
+import AgreementStatusChart from "@/components/admin/AgreementStatusChart";
+import RecentSignupsChart from "@/components/admin/RecentSignupsChart";
+import AgentActivityDashboard from "@/components/admin/AgentActivityDashboard";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import {
   Table,
   TableBody,
@@ -65,6 +68,13 @@ export default function AdminDashboard() {
         </div>
 
         <DashboardStats />
+        
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <AgreementStatusChart />
+          <RecentSignupsChart />
+        </div>
+        
+        <AgentActivityDashboard />
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <Card>

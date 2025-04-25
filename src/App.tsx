@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -14,6 +15,7 @@ import Confirmation from "@/pages/agent/Confirmation";
 import Dashboard from "@/pages/admin/Dashboard";
 import Invitations from "@/pages/admin/Invitations";
 import Agreements from "@/pages/admin/Agreements";
+import UsersManagement from "@/pages/admin/Users";
 import NotFound from "@/pages/NotFound";
 import Profile from "@/pages/agent/Profile";
 import Auth from "@/pages/Auth";
@@ -94,6 +96,14 @@ const App = () => (
               element={
                 <ProtectedRoute adminOnly>
                   <Dashboard />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/users" 
+              element={
+                <ProtectedRoute adminOnly>
+                  <UsersManagement />
                 </ProtectedRoute>
               } 
             />
