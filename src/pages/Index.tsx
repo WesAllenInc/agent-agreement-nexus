@@ -10,10 +10,12 @@ export default function Index() {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-50 via-primary-100 to-primary-200 font-sans">
       <div className="max-w-md w-full px-6 animate-fade-in">
         <div className="text-center space-y-8">
-          <div className="space-y-4">
-            <h1 className="text-5xl font-bold text-primary-800 mb-4">
-              IrelandPay Portal
-            </h1>
+          <div className="space-y-4 flex flex-col items-center">
+            <img 
+              src="/ireland-pay-logo.png" 
+              alt="Ireland Pay Logo" 
+              className="h-20 mb-4"
+            />
             <p className="text-xl text-gray-700 leading-relaxed">
               Join our network of sales agents and start earning today
             </p>
@@ -41,4 +43,3 @@ export default function Index() {
     </div>
   );
 }
-

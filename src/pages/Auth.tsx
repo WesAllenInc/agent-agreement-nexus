@@ -38,8 +38,12 @@ export default function Auth() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-50 via-primary-100 to-primary-200 font-sans py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8 animate-fade-in">
-        <div className="text-center">
-          <h1 className="text-3xl font-bold text-primary-800">IrelandPay</h1>
+        <div className="text-center flex flex-col items-center">
+          <img 
+            src="/ireland-pay-logo.png" 
+            alt="Ireland Pay Logo" 
+            className="h-16 mb-4"
+          />
           <p className="mt-2 text-sm text-gray-600">Sales Agent Portal</p>
         </div>
 

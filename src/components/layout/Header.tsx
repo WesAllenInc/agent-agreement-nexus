@@ -19,9 +19,7 @@ export default function Header({ isAdmin }: HeaderProps) {
   const isMobile = useIsMobile();
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   
-  // Mock function for auth - would be replaced with Supabase auth
   const handleLogout = () => {
-    // Implement logout logic here
     navigate("/login");
   };
 
@@ -29,7 +27,11 @@ export default function Header({ isAdmin }: HeaderProps) {
     <header className="bg-white border-b border-border shadow-sm">
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
         <div className="flex items-center">
-          <div className="font-bold text-xl text-brand-800">IrelandPay Portal</div>
+          <img 
+            src="/ireland-pay-logo.png" 
+            alt="Ireland Pay Logo" 
+            className="h-10 mr-4"
+          />
         </div>
 
         {isMobile && isAdmin && (
