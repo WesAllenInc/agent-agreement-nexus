@@ -42,7 +42,7 @@ export default function Auth() {
           <img 
             src="/lovable-uploads/692c0e22-35ce-4558-9822-df60e105764d.png" 
             alt="Ireland Pay Logo" 
-            className="h-12 mb-4"
+            className="h-24 mb-4"  // Changed from h-12 to h-24 (doubled)
           />
           <p className="mt-2 text-sm text-gray-600">Sales Agent Portal</p>
         </div>

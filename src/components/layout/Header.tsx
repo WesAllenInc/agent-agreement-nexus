@@ -30,7 +30,7 @@ export default function Header({ isAdmin }: HeaderProps) {
           <img 
             src="/lovable-uploads/692c0e22-35ce-4558-9822-df60e105764d.png" 
             alt="Ireland Pay Logo" 
-            className="h-8 mr-4"
+            className="h-16 mr-4"
           />
         </div>
 
