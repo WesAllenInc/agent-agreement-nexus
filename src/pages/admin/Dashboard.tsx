@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import MainLayout from "@/components/layout/MainLayout";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import DocumentsList from "@/components/agent/documents/DocumentsList";
+import DashboardStats from "@/components/admin/DashboardStats";
 import {
   Table,
   TableBody,
@@ -12,9 +13,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { toast } from "sonner";
 
 export default function AdminDashboard() {
   const { data: executedAgreements, isLoading: isLoadingDocuments } = useQuery({
@@ -23,7 +21,8 @@ export default function AdminDashboard() {
       const { data, error } = await supabase
         .from('executed_agreements')
         .select('*')
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: false })
+        .limit(5);
       
       if (error) throw error;
       return data;
@@ -36,7 +35,8 @@ export default function AdminDashboard() {
       const { data, error } = await supabase
         .from('sub_offices')
         .select('*')
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: false })
+        .limit(5);
       
       if (error) throw error;
       return data;
@@ -49,7 +49,8 @@ export default function AdminDashboard() {
       const { data, error } = await supabase
         .from('sub_agents')
         .select('*')
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: false })
+        .limit(5);
       
       if (error) throw error;
       return data;
@@ -57,9 +58,13 @@ export default function AdminDashboard() {
   });
 
   return (
-    <MainLayout>
+    <MainLayout isAdmin>
       <div className="space-y-6">
-        <h1 className="text-3xl font-bold">Admin Dashboard</h1>
+        <div className="flex items-center justify-between">
+          <h1 className="text-3xl font-bold">Admin Dashboard</h1>
+        </div>
+
+        <DashboardStats />
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <Card>
@@ -79,7 +84,7 @@ export default function AdminDashboard() {
 
           <Card>
             <CardHeader>
-              <CardTitle>Sub-Offices</CardTitle>
+              <CardTitle>Recent Sub-Offices</CardTitle>
             </CardHeader>
             <CardContent>
               {isLoadingOffices ? (
@@ -114,7 +119,7 @@ export default function AdminDashboard() {
 
           <Card>
             <CardHeader>
-              <CardTitle>Sub-Agents</CardTitle>
+              <CardTitle>Recent Sub-Agents</CardTitle>
             </CardHeader>
             <CardContent>
               {isLoadingAgents ? (
