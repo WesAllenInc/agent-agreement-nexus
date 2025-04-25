@@ -10,22 +10,27 @@ import AcceptInvitation from "./pages/AcceptInvitation";
 import Agents from "./pages/admin/Agents";
 import AgentDashboard from "./pages/agent/AgentDashboard";
 import AgentDocuments from "./pages/agent/AgentDocuments";
+import { AuthProvider } from "./hooks/useAuth";
+import Auth from "./pages/auth/Auth";
 
 function App() {
   return (
-    <Routes>
-      <Route path="/" element={<AcceptInvitation />} />
-      <Route path="/invitation/accept" element={<AcceptInvitation />} />
-      <Route path="/dashboard" element={<Dashboard />} />
-      <Route path="/users" element={<Users />} />
-      <Route path="/invitations" element={<Invitations />} />
-      <Route path="/agents" element={<Agents />} />
-      <Route path="/agreements" element={<Agreements />} />
-      <Route path="/agreements/:id" element={<AgreementDetails />} />
-      <Route path="/agent/agreement" element={<Agreement />} />
-      <Route path="/agent/dashboard" element={<AgentDashboard />} />
-      <Route path="/agent/documents" element={<AgentDocuments />} />
-    </Routes>
+    <AuthProvider>
+      <Routes>
+        <Route path="/" element={<AcceptInvitation />} />
+        <Route path="/invitation/accept" element={<AcceptInvitation />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/users" element={<Users />} />
+        <Route path="/invitations" element={<Invitations />} />
+        <Route path="/agents" element={<Agents />} />
+        <Route path="/agreements" element={<Agreements />} />
+        <Route path="/agreements/:id" element={<AgreementDetails />} />
+        <Route path="/agent/agreement" element={<Agreement />} />
+        <Route path="/agent/dashboard" element={<AgentDashboard />} />
+        <Route path="/agent/documents" element={<AgentDocuments />} />
+        <Route path="/auth" element={<Auth />} />
+      </Routes>
+    </AuthProvider>
   );
 }
 
