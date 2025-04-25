@@ -7,9 +7,7 @@ import Agreements from "./pages/admin/Agreements";
 import AgreementDetails from "./pages/admin/AgreementDetails";
 import Agreement from "./pages/agent/Agreement";
 import AcceptInvitation from "./pages/AcceptInvitation";
-import { ReactNode } from "react";
 import Agents from "./pages/admin/Agents";
-// Import correct paths for agent dashboard and documents
 import AgentDashboard from "./pages/agent/AgentDashboard";
 import AgentDocuments from "./pages/agent/AgentDocuments";
 

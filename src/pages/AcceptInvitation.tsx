@@ -69,7 +69,7 @@ export default function AcceptInvitation() {
             This invitation link is invalid or has expired.
           </p>
           <button
-            className="text-brand-600 hover:text-brand-700"
+            className="text-primary hover:text-primary-600"
             onClick={() => navigate("/login")}
           >
             Go to Login
