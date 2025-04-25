@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 import { useAuth } from './useAuth';
 import { AgreementData } from '@/types';
 
+// Define the draft table structure based on Supabase's generated types
 type AgreementDraft = {
   id: string;
   user_id: string;
@@ -27,7 +28,7 @@ export function useAutoSave(formKey: string) {
       
       try {
         const { data, error } = await supabase
-          .from<'agreement_drafts', AgreementDraft>('agreement_drafts')
+          .from('agreement_drafts')
           .select()
           .eq('user_id', user.id)
           .eq('form_key', formKey)
@@ -39,7 +40,7 @@ export function useAutoSave(formKey: string) {
         }
         
         if (data?.form_data) {
-          setFormData(data.form_data);
+          setFormData(data.form_data as AgreementData);
           toast.info('Loaded saved progress');
         }
       } catch (error) {
@@ -61,7 +62,7 @@ export function useAutoSave(formKey: string) {
     saveTimeoutRef.current = setTimeout(async () => {
       try {
         const { error } = await supabase
-          .from<'agreement_drafts', AgreementDraft>('agreement_drafts')
+          .from('agreement_drafts')
           .upsert({
             user_id: user.id,
             form_key: formKey,
