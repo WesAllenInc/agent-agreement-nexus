@@ -16,8 +16,8 @@ export default function AgreementText() {
     <ScrollArea className="h-[70vh] w-full rounded-md border p-4">
       <div className="space-y-6 text-sm">
         {/* Introduction Section */}
-        <div className="space-y-4">
-          <p className="text-justify">
+        <div className="space-y-4 text-justify">
+          <p>
             This Sales Agent Agreement ("Agreement") is made on {month} {day}, {year} ("Effective Date") by and among WLJ Innovations, LLC, 
             a Florida limited liability company d/b/a Ireland Pay with offices at 5000 SW 75th Avenue, Suite 131, Miami, FL 33155 ("Ireland Pay") and,
           </p>
@@ -29,7 +29,7 @@ export default function AgreementText() {
             <p className="text-center">{"(\"Sales Agent\")"}</p>
           </div>
 
-          <p className="text-justify">
+          <p>
             and the Guarantor(s) listed on Schedule C. Ireland Pay provides merchant credit and debit card processing, 
             check processing, software and hardware solutions, and related services. Sales Agent desires to solicit and 
             refer merchants to Ireland Pay for those services. Therefore, for adequate consideration, the sufficiency of 
@@ -37,73 +37,165 @@ export default function AgreementText() {
           </p>
         </div>
 
-        {/* Sections */}
-        <div className="space-y-8">
-          {/* Definitions Section */}
-          <section>
-            <h2 className="text-xl font-semibold mb-4">Definitions</h2>
-            <p className="mb-4">The following terms when used in this Agreement will have the meanings set forth in this Section:</p>
-            <div className="space-y-4">
-              {definitions.map((def, index) => (
-                <div key={index} className="pl-4 border-l-2 border-gray-200">
-                  <p>
-                    <span className="font-medium">{def.term}</span> {def.definition}
-                  </p>
-                </div>
-              ))}
+        {/* Definitions Section */}
+        <section>
+          <h2 className="text-xl font-semibold mb-4">Definitions</h2>
+          <p className="mb-4">The following terms when used in this Agreement will have the meanings set forth in this Section:</p>
+          <div className="space-y-4">
+            {definitions.map((def, index) => (
+              <div key={index} className="pl-4 border-l-2 border-gray-200">
+                <p>
+                  <span className="font-medium">{def.term}</span> {def.definition}
+                </p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Sales Agent's Obligations */}
+        <section>
+          <h2 className="text-xl font-semibold mb-4">Sales Agent's Obligations</h2>
+          <div className="space-y-4">
+            {obligations.map((obligation, index) => (
+              <div key={index} className="pl-4">
+                <p className="font-medium mb-2">{obligation.title}</p>
+                <p className="text-justify">{obligation.content}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Names and Trademarks */}
+        <section>
+          <h2 className="text-xl font-semibold mb-4">Names and Trademarks</h2>
+          {namesAndTrademarks.map((section, index) => (
+            <div key={index} className="mb-4 text-justify">
+              <p className="font-medium mb-2">{section.title}</p>
+              <p>{section.content}</p>
             </div>
-          </section>
+          ))}
+        </section>
 
-          {/* Sales Agent's Obligations Section */}
-          <section>
-            <h2 className="text-xl font-semibold mb-4">Sales Agent's Obligations</h2>
-            <div className="space-y-4">
-              {obligations.map((obligation, index) => (
-                <div key={index} className="pl-4">
-                  <p className="font-medium mb-2">{obligation.title}</p>
-                  <p className="text-justify">{obligation.content}</p>
-                </div>
-              ))}
-            </div>
-          </section>
-
-          {/* Continue with all other sections similarly structured */}
-        </div>
-
+        {/* Continue with other sections in a similar manner */}
+        
         {/* Signature Section */}
-        <section className="mt-8 grid grid-cols-2 gap-8">
-          <div>
-            <p className="font-semibold mb-4">WLJ Innovations, LLC DBA Ireland Pay</p>
-            <div className="space-y-4">
-              <div>
-                <p className="text-sm text-gray-600">Signature:</p>
-                <div className="border-b border-gray-300 h-8"></div>
+        <section className="mt-8">
+          <div className="grid grid-cols-2 gap-8">
+            <div>
+              <p className="font-semibold mb-4">WLJ Innovations, LLC DBA Ireland Pay</p>
+              <div className="space-y-4">
+                <div>
+                  <p className="text-sm text-gray-600">Signature:</p>
+                  <div className="border-b border-gray-300 h-8"></div>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-600">Print Name:</p>
+                  <div className="border-b border-gray-300 h-8"></div>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-600">Position:</p>
+                  <div className="border-b border-gray-300 h-8"></div>
+                </div>
               </div>
-              <div>
-                <p className="text-sm text-gray-600">Print Name:</p>
-                <div className="border-b border-gray-300 h-8"></div>
-              </div>
-              <div>
-                <p className="text-sm text-gray-600">Position:</p>
-                <div className="border-b border-gray-300 h-8"></div>
+            </div>
+            <div>
+              <p className="font-semibold mb-4">Sales Agent</p>
+              <div className="space-y-4">
+                <div>
+                  <p className="text-sm text-gray-600">Signature:</p>
+                  <div className="border-b border-gray-300 h-8"></div>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-600">Print Name:</p>
+                  <div className="border-b border-gray-300 h-8"></div>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-600">Position:</p>
+                  <div className="border-b border-gray-300 h-8"></div>
+                </div>
               </div>
             </div>
           </div>
-          <div>
-            <p className="font-semibold mb-4">Sales Agent</p>
-            <div className="space-y-4">
-              <div>
-                <p className="text-sm text-gray-600">Signature:</p>
-                <div className="border-b border-gray-300 h-8"></div>
-              </div>
-              <div>
-                <p className="text-sm text-gray-600">Print Name:</p>
-                <div className="border-b border-gray-300 h-8"></div>
-              </div>
-              <div>
-                <p className="text-sm text-gray-600">Position:</p>
-                <div className="border-b border-gray-300 h-8"></div>
-              </div>
+        </section>
+
+        {/* Schedules */}
+        <section className="mt-8">
+          <h2 className="text-xl font-semibold mb-4">Schedule B - Sales Offices and Sales Agents</h2>
+          <div className="space-y-8">
+            {/* Sales Offices Table */}
+            <div>
+              <table className="w-full border-collapse">
+                <thead>
+                  <tr>
+                    <th className="border p-2 text-left">Sales Office Name</th>
+                    <th className="border p-2 text-left">Address</th>
+                    <th className="border p-2 text-left">Phone Number</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {[...Array(5)].map((_, i) => (
+                    <tr key={i}>
+                      <td className="border p-2">&nbsp;</td>
+                      <td className="border p-2">&nbsp;</td>
+                      <td className="border p-2">&nbsp;</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Sales Agents Table */}
+            <div>
+              <table className="w-full border-collapse">
+                <thead>
+                  <tr>
+                    <th className="border p-2 text-left">Sales Agent Name</th>
+                    <th className="border p-2 text-left">Address</th>
+                    <th className="border p-2 text-left">Social Security Number</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {[...Array(5)].map((_, i) => (
+                    <tr key={i}>
+                      <td className="border p-2">&nbsp;</td>
+                      <td className="border p-2">&nbsp;</td>
+                      <td className="border p-2">&nbsp;</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        {/* Schedule C */}
+        <section className="mt-8">
+          <h2 className="text-xl font-semibold mb-4">Schedule C - Personal Guarantee</h2>
+          <div className="space-y-4">
+            <p className="text-justify">
+              As a primary inducement to Ireland Pay to enter into this Agreement, the Guarantor(s) indicated below
+              jointly and severally, unconditionally, and irrevocably, guarantee the continuing full and faithful performance
+              and payment by Sales Agent of each if its duties and obligations to Ireland Pay pursuant to the Agreement
+              as it now exists or may be amended from time to time, with or without notice.
+            </p>
+            {/* Guarantor Signature Fields */}
+            <div className="space-y-8 mt-8">
+              {[1, 2].map((num) => (
+                <div key={num} className="grid grid-cols-3 gap-4">
+                  <div>
+                    <p className="text-sm text-gray-600">Personal Guarantor Printed Name</p>
+                    <div className="border-b border-gray-300 h-8"></div>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-600">Personal Guarantor Signature</p>
+                    <div className="border-b border-gray-300 h-8"></div>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-600">Date</p>
+                    <div className="border-b border-gray-300 h-8"></div>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </section>
@@ -112,15 +204,11 @@ export default function AgreementText() {
   );
 }
 
-// Agreement text data
+// Agreement text data structures
 const definitions = [
   {
     term: '"Card Organization"',
     definition: 'means Visa, MasterCard, American Express, Discover, debit networks, and payment networks offered by Ireland Pay and any successor organization.'
-  },
-  {
-    term: '"Confidential Information"',
-    definition: 'means information disclosed to Sales Agent by Ireland Pay or gained by Sales Agent in the course of its relationship with Ireland Pay including but not limited to information relating to the business of Ireland Pay (Merchant contact information, Merchant identification numbers, Merchant data, transaction information, cardholder account numbers and information, pricing, the terms of this Agreement, which the parties agree is Ireland Pay\'s Confidential Information), programs, devices, trade secrets, methods, processes, financial data, information identifying other independent sales offices that do business with Ireland Pay, lists of Ireland Pay customers or suppliers, computer access codes, instruction and/or procedural manuals, business and financial plans, and any other data or information which is competitively sensitive and not generally known to the public.'
   },
   // ... Add all other definitions
 ];
@@ -128,12 +216,15 @@ const definitions = [
 const obligations = [
   {
     title: 'Responsibilities of Sales Agent',
-    content: 'On an exclusive basis, Sales Agent will market the Services and will encourage all prospective Merchants that comply with Ireland Pay\'s credit criteria to become Merchants. Agent will assist potential Merchants in completing all documentation required for application to the Merchant Program and will submit completed Merchant Agreements to Ireland Pay...'
-  },
-  {
-    title: 'Site Inspections',
-    content: 'Sales Agent will take all action necessary to verify that each prospective Merchant conducts a bona fide business operation, including but not limited to inspecting the Merchant\'s premises to determine whether Merchant has the proper facilities, equipment, inventory and license or permit, if necessary, to conduct its business.'
+    content: 'On an exclusive basis, Sales Agent will market the Services and will encourage all prospective Merchants that comply with Ireland Pay\'s credit criteria to become Merchants...'
   },
   // ... Add all other obligations
 ];
 
+const namesAndTrademarks = [
+  {
+    title: 'Ireland Pay Name and Trademark',
+    content: 'Ireland Pay owns all right, title, and interest in and to the Ireland Pay name and trademark...'
+  },
+  // ... Add other trademark sections
+];
