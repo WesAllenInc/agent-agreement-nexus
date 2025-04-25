@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useWizard } from "../WizardContext";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -266,7 +267,7 @@ export default function AgreementText() {
             10.13 Remedies Cumulative. The remedies provided in this Agreement are cumulative and not exclusive, and Ireland Pay may exercise any remedies available to it at law or in equity and as are provided in this Agreement.
           </p>
           <p>
-            10.14 Counterparts/Signatures/Electronic Execution. This Agreement may be executed in one or more counterparts, each of which shall be deemed an original and all of which together shall constitute one and the same instrument. Execution and delivery of a counterpart by electronic means—including, without limitation, via PDF, .jpg, .png, or through a secure website or electronic signature platform (e.g., DocuSign, Adobe Sign, or similar)—shall have the same legal force and effect as an original “wet‐ink” signature. Each Party hereby agrees that its electronic signature on any counterpart shall be binding and admissible in evidence to the same extent as an original signature.
+            10.14 Counterparts/Signatures/Electronic Execution. This Agreement may be executed in one or more counterparts, each of which shall be deemed an original and all of which together shall constitute one and the same instrument. Execution and delivery of a counterpart by electronic means—including, without limitation, via PDF, .jpg, .png, or through a secure website or electronic signature platform (e.g., DocuSign, Adobe Sign, or similar)—shall have the same legal force and effect as an original "wet‐ink" signature. Each Party hereby agrees that its electronic signature on any counterpart shall be binding and admissible in evidence to the same extent as an original signature.
           </p>
         </section>
 
@@ -343,4 +344,16 @@ export default function AgreementText() {
               <tbody>
                 {[...Array(5)].map((_, i) => (
                   <tr key={i}>
-                    <td className="border
+                    <td className="border p-2">&nbsp;</td>
+                    <td className="border p-2">&nbsp;</td>
+                    <td className="border p-2">&nbsp;</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+    </ScrollArea>
+  );
+}
