@@ -1,7 +1,9 @@
+
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import LoginForm from "@/components/auth/LoginForm";
 import SignUpForm from "@/components/auth/SignUpForm";
+import { AnimatedBackground } from "@/components/ui/animated-background";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function Auth() {
@@ -15,6 +17,7 @@ export default function Auth() {
 
   return (
     <div className="min-h-screen relative flex items-center justify-center overflow-hidden bg-gradient-to-br from-primary-50 via-primary-100 to-primary-200">
+      <AnimatedBackground />
       <div className="absolute inset-0 bg-gradient-to-br from-primary-400/20 via-transparent to-primary-600/20 pointer-events-none" />
       
       <motion.div 
