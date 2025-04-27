@@ -19,7 +19,7 @@ export const AnimatedBackground = () => {
     setSize();
     window.addEventListener('resize', setSize);
 
-    // Particle system with shamrock formation behavior
+    // Particle system for shamrock formation
     const particles: Array<{
       x: number;
       y: number;
@@ -32,15 +32,15 @@ export const AnimatedBackground = () => {
       angle: number;
       targetX?: number;
       targetY?: number;
-      inFormation: boolean;
+      formationIndex: number;
     }> = [];
 
-    // Lighter color palette
+    // Even lighter color palette
     const colors = [
-      'rgba(26, 192, 115, 0.15)',  // lighter primary green
-      'rgba(22, 148, 97, 0.15)',   // lighter dark green
-      'rgba(77, 198, 149, 0.15)',  // very light green
-      'rgba(178, 234, 209, 0.15)', // extremely light green
+      'rgba(26, 192, 115, 0.1)',   // very light primary green
+      'rgba(22, 148, 97, 0.1)',    // very light dark green
+      'rgba(77, 198, 149, 0.1)',   // extremely light green
+      'rgba(178, 234, 209, 0.1)',  // almost transparent green
     ];
 
     // Create initial particles
@@ -55,7 +55,7 @@ export const AnimatedBackground = () => {
         color: colors[Math.floor(Math.random() * colors.length)],
         rotationSpeed: (Math.random() - 0.5) * 0.02,
         angle: Math.random() * Math.PI * 2,
-        inFormation: false,
+        formationIndex: -1,
       });
     }
 
@@ -63,72 +63,96 @@ export const AnimatedBackground = () => {
     const createShamrockFormation = (centerX: number, centerY: number, size: number) => {
       const points = [];
       const leafCount = 3;
+      const leafSize = size * 0.8;
+      
+      // Create three leaves
       for (let i = 0; i < leafCount; i++) {
         const angle = (i * 2 * Math.PI) / leafCount;
         points.push({
-          x: centerX + Math.cos(angle) * size,
-          y: centerY + Math.sin(angle) * size,
+          x: centerX + Math.cos(angle) * leafSize,
+          y: centerY + Math.sin(angle) * leafSize,
         });
       }
-      // Add stem point
+      
+      // Add stem points
       points.push({
         x: centerX,
-        y: centerY + size * 1.2,
+        y: centerY + size,
       });
+
+      // Add center points for more density
+      points.push({
+        x: centerX,
+        y: centerY,
+      });
+
       return points;
     };
 
-    // Periodically create new formations
-    setInterval(() => {
+    // Formation management
+    let formations: Array<{ x: number; y: number; points: Array<{ x: number; y: number }> }> = [];
+
+    // Create new formations periodically
+    const createNewFormation = () => {
       const centerX = Math.random() * canvas.width;
       const centerY = Math.random() * canvas.height;
       const formationPoints = createShamrockFormation(centerX, centerY, 50);
       
-      // Assign some particles to the formation
-      const availableParticles = particles.filter(p => !p.inFormation);
-      const particlesToAssign = Math.min(formationPoints.length * 5, availableParticles.length);
-      
-      for (let i = 0; i < particlesToAssign; i++) {
-        const particle = availableParticles[i];
-        const point = formationPoints[i % formationPoints.length];
-        particle.targetX = point.x;
-        particle.targetY = point.y;
-        particle.inFormation = true;
-      }
-    }, 5000);
-
-    // Release particles from formation
-    setInterval(() => {
-      particles.forEach(particle => {
-        if (particle.inFormation && Math.random() < 0.1) {
-          particle.inFormation = false;
-          particle.targetX = undefined;
-          particle.targetY = undefined;
-        }
+      formations.push({
+        x: centerX,
+        y: centerY,
+        points: formationPoints,
       });
-    }, 1000);
 
-    // Animation loop with enhanced particle behavior
+      // Assign available particles to the new formation
+      const availableParticles = particles.filter(p => p.formationIndex === -1);
+      const pointsPerPosition = Math.ceil(availableParticles.length / formationPoints.length);
+      
+      availableParticles.forEach((particle, index) => {
+        const pointIndex = Math.floor(index / pointsPerPosition) % formationPoints.length;
+        particle.targetX = formationPoints[pointIndex].x;
+        particle.targetY = formationPoints[pointIndex].y;
+        particle.formationIndex = formations.length - 1;
+      });
+    };
+
+    // Initial formations
+    for (let i = 0; i < 5; i++) {
+      createNewFormation();
+    }
+
+    // Create new formations periodically
+    setInterval(() => {
+      // Remove oldest formation and create a new one
+      if (formations.length > 4) {
+        formations.shift();
+        // Reset particles from the removed formation
+        particles.forEach(particle => {
+          if (particle.formationIndex === 0) {
+            particle.formationIndex = -1;
+          } else if (particle.formationIndex > 0) {
+            particle.formationIndex--;
+          }
+        });
+      }
+      createNewFormation();
+    }, 4000);
+
+    // Animation loop
     const animate = () => {
       ctx.fillStyle = 'rgba(255, 255, 255, 0.03)';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       particles.forEach((particle) => {
-        if (particle.inFormation && particle.targetX !== undefined && particle.targetY !== undefined) {
+        if (particle.formationIndex !== -1 && particle.targetX !== undefined && particle.targetY !== undefined) {
           // Move towards formation position
           const dx = particle.targetX - particle.x;
           const dy = particle.targetY - particle.y;
           particle.x += dx * 0.05;
           particle.y += dy * 0.05;
-        } else {
-          // Free floating movement
-          particle.x += Math.sin(particle.angle) * particle.speedX;
-          particle.y += Math.cos(particle.angle) * particle.speedY;
-          particle.angle += particle.rotationSpeed;
-          particle.y += Math.sin(Date.now() * 0.001) * 0.3;
         }
 
-        // Wrap around screen with smooth transition
+        // Wrap around screen
         if (particle.x < -50) particle.x = canvas.width + 50;
         if (particle.x > canvas.width + 50) particle.x = -50;
         if (particle.y < -50) particle.y = canvas.height + 50;
