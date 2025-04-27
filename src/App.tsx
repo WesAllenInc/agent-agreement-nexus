@@ -1,5 +1,5 @@
-
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { ParticleLogoBackground } from "./components/ui/particle-logo-background";
 import Dashboard from "./pages/admin/Dashboard";
 import Users from "./pages/admin/Users";
 import Invitations from "./pages/admin/Invitations";
@@ -12,13 +12,14 @@ import AgentDashboard from "./pages/agent/AgentDashboard";
 import AgentDocuments from "./pages/agent/AgentDocuments";
 import { AuthProvider } from "./hooks/useAuth";
 import Auth from "./pages/auth/Auth";
-import Index from "./pages/Index"; // Import the Index page
+import Index from "./pages/Index";
 
 function App() {
   return (
     <AuthProvider>
+      <ParticleLogoBackground />
       <Routes>
-        <Route path="/" element={<Index />} /> {/* Change root path to Index */}
+        <Route path="/" element={<Index />} />
         <Route path="/invitation/accept" element={<AcceptInvitation />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/users" element={<Users />} />
