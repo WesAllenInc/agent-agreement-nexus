@@ -19,7 +19,7 @@ export const AnimatedBackground = () => {
     setSize();
     window.addEventListener('resize', setSize);
 
-    // Particle system for shamrock formation
+    // Particle system
     const particles: Array<{
       x: number;
       y: number;
@@ -32,111 +32,100 @@ export const AnimatedBackground = () => {
       angle: number;
       targetX?: number;
       targetY?: number;
-      formationIndex: number;
     }> = [];
 
     // Even lighter color palette
     const colors = [
-      'rgba(26, 192, 115, 0.1)',   // very light primary green
-      'rgba(22, 148, 97, 0.1)',    // very light dark green
-      'rgba(77, 198, 149, 0.1)',   // extremely light green
-      'rgba(178, 234, 209, 0.1)',  // almost transparent green
+      'rgba(26, 192, 115, 0.06)',  // extremely light primary green
+      'rgba(22, 148, 97, 0.06)',   // extremely light dark green
+      'rgba(77, 198, 149, 0.06)',  // extremely light medium green
+      'rgba(178, 234, 209, 0.06)', // barely visible light green
     ];
 
     // Create initial particles
-    for (let i = 0; i < 100; i++) {
+    for (let i = 0; i < 150; i++) {
       particles.push({
         x: Math.random() * canvas.width,
         y: Math.random() * canvas.height,
         size: Math.random() * 3 + 1.5,
         speedX: (Math.random() - 0.5) * 1,
         speedY: (Math.random() - 0.5) * 1,
-        opacity: Math.random() * 0.4 + 0.1,
+        opacity: Math.random() * 0.3 + 0.1,
         color: colors[Math.floor(Math.random() * colors.length)],
         rotationSpeed: (Math.random() - 0.5) * 0.02,
         angle: Math.random() * Math.PI * 2,
-        formationIndex: -1,
+        targetX: undefined,
+        targetY: undefined,
       });
     }
 
-    // Function to create shamrock formation points
-    const createShamrockFormation = (centerX: number, centerY: number, size: number) => {
+    // Function to create logo formation points
+    const createLogoFormation = (centerX: number, centerY: number, size: number) => {
       const points = [];
-      const leafCount = 3;
-      const leafSize = size * 0.8;
+      const scale = size;
       
-      // Create three leaves
-      for (let i = 0; i < leafCount; i++) {
-        const angle = (i * 2 * Math.PI) / leafCount;
+      // Create points for "IP" letters
+      // Letter I
+      for (let y = 0; y < 5; y++) {
         points.push({
-          x: centerX + Math.cos(angle) * leafSize,
-          y: centerY + Math.sin(angle) * leafSize,
+          x: centerX - scale * 2,
+          y: centerY - scale * 2 + y * scale,
         });
       }
       
-      // Add stem points
-      points.push({
-        x: centerX,
-        y: centerY + size,
-      });
+      // Letter P
+      points.push(
+        // Vertical line
+        ...Array.from({ length: 5 }, (_, i) => ({
+          x: centerX,
+          y: centerY - scale * 2 + i * scale,
+        })),
+        // Top horizontal line
+        ...Array.from({ length: 2 }, (_, i) => ({
+          x: centerX + i * scale,
+          y: centerY - scale * 2,
+        })),
+        // Middle horizontal line
+        ...Array.from({ length: 2 }, (_, i) => ({
+          x: centerX + i * scale,
+          y: centerY,
+        })),
+        // Curve point
+        {
+          x: centerX + scale,
+          y: centerY - scale,
+        }
+      );
 
-      // Add center points for more density
-      points.push({
-        x: centerX,
-        y: centerY,
-      });
+      // Add some scattered points for a more dynamic effect
+      for (let i = 0; i < 10; i++) {
+        points.push({
+          x: centerX + (Math.random() - 0.5) * size * 4,
+          y: centerY + (Math.random() - 0.5) * size * 4,
+        });
+      }
 
       return points;
     };
 
     // Formation management
-    let formations: Array<{ x: number; y: number; points: Array<{ x: number; y: number }> }> = [];
-
-    // Create new formations periodically
-    const createNewFormation = () => {
-      const centerX = Math.random() * canvas.width;
-      const centerY = Math.random() * canvas.height;
-      const formationPoints = createShamrockFormation(centerX, centerY, 50);
+    const updateFormation = () => {
+      const formationPoints = createLogoFormation(canvas.width / 2, canvas.height / 2, 30);
       
-      formations.push({
-        x: centerX,
-        y: centerY,
-        points: formationPoints,
-      });
-
-      // Assign available particles to the new formation
-      const availableParticles = particles.filter(p => p.formationIndex === -1);
-      const pointsPerPosition = Math.ceil(availableParticles.length / formationPoints.length);
-      
-      availableParticles.forEach((particle, index) => {
-        const pointIndex = Math.floor(index / pointsPerPosition) % formationPoints.length;
+      particles.forEach((particle, index) => {
+        const pointIndex = index % formationPoints.length;
         particle.targetX = formationPoints[pointIndex].x;
         particle.targetY = formationPoints[pointIndex].y;
-        particle.formationIndex = formations.length - 1;
       });
     };
 
-    // Initial formations
-    for (let i = 0; i < 5; i++) {
-      createNewFormation();
-    }
+    // Initial formation
+    updateFormation();
 
-    // Create new formations periodically
+    // Recreate formation periodically with slight variations
     setInterval(() => {
-      // Remove oldest formation and create a new one
-      if (formations.length > 4) {
-        formations.shift();
-        // Reset particles from the removed formation
-        particles.forEach(particle => {
-          if (particle.formationIndex === 0) {
-            particle.formationIndex = -1;
-          } else if (particle.formationIndex > 0) {
-            particle.formationIndex--;
-          }
-        });
-      }
-      createNewFormation();
-    }, 4000);
+      updateFormation();
+    }, 5000);
 
     // Animation loop
     const animate = () => {
@@ -144,7 +133,7 @@ export const AnimatedBackground = () => {
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       particles.forEach((particle) => {
-        if (particle.formationIndex !== -1 && particle.targetX !== undefined && particle.targetY !== undefined) {
+        if (particle.targetX !== undefined && particle.targetY !== undefined) {
           // Move towards formation position
           const dx = particle.targetX - particle.x;
           const dy = particle.targetY - particle.y;
