@@ -12,12 +12,13 @@ import AgentDashboard from "./pages/agent/AgentDashboard";
 import AgentDocuments from "./pages/agent/AgentDocuments";
 import { AuthProvider } from "./hooks/useAuth";
 import Auth from "./pages/auth/Auth";
+import Index from "./pages/Index"; // Import the Index page
 
 function App() {
   return (
     <AuthProvider>
       <Routes>
-        <Route path="/" element={<AcceptInvitation />} />
+        <Route path="/" element={<Index />} /> {/* Change root path to Index */}
         <Route path="/invitation/accept" element={<AcceptInvitation />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/users" element={<Users />} />
