@@ -58,7 +58,7 @@ export default function Header({ isAdmin }: HeaderProps) {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={() => navigate("/agent/dashboard")}>Dashboard</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => navigate("/agent/AgentDashboard")}>Dashboard</DropdownMenuItem>
             <DropdownMenuItem onClick={() => navigate("/agent/profile")}>Profile</DropdownMenuItem>
             <DropdownMenuItem 
               onClick={handleLogout} 
