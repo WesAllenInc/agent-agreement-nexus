@@ -187,6 +187,39 @@ export type Database = {
           },
         ]
       }
+      physical_agreements: {
+        Row: {
+          created_at: string | null
+          file_path: string
+          id: string
+          signed_date: string
+          status: Database["public"]["Enums"]["agreement_status"] | null
+          title: string
+          uploaded_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          file_path: string
+          id?: string
+          signed_date: string
+          status?: Database["public"]["Enums"]["agreement_status"] | null
+          title: string
+          uploaded_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          file_path?: string
+          id?: string
+          signed_date?: string
+          status?: Database["public"]["Enums"]["agreement_status"] | null
+          title?: string
+          uploaded_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string | null
@@ -322,7 +355,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      agreement_status: "draft" | "executed"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -437,6 +470,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      agreement_status: ["draft", "executed"],
+    },
   },
 } as const
