@@ -1,11 +1,9 @@
-
 import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import AcceptInvitationForm from "@/components/auth/AcceptInvitationForm";
 import { toast } from "sonner";
 import { validateToken } from "@/api/mockEdgeFunctions";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { AnimatedBackground } from "@/components/ui/animated-background";
 import { motion } from "framer-motion";
 import { Loader2 } from "lucide-react";
 
@@ -18,7 +16,6 @@ export default function AcceptInvitation() {
   const location = useLocation();
 
   useEffect(() => {
-    // Extract token and email from URL query parameters
     const queryParams = new URLSearchParams(location.search);
     const tokenParam = queryParams.get("token");
     const emailParam = queryParams.get("email");
@@ -85,7 +82,6 @@ export default function AcceptInvitation() {
 
   return (
     <div className="min-h-screen relative flex items-center justify-center overflow-hidden bg-gradient-to-br from-primary-50 via-primary-100 to-primary-200">
-      <AnimatedBackground />
       <div className="absolute inset-0 bg-gradient-to-br from-primary-400/20 via-transparent to-primary-600/20 pointer-events-none" />
       
       <motion.div 
