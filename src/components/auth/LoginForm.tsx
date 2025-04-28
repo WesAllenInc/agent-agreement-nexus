@@ -10,7 +10,7 @@ import { toast } from "sonner";
 import { Eye, EyeOff, Loader2, Mail, Lock } from "lucide-react";
 import { useFormValidation } from "@/hooks/useFormValidation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Provider } from "@supabase/supabase-js";
+import { Provider, AuthError } from "@supabase/supabase-js";
 
 export default function LoginForm() {
   const [email, setEmail] = useState("");
@@ -44,14 +44,18 @@ export default function LoginForm() {
       
       if (error) throw error;
       navigate("/agent/agreement");
-    } catch (error: any) {
-      toast.error("Login failed: " + error.message);
+    } catch (error) {
+      if (error instanceof AuthError) {
+        toast.error("Login failed: " + error.message);
+      } else {
+        toast.error("An unexpected error occurred");
+      }
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleSocialLogin = async (provider: Provider) => {
+  const handleSocialLogin = async (provider) => {
     try {
       const { error } = await supabase.auth.signInWithOAuth({
         provider,
@@ -61,8 +65,12 @@ export default function LoginForm() {
       });
 
       if (error) throw error;
-    } catch (error: any) {
-      toast.error("Login failed: " + error.message);
+    } catch (error) {
+      if (error instanceof AuthError) {
+        toast.error("Login failed: " + error.message);
+      } else {
+        toast.error("An unexpected error occurred");
+      }
     }
   };
 
@@ -136,7 +144,7 @@ export default function LoginForm() {
             <Checkbox
               id="remember"
               checked={rememberMe}
-              onCheckedChange={(checked) => setRememberMe(checked as boolean)}
+              onCheckedChange={(checked) => setRememberMe(checked)}
             />
             <Label
               htmlFor="remember"
@@ -176,7 +184,7 @@ export default function LoginForm() {
             <Button
               type="button"
               variant="outline"
-              onClick={() => handleSocialLogin("google" as Provider)}
+              onClick={() => handleSocialLogin("google")}
               className="transition-all duration-200 hover:bg-gray-50"
             >
               <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
@@ -202,7 +210,7 @@ export default function LoginForm() {
             <Button
               type="button"
               variant="outline"
-              onClick={() => handleSocialLogin("azure" as Provider)}
+              onClick={() => handleSocialLogin("azure")}
               className="transition-all duration-200 hover:bg-gray-50"
             >
               <svg className="mr-2 h-4 w-4" fill="currentColor" viewBox="0 0 24 24">

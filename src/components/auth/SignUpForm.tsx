@@ -10,7 +10,7 @@ import { Eye, EyeOff, Loader2, Mail, Lock, User } from "lucide-react";
 import { useFormValidation } from "@/hooks/useFormValidation";
 import PasswordStrengthMeter from "./PasswordStrengthMeter";
 import { motion, AnimatePresence } from "framer-motion";
-import { Provider } from "@supabase/supabase-js";
+import { Provider, AuthError } from "@supabase/supabase-js";
 
 export default function SignUpForm() {
   const [email, setEmail] = useState("");
@@ -80,8 +80,12 @@ export default function SignUpForm() {
 
       toast.success("Account created successfully! You can now sign in.");
       navigate("/agent/agreement");
-    } catch (error: any) {
-      toast.error("Error creating account: " + error.message);
+    } catch (error) {
+      if (error instanceof AuthError) {
+        toast.error("Error creating account: " + error.message);
+      } else {
+        toast.error("An unexpected error occurred while creating your account");
+      }
     } finally {
       setIsLoading(false);
     }
@@ -97,8 +101,12 @@ export default function SignUpForm() {
       });
 
       if (error) throw error;
-    } catch (error: any) {
-      toast.error(`${provider} sign up failed: ${error.message}`);
+    } catch (error) {
+      if (error instanceof AuthError) {
+        toast.error(`${provider} sign up failed: ${error.message}`);
+      } else {
+        toast.error(`An unexpected error occurred during ${provider} sign up`);
+      }
     }
   };
 

@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import AcceptInvitationForm from "@/components/auth/AcceptInvitationForm";
@@ -44,8 +43,9 @@ export default function AcceptInvitation() {
         
         setIsValid(true);
         setIsValidating(false);
-      } catch (error: any) {
-        toast.error("Error validating invitation: " + (error.message || "Please try again"));
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : "Please try again";
+        toast.error("Error validating invitation: " + errorMessage);
         setIsValidating(false);
       }
     };

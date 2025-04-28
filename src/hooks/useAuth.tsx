@@ -1,7 +1,6 @@
-
 import { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Session, User } from '@supabase/supabase-js';
+import { Session, User, AuthError } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { AuthContext, AuthContextType } from '@/contexts/AuthContext';
@@ -58,8 +57,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       } else {
         navigate('/agent/agreement');
       }
-    } catch (error: any) {
-      toast.error(error.message);
+    } catch (error) {
+      if (error instanceof AuthError) {
+        toast.error(error.message);
+      } else {
+        toast.error('An unexpected error occurred during sign in');
+      }
     }
   };
 
@@ -68,8 +71,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
       navigate('/login');
-    } catch (error: any) {
-      toast.error(error.message);
+    } catch (error) {
+      if (error instanceof AuthError) {
+        toast.error(error.message);
+      } else {
+        toast.error('An unexpected error occurred during sign out');
+      }
     }
   };
 

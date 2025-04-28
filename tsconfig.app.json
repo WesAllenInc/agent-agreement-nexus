@@ -24,7 +24,10 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
-    }
+    },
+    
+    /* Type Definitions */
+    "types": ["vite/client"]
   },
-  "include": ["src"]
+  "include": ["src", "src/env.d.ts"]
 }
