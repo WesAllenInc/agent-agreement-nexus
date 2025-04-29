@@ -1,18 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../integrations/supabase/client';
-import { useToast } from '@/components/ui/use-toast';
-
-interface Agreement {
-  id: string;
-  user_id: string;
-  file_name: string;
-  file_path: string;
-  file_size: number;
-  mime_type: string;
-  status: string;
-  created_at: string;
-  updated_at: string;
-}
+import { useToast } from '../components/ui/use-toast';
+import { Agreement, UploadAgreementParams } from '../types/agreement';
 
 export function useAgreements(userId?: string) {
   const { toast } = useToast();
@@ -32,7 +21,7 @@ export function useAgreements(userId?: string) {
   });
 
   const uploadAgreement = useMutation({
-    mutationFn: async ({ file, userId }: { file: File; userId: string }) => {
+    mutationFn: async ({ file, userId }: UploadAgreementParams) => {
       const filePath = `${userId}/${file.name}`;
       
       // Upload to storage
@@ -49,6 +38,7 @@ export function useAgreements(userId?: string) {
         file_path: filePath,
         file_size: file.size,
         mime_type: file.type,
+        status: 'active' as const,
       });
 
       if (dbError) throw dbError;
@@ -60,7 +50,7 @@ export function useAgreements(userId?: string) {
         description: 'Agreement uploaded successfully',
       });
     },
-    onError: (error) => {
+    onError: (error: Error) => {
       toast({
         title: 'Error',
         description: error.message,
@@ -86,10 +76,15 @@ export function useAgreements(userId?: string) {
       a.click();
       URL.revokeObjectURL(url);
       document.body.removeChild(a);
+
+      toast({
+        title: 'Success',
+        description: 'Agreement downloaded successfully',
+      });
     } catch (error) {
       toast({
         title: 'Error',
-        description: 'Failed to download agreement',
+        description: error instanceof Error ? error.message : 'Failed to download agreement',
         variant: 'destructive',
       });
     }
