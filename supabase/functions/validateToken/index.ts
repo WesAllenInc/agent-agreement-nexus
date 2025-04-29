@@ -1,40 +1,46 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
-import { corsHeaders } from '../_shared/cors.ts'
-import { checkRateLimit } from '../_shared/rateLimit.ts'
-import { 
-  logSecurityEvent, 
-  sanitizeInput, 
-  validateEmail, 
-  getSecurityHeaders 
-} from '../_shared/security.ts'
-import { ValidateTokenResponse } from '../types.ts'
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { corsHeaders } from '../_shared/cors.ts';
+import { checkRateLimit } from '../_shared/rateLimit.ts';
+import { logSecurityEvent, validateEmail } from '../_shared/security.ts';
+import { ValidateTokenResponse } from '../types.ts';
 
-console.log("Hello from validateToken!")
+console.log("Debug: validateToken function started");
 
 serve(async (req) => {
-  // Handle CORS
+  // Handle CORS preflight
   if (req.method === 'OPTIONS') {
-    return new Response('ok', { headers: corsHeaders })
+    console.log("Debug: Handling CORS preflight request");
+    return new Response('ok', { 
+      headers: {
+        ...corsHeaders,
+        'Content-Type': 'text/plain'
+      }
+    });
   }
 
   try {
-    const { token, email } = await req.json()
-    const clientIp = req.headers.get('x-forwarded-for') || 'unknown'
-    const userAgent = req.headers.get('user-agent') || 'unknown'
+    if (req.method !== 'POST') {
+      throw new Error('Method not allowed');
+    }
+
+    console.log("Debug: Processing request");
+    const { token, email } = await req.json();
+    const clientIp = req.headers.get('x-forwarded-for') || 'unknown';
+    const userAgent = req.headers.get('user-agent') || 'unknown';
+
+    console.log("Debug: Received parameters:", { token, email, clientIp });
 
     // Input validation
     if (!token || !email) {
-      throw new Error('Token and email are required')
+      console.log("Debug: Missing required parameters");
+      throw new Error('Token and email are required');
     }
 
-    // Sanitize inputs
-    const sanitizedToken = sanitizeInput(token)
-    const sanitizedEmail = sanitizeInput(email)
-
     // Validate email format
-    if (!validateEmail(sanitizedEmail)) {
-      throw new Error('Invalid email format')
+    if (!validateEmail(email)) {
+      console.log("Debug: Invalid email format:", email);
+      throw new Error('Invalid email format');
     }
 
     // Check rate limit
@@ -42,44 +48,51 @@ serve(async (req) => {
       key: `validate_token:${clientIp}`,
       window: 3600,
       maxAttempts: 10
-    })
+    });
 
     if (!isWithinLimit) {
+      console.log("Debug: Rate limit exceeded for IP:", clientIp);
       await logSecurityEvent('rate_limit_exceeded', {
         ip: clientIp,
         userAgent,
-        eventData: { email: sanitizedEmail }
-      })
-      throw new Error('Too many validation attempts. Please try again later.')
+        eventData: { email }
+      });
+      throw new Error('Too many attempts. Please try again later.');
     }
+
+    console.log("Debug: Rate limit check passed");
 
     // Create Supabase client
     const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-    )
+    );
+
+    console.log("Debug: Checking invitation in database");
 
     // Check if invitation exists and is valid
     const { data: invitation, error: invitationError } = await supabaseClient
       .from('invitations')
       .select('*')
-      .eq('token', sanitizedToken)
-      .eq('email', sanitizedEmail)
+      .eq('token', token)
+      .eq('email', email)
       .eq('status', 'pending')
       .gt('expires_at', new Date().toISOString())
-      .single()
+      .single();
+
+    console.log("Debug: Database response:", { invitation, error: invitationError });
 
     if (invitationError || !invitation) {
-      await logSecurityEvent('invitation_validated', {
+      console.log("Debug: Invalid or expired invitation");
+      await logSecurityEvent('invalid_invitation_attempt', {
         ip: clientIp,
         userAgent,
         eventData: { 
-          email: sanitizedEmail,
-          success: false,
+          email,
           error: invitationError?.message || 'Invalid or expired invitation'
         }
-      })
-      throw new Error('This invitation link has expired or is invalid')
+      });
+      throw new Error('This invitation link has expired or is invalid');
     }
 
     // Log successful validation
@@ -87,39 +100,45 @@ serve(async (req) => {
       ip: clientIp,
       userAgent,
       eventData: { 
-        email: sanitizedEmail,
-        success: true,
+        email,
         invitationId: invitation.id
       }
-    })
+    });
 
-    const headers = {
-      ...corsHeaders,
-      ...getSecurityHeaders(),
-      'Content-Type': 'application/json'
-    }
+    console.log("Debug: Invitation validated successfully");
 
     return new Response(
       JSON.stringify({
         valid: true,
-        email: sanitizedEmail
+        invitation: {
+          id: invitation.id,
+          email: invitation.email,
+          expiresAt: invitation.expires_at
+        }
       } as ValidateTokenResponse),
-      { headers, status: 200 }
-    )
+      {
+        headers: { 
+          ...corsHeaders,
+          'Content-Type': 'application/json'
+        },
+        status: 200
+      }
+    );
 
   } catch (error) {
-    const headers = {
-      ...corsHeaders,
-      ...getSecurityHeaders(),
-      'Content-Type': 'application/json'
-    }
-
+    console.error("Debug: Error in validateToken:", error);
     return new Response(
       JSON.stringify({
         valid: false,
         error: error.message
       } as ValidateTokenResponse),
-      { headers, status: 400 }
-    )
+      {
+        headers: { 
+          ...corsHeaders,
+          'Content-Type': 'application/json'
+        },
+        status: 400
+      }
+    );
   }
-})
+});

@@ -12,7 +12,8 @@ import AgentDashboard from "./pages/agent/AgentDashboard";
 import AgentDocuments from "./pages/agent/AgentDocuments";
 import { AuthProvider } from "./hooks/useAuth";
 import Auth from "./pages/auth/Auth";
-import Index from "./pages/Index"; // Import the Index page
+import Index from "./pages/Index"; 
+import { TestAgreementUpload } from "./pages/TestAgreementUpload"; // Import the Index page
 
 function App() {
   return (
@@ -29,7 +30,8 @@ function App() {
         <Route path="/agent/agreement" element={<Agreement />} />
         <Route path="/agent/dashboard" element={<AgentDashboard />} />
         <Route path="/agent/documents" element={<AgentDocuments />} />
-        <Route path="/auth" element={<Auth />} />
+        <Route path="/auth" element={<Auth />} />  
+        <Route path="/test-upload" element={<TestAgreementUpload />} />
       </Routes>
     </AuthProvider>
   );

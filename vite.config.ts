@@ -11,6 +11,18 @@ export default defineConfig(({ mode }) => {
     server: {
       host: "::",
       port: 8080,
+      proxy: {
+        '/functions/v1': {
+          target: 'https://clluedtbnphgwikytoil.supabase.co',
+          changeOrigin: true,
+          secure: true,
+          headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, PATCH, OPTIONS',
+            'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+          },
+        },
+      },
     },
     plugins: [
       react(),

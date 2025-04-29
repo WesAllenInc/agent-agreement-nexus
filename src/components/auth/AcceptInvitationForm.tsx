@@ -57,6 +57,8 @@ export default function AcceptInvitationForm({ token, email }: AcceptInvitationF
   };
   
   const handleSubmit = async (e: React.FormEvent) => {
+    console.log("Debug: Starting form submission", { email, token });
+    
     e.preventDefault();
     
     if (passwordError || confirmPasswordError) {
@@ -66,15 +68,28 @@ export default function AcceptInvitationForm({ token, email }: AcceptInvitationF
     setIsLoading(true);
     
     try {
+      console.log("Debug: Creating user account...");
+      
+      // Validate passwords match
+      if (password !== confirmPassword) {
+        toast.error("Passwords do not match");
+        return;
+      }
+      
       const result = await createUserFromInvitation(token, email, password);
       
+      console.log("Debug: Create user response:", { result });
+      
       if (result.success) {
+        console.log("Debug: Account created successfully");
+        
         toast.success("Account created successfully! Redirecting to dashboard...");
         navigate("/agent/agreement");
       } else {
         throw new Error("Failed to create account");
       }
     } catch (error) {
+      console.error("Debug: Error in form submission:", error);
       const errorMessage = error instanceof Error ? error.message : "Please try again";
       toast.error("Failed to create account: " + errorMessage);
     } finally {
