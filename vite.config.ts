@@ -47,8 +47,16 @@ export default defineConfig(({ mode }) => {
       minify: 'esbuild', 
       cssMinify: true,
       outDir: 'dist',
+      target: 'esnext',
+      modulePreload: {
+        polyfill: true
+      },
       rollupOptions: {
         output: {
+          format: 'es',
+          entryFileNames: 'assets/[name]-[hash].js',
+          chunkFileNames: 'assets/[name]-[hash].js',
+          assetFileNames: 'assets/[name]-[hash].[ext]',
           manualChunks: {
             vendor: ['react', 'react-dom', 'react-router-dom'],
             ui: [
