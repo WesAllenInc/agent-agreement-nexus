@@ -1,4 +1,4 @@
-import { createContext, useContext, useCallback, useMemo, useEffect, useState, type HTMLAttributes } from "react"
+import { createContext, useContext, useCallback, useMemo, useEffect, useState, type HTMLAttributes, Suspense, lazy } from "react"
 import { Slot } from "@radix-ui/react-slot"
 import { VariantProps, cva } from "class-variance-authority"
 import { PanelLeft } from "lucide-react"
@@ -16,6 +16,15 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
+import { ScrollArea } from "@/components/ui/scroll-area"
+import { ResizableHandle, ResizablePanel } from "@/components/ui/resizable"
+
+const LazyNav = lazy(() => import('@/components/ui/nav').then(module => {
+  if ('default' in module) {
+    return { default: module.default }
+  }
+  return { default: module }
+}))
 
 const SIDEBAR_COOKIE_NAME = "sidebar:state"
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7
@@ -219,7 +228,18 @@ const Sidebar = ({
           data-sidebar="sidebar"
           className="flex h-full w-full flex-col bg-sidebar group-data-[variant=floating]:rounded-lg group-data-[variant=floating]:border group-data-[variant=floating]:border-sidebar-border group-data-[variant=floating]:shadow"
         >
-          {children}
+          <Suspense fallback={<Skeleton className="h-[800px] w-full" />}>
+            <ResizablePanel defaultSize={17} minSize={15} maxSize={20}>
+              <ScrollArea className="h-screen py-6">
+                <Suspense fallback={<Skeleton className="h-[100px] w-full" />}>
+                  <LazyNav />
+                </Suspense>
+              </ScrollArea>
+              <Suspense fallback={<div className="w-1" />}>
+                <ResizableHandle withHandle />
+              </Suspense>
+            </ResizablePanel>
+          </Suspense>
         </div>
       </div>
     </div>

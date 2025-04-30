@@ -2,6 +2,7 @@ import { defineConfig, loadEnv } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
 import { componentTagger } from "lovable-tagger";
+import { treeShakePlugin } from './vite.tree-shake';
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
@@ -16,7 +17,8 @@ export default defineConfig(({ mode }) => {
       }
     },
     optimizeDeps: {
-      include: ['tailwindcss', 'react', 'react-dom', 'react-router-dom', '@supabase/supabase-js']
+      include: ['tailwindcss', 'react', 'react-dom', 'react-router-dom', '@radix-ui/react-icons'],
+      exclude: ['@supabase/supabase-js']
     },
     esbuild: {
       jsxInject: `import React from 'react'`
@@ -41,6 +43,7 @@ export default defineConfig(({ mode }) => {
       react({
         jsxImportSource: 'react'
       }),
+      treeShakePlugin(),
       mode === 'development' && componentTagger(),
     ].filter(Boolean),
     resolve: {
@@ -49,36 +52,59 @@ export default defineConfig(({ mode }) => {
       },
     },
     build: {
-      sourcemap: mode === 'development',
-      minify: mode === 'development' ? false : 'esbuild',
+      target: 'es2015',
+      minify: mode === 'development' ? false : 'terser',
       cssMinify: mode !== 'development',
-      outDir: 'dist',
-      target: 'esnext',
-      modulePreload: {
-        polyfill: true
-      },
+      sourcemap: mode === 'development',
+      chunkSizeWarningLimit: 1000,
+      reportCompressedSize: false,
       rollupOptions: {
+        maxParallelFileOps: 2,
+        treeshake: {
+          moduleSideEffects: false,
+          propertyReadSideEffects: false,
+          tryCatchDeoptimization: false
+        },
         output: {
           format: 'es',
           entryFileNames: 'assets/[name]-[hash].js',
           chunkFileNames: 'assets/[name]-[hash].js',
           assetFileNames: 'assets/[name]-[hash].[ext]',
-          manualChunks: {
-            vendor: ['react', 'react-dom', 'react-router-dom'],
-            ui: [
-              '@radix-ui/react-accordion',
-              '@radix-ui/react-alert-dialog',
-              '@radix-ui/react-avatar',
-              '@radix-ui/react-dialog',
-              '@radix-ui/react-dropdown-menu',
-              '@radix-ui/react-tabs',
-              '@radix-ui/react-toast',
-              'lucide-react',
-              'class-variance-authority',
-              'clsx',
-              'tailwind-merge'
-            ],
-            supabase: ['@supabase/supabase-js']
+          manualChunks: (id) => {
+            if (id.includes('node_modules')) {
+              if (id.includes('react')) {
+                return 'react-vendor'
+              }
+              if (id.includes('@radix-ui')) {
+                return 'ui-vendor'
+              }
+              if (id.includes('@supabase')) {
+                return 'supabase-vendor'
+              }
+              if (id.includes('@tanstack')) {
+                return 'tanstack-vendor'
+              }
+              if (id.includes('lucide-react') || id.includes('framer-motion')) {
+                return 'animations-vendor'
+              }
+              return 'vendor'
+            }
+          }
+        }
+      },
+      terserOptions: {
+        compress: {
+          drop_console: true,
+          drop_debugger: true,
+          pure_funcs: ['console.log', 'console.debug', 'console.info'],
+          passes: 2,
+          unsafe_arrows: true,
+          unsafe_methods: true
+        },
+        mangle: {
+          safari10: true,
+          properties: {
+            regex: /^_/
           }
         }
       }
