@@ -3,13 +3,15 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { User, LogOut } from "lucide-react";
+import { Menu, User, LogOut, ChevronDown, LayoutDashboard, UserCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
+import { ThemeToggle } from "../ui/theme-toggle";
 
 interface HeaderProps {
   isAdmin?: boolean;
@@ -23,91 +25,106 @@ export default function Header({ isAdmin }: HeaderProps) {
   
   const handleLogout = () => {
     signOut();
-    navigate("/auth");  // Redirect to the authentication page after logout
+    navigate("/auth");
   };
 
   return (
-    <header className="bg-white border-b border-border shadow-sm">
+    <header className="bg-background border-b border-border shadow-md sticky top-0 z-40">
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-        <div className="flex items-center">
+        <div className="flex items-center gap-4">
           <img 
             src="/lovable-uploads/692c0e22-35ce-4558-9822-df60e105764d.png" 
             alt="Ireland Pay Logo" 
-            className="h-16 mr-4"
+            className="h-12"
           />
         </div>
 
-        {isMobile && isAdmin && (
-          <Button 
-            variant="ghost" 
-            onClick={() => setShowMobileMenu(!showMobileMenu)}
-            className="mr-2"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <line x1="3" y1="12" x2="21" y2="12"></line>
-              <line x1="3" y1="6" x2="21" y2="6"></line>
-              <line x1="3" y1="18" x2="21" y2="18"></line>
-            </svg>
-          </Button>
-        )}
+        <div className="flex items-center gap-4">
+          {/* Theme Toggle */}
+          <ThemeToggle />
 
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" className="rounded-full">
-              <User className="h-5 w-5" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={() => navigate("/agent/AgentDashboard")}>Dashboard</DropdownMenuItem>
-            <DropdownMenuItem onClick={() => navigate("/agent/profile")}>Profile</DropdownMenuItem>
-            <DropdownMenuItem 
-              onClick={handleLogout} 
-              className="text-destructive focus:text-destructive-foreground"
+          {/* Mobile Menu Toggle */}
+          {isMobile && isAdmin && (
+            <Button 
+              variant="ghost" 
+              size="icon"
+              onClick={() => setShowMobileMenu(!showMobileMenu)}
+              className="rounded-full"
             >
-              <LogOut className="mr-2 h-4 w-4" />
-              Logout
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+              <Menu className="h-5 w-5" />
+            </Button>
+          )}
+
+          {/* User Menu */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" className="rounded-full">
+                <User className="h-5 w-5" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56">
+              <DropdownMenuItem onClick={() => navigate("/agent/dashboard")}>
+                <LayoutDashboard className="mr-2 h-4 w-4" />
+                Dashboard
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate("/agent/profile")}>
+                <UserCircle className="mr-2 h-4 w-4" />
+                Profile
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem 
+                onClick={handleLogout} 
+                className="text-destructive focus:text-destructive-foreground"
+              >
+                <LogOut className="mr-2 h-4 w-4" />
+                Logout
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
       
+      {/* Mobile Menu */}
       {isMobile && showMobileMenu && isAdmin && (
-        <div className="bg-white border-b border-border">
-          <nav className="container mx-auto px-4 py-2">
-            <ul className="space-y-1">
+        <div className="bg-background border-t border-border">
+          <nav className="container mx-auto px-4 py-3">
+            <ul className="space-y-2">
               <li>
                 <Button 
                   variant="ghost" 
-                  className="w-full justify-start" 
+                  className="w-full justify-start text-foreground/80 hover:text-foreground" 
                   onClick={() => {
                     navigate("/dashboard");
                     setShowMobileMenu(false);
                   }}
                 >
+                  <LayoutDashboard className="mr-2 h-4 w-4" />
                   Dashboard
                 </Button>
               </li>
               <li>
                 <Button 
                   variant="ghost" 
-                  className="w-full justify-start" 
+                  className="w-full justify-start text-foreground/80 hover:text-foreground" 
                   onClick={() => {
                     navigate("/invitations");
                     setShowMobileMenu(false);
                   }}
                 >
+                  <UserCircle className="mr-2 h-4 w-4" />
                   Invitations
                 </Button>
               </li>
               <li>
                 <Button 
                   variant="ghost" 
-                  className="w-full justify-start" 
+                  className="w-full justify-start text-foreground/80 hover:text-foreground" 
                   onClick={() => {
                     navigate("/agreements");
                     setShowMobileMenu(false);
                   }}
                 >
+                  <LayoutDashboard className="mr-2 h-4 w-4" />
                   Agreements
                 </Button>
               </li>

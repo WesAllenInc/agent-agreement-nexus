@@ -1,70 +1,68 @@
-
 import { useNavigate, useLocation } from "react-router-dom";
-import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 import {
   LayoutDashboard,
   Users,
   FileText,
-  MailPlus,
-  UserPlus,
+  Mail,
+  UserCircle,
+  ChevronRight,
 } from "lucide-react";
 
 export default function Navigation() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const navigation = [
+  const menuItems = [
     {
       name: "Dashboard",
-      href: "/dashboard",
-      icon: LayoutDashboard,
+      path: "/dashboard",
+      icon: <LayoutDashboard className="h-5 w-5" />,
     },
     {
       name: "Users",
-      href: "/users",
-      icon: UserPlus,
-    },
-    {
-      name: "Invitations",
-      href: "/invitations",
-      icon: MailPlus,
+      path: "/users",
+      icon: <Users className="h-5 w-5" />,
     },
     {
       name: "Agreements",
-      href: "/agreements", 
-      icon: FileText,
+      path: "/agreements",
+      icon: <FileText className="h-5 w-5" />,
     },
     {
-      name: "Sales Agents",
-      href: "/agents",
-      icon: Users,
+      name: "Invitations",
+      path: "/invitations",
+      icon: <Mail className="h-5 w-5" />,
+    },
+    {
+      name: "Agents",
+      path: "/agents",
+      icon: <UserCircle className="h-5 w-5" />,
     },
   ];
 
   return (
-    <div className="hidden md:flex h-screen w-64 flex-col fixed inset-y-0 z-50 bg-white/80 backdrop-blur-sm border-r border-gray-200">
-      <div className="flex h-16 items-center border-b border-gray-200 px-6">
-        <span className="font-bold text-xl text-primary-800">Admin Portal</span>
+    <nav className="h-screen bg-background border-r border-border p-4">
+      <div className="space-y-2">
+        {menuItems.map((item) => (
+          <Button
+            key={item.path}
+            variant={location.pathname === item.path ? "default" : "ghost"}
+            className={`w-full justify-start gap-3 ${
+              location.pathname === item.path
+                ? "bg-primary text-primary-foreground"
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+            onClick={() => navigate(item.path)}
+          >
+            {item.icon}
+            <span>{item.name}</span>
+            {location.pathname === item.path && (
+              <ChevronRight className="h-4 w-4 ml-auto" />
+            )}
+          </Button>
+        ))}
       </div>
-      <div className="flex-1 overflow-auto py-4">
-        <nav className="space-y-1 px-4">
-          {navigation.map((item) => (
-            <button
-              key={item.name}
-              onClick={() => navigate(item.href)}
-              className={cn(
-                "flex items-center w-full px-3 py-2 text-sm font-medium rounded-md transition-colors",
-                location.pathname === item.href
-                  ? "bg-primary text-white"
-                  : "text-gray-600 hover:bg-primary-50"
-              )}
-            >
-              <item.icon className="mr-3 h-5 w-5 flex-shrink-0" />
-              {item.name}
-            </button>
-          ))}
-        </nav>
-      </div>
-    </div>
+    </nav>
   );
 }
