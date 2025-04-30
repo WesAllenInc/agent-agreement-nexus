@@ -141,3 +141,4 @@ export function PdfViewer({ url, onDownload }: PdfViewerProps) {
     </Card>
   );
 }
+

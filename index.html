@@ -1,11 +1,16 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <title>IrelandPay Portal</title>
+    <script>
+      // Initialize theme
+      const theme = localStorage.getItem('ui-theme') || 'dark';
+      document.documentElement.classList.toggle('dark', theme === 'dark');
+    </script>
   </head>
   <body>
     <div id="root"></div>

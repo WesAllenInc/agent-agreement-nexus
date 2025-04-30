@@ -42,3 +42,4 @@ export default function InvitationChart({ data }: InvitationChartProps) {
     </Card>
   );
 }
+

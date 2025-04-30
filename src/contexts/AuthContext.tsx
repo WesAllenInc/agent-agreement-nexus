@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/lib/supabase';
 import type { User } from '@supabase/supabase-js';
 
 interface AuthContextType {
@@ -82,3 +82,4 @@ export function useAuth() {
   }
   return context;
 }
+

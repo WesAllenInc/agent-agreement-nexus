@@ -97,3 +97,4 @@ export function AgreementSearch({ filters, onFiltersChange, onReset }: Agreement
     </div>
   );
 }
+

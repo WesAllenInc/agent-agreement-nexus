@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 import Dashboard from "./pages/admin/Dashboard";
 import Users from "./pages/admin/Users";
 import Invitations from "./pages/admin/Invitations";
@@ -14,39 +14,32 @@ import Auth from "./pages/auth/Auth";
 import Index from "./pages/Index"; 
 import { TestAgreementUpload } from "./pages/TestAgreementUpload";
 import { ThemeProvider } from "@/providers/theme-provider";
-import { useEffect } from "react";
 
 function App() {
-  // Set dark mode as default
-  useEffect(() => {
-    document.documentElement.classList.add('dark');
-  }, []);
-
   return (
-    <Router>
-      <ThemeProvider defaultTheme="dark" storageKey="ui-theme">
-        <AuthProvider>
-          <div className="min-h-screen bg-background font-sans antialiased">
-            <Routes>
-              <Route path="/" element={<Index />} /> {/* Change root path to Index */}
-              <Route path="/invitation/accept" element={<AcceptInvitation />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/users" element={<Users />} />
-              <Route path="/invitations" element={<Invitations />} />
-              <Route path="/agents" element={<Agents />} />
-              <Route path="/agreements" element={<Agreements />} />
-              <Route path="/agreements/:id" element={<AgreementDetails />} />
-              <Route path="/agent/agreement" element={<Agreement />} />
-              <Route path="/agent/dashboard" element={<AgentDashboard />} />
-              <Route path="/agent/documents" element={<AgentDocuments />} />
-              <Route path="/auth" element={<Auth />} />  
-              <Route path="/test-upload" element={<TestAgreementUpload />} />
-            </Routes>
-          </div>
-        </AuthProvider>
-      </ThemeProvider>
-    </Router>
+    <ThemeProvider defaultTheme="dark" storageKey="ui-theme">
+      <AuthProvider>
+        <main className="min-h-screen bg-background font-sans antialiased">
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/invitation/accept" element={<AcceptInvitation />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/users" element={<Users />} />
+            <Route path="/invitations" element={<Invitations />} />
+            <Route path="/agents" element={<Agents />} />
+            <Route path="/agreements" element={<Agreements />} />
+            <Route path="/agreements/:id" element={<AgreementDetails />} />
+            <Route path="/agent/agreement" element={<Agreement />} />
+            <Route path="/agent/dashboard" element={<AgentDashboard />} />
+            <Route path="/agent/documents" element={<AgentDocuments />} />
+            <Route path="/auth" element={<Auth />} />  
+            <Route path="/test-upload" element={<TestAgreementUpload />} />
+          </Routes>
+        </main>
+      </AuthProvider>
+    </ThemeProvider>
   );
 }
 
 export default App;
+

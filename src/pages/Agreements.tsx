@@ -212,3 +212,4 @@ export function Agreements() {
     </div>
   );
 }
+

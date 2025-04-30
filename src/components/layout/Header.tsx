@@ -135,3 +135,4 @@ export default function Header({ isAdmin }: HeaderProps) {
     </header>
   );
 }
+

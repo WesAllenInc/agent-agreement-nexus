@@ -203,3 +203,4 @@ export default function AcceptInvitationForm({ token, email }: AcceptInvitationF
     </form>
   );
 }
+

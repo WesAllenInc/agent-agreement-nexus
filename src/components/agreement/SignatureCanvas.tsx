@@ -157,3 +157,4 @@ export default function SignatureCanvas({ onSave, existingSignature }: Signature
     </div>
   );
 }
+

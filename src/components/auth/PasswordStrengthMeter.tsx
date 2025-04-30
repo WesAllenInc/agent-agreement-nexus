@@ -52,3 +52,4 @@ export default function PasswordStrengthMeter({ score, requirements }: PasswordS
     </div>
   );
 }
+

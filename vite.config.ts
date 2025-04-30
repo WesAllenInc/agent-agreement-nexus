@@ -9,9 +9,21 @@ export default defineConfig(({ mode }) => {
   
   return {
     base: '/',
+    css: {
+      postcss: './postcss.config.cjs',
+      modules: {
+        localsConvention: 'camelCase'
+      }
+    },
+    optimizeDeps: {
+      include: ['tailwindcss', 'react', 'react-dom', 'react-router-dom', '@supabase/supabase-js']
+    },
+    esbuild: {
+      jsxInject: `import React from 'react'`
+    },
     server: {
       host: "::",
-      port: 8080,
+      port: 8081,
       proxy: {
         '/functions/v1': {
           target: 'https://clluedtbnphgwikytoil.supabase.co',
@@ -26,26 +38,20 @@ export default defineConfig(({ mode }) => {
       },
     },
     plugins: [
-      react(),
-      mode === 'development' &&
-      componentTagger(),
+      react({
+        jsxImportSource: 'react'
+      }),
+      mode === 'development' && componentTagger(),
     ].filter(Boolean),
     resolve: {
       alias: {
         "@": path.resolve(__dirname, "./src"),
       },
     },
-    optimizeDeps: {
-      esbuildOptions: {
-        define: {
-          global: 'globalThis'
-        },
-      }
-    },
     build: {
-      sourcemap: false,
-      minify: 'esbuild', 
-      cssMinify: true,
+      sourcemap: mode === 'development',
+      minify: mode === 'development' ? false : 'esbuild',
+      cssMinify: mode !== 'development',
       outDir: 'dist',
       target: 'esnext',
       modulePreload: {

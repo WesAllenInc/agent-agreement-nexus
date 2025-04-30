@@ -12,7 +12,7 @@
     "postinstall": "npm run build"
   },
   "engines": {
-    "node": "^18.18.0",
+    "node": ">=18.0.0",
     "npm": ">=8.0.0"
   },
   "dependencies": {
@@ -71,7 +71,6 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.9.0",
-    "@rollup/rollup-linux-x64-gnu": "^4.9.0",
     "@tailwindcss/typography": "^0.5.15",
     "@types/node": "^22.5.5",
     "@types/react": "^18.3.20",

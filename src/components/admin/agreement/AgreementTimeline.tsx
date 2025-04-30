@@ -61,3 +61,4 @@ export default function AgreementTimeline({ agreement }: AgreementTimelineProps)
     </Card>
   );
 }
+

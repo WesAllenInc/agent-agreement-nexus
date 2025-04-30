@@ -1,10 +1,7 @@
-
 import React from 'react';
 import MainLayout from '@/components/layout/MainLayout';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import DocumentDownload from '@/components/agent/dashboard/DocumentDownload';
-import DocumentUpload from '@/components/agent/dashboard/DocumentUpload';
-import PhysicalAgreementUpload from '@/components/agent/dashboard/PhysicalAgreementUpload';
 import ExternalLinks from '@/components/agent/dashboard/ExternalLinks';
 
 const AgentDashboard = () => {
@@ -23,18 +20,8 @@ const AgentDashboard = () => {
             <CardHeader>
               <CardTitle>Your Documents</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <DocumentUpload />
-              <DocumentDownload />
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Physical Agreements</CardTitle>
-            </CardHeader>
             <CardContent>
-              <PhysicalAgreementUpload />
+              <DocumentDownload />
             </CardContent>
           </Card>
 
@@ -53,3 +40,4 @@ const AgentDashboard = () => {
 };
 
 export default AgentDashboard;
+

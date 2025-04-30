@@ -24,3 +24,4 @@ export default function Invitations() {
     </MainLayout>
   );
 }
+

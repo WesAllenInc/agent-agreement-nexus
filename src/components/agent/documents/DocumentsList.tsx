@@ -60,3 +60,4 @@ export default function DocumentsList({ documents }: DocumentsListProps) {
     </Table>
   );
 }
+

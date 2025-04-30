@@ -33,25 +33,39 @@ export function ThemeProvider({
   useEffect(() => {
     const root = window.document.documentElement
 
+    // Remove both classes first
     root.classList.remove("light", "dark")
 
+    // Apply the theme
     if (theme === "system") {
-      const systemTheme = window.matchMedia("(prefers-color-scheme: dark)")
-        .matches
+      const systemTheme = window.matchMedia("(prefers-color-scheme: dark)").matches
         ? "dark"
         : "light"
-
       root.classList.add(systemTheme)
-      return
+    } else {
+      root.classList.add(theme)
     }
 
-    root.classList.add(theme)
-  }, [theme])
+    // Store the theme
+    localStorage.setItem(storageKey, theme)
+
+    // Update CSS variables
+    if (theme === "dark" || (theme === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
+      root.style.setProperty("--background", "240 10% 3.9%")
+      root.style.setProperty("--foreground", "0 0% 98%")
+      root.style.setProperty("--primary", "0 0% 98%")
+      root.style.setProperty("--primary-foreground", "240 5.9% 10%")
+    } else {
+      root.style.setProperty("--background", "0 0% 100%")
+      root.style.setProperty("--foreground", "240 10% 3.9%")
+      root.style.setProperty("--primary", "240 5.9% 10%")
+      root.style.setProperty("--primary-foreground", "0 0% 98%")
+    }
+  }, [theme, storageKey])
 
   const value = {
     theme,
     setTheme: (theme: Theme) => {
-      localStorage.setItem(storageKey, theme)
       setTheme(theme)
     },
   }
@@ -71,3 +85,4 @@ export const useTheme = () => {
 
   return context
 }
+
