@@ -1,0 +1,43 @@
+{
+  "project": {
+    "name": "agent-agreement-nexus",
+    "description": "PDF agreement management system with Supabase integration"
+  },
+  "documentation": {
+    "sources": [
+      {
+        "type": "local",
+        "path": "./docs",
+        "patterns": ["**/*.md"]
+      },
+      {
+        "type": "local",
+        "path": "./src",
+        "patterns": ["**/*.ts", "**/*.tsx"]
+      }
+    ]
+  },
+  "integrations": {
+    "supabase": {
+      "enabled": true,
+      "docs": true
+    },
+    "react": {
+      "enabled": true,
+      "docs": true
+    },
+    "typescript": {
+      "enabled": true,
+      "docs": true
+    }
+  },
+  "contextRules": {
+    "codeAnalysis": {
+      "enabled": true,
+      "includeComments": true,
+      "includeDependencies": true
+    },
+    "documentationPriority": ["local", "external"],
+    "searchDepth": 3
+  }
+}

@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState, ReactNode, createElement } from 'react';
+import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { supabase } from '../integrations/supabase/client';
 import { UserRole } from '../lib/roles';
 import { User } from '@supabase/supabase-js';
@@ -121,5 +121,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
     signOut,
   };
 
-  return createElement(AuthContext.Provider, { value }, children);
+  return (
+    <AuthContext.Provider value={value}>
+      {children}
+    </AuthContext.Provider>
+  );
 }
