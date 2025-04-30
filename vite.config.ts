@@ -8,6 +8,7 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
   
   return {
+    base: '/',
     server: {
       host: "::",
       port: 8080,
@@ -45,6 +46,7 @@ export default defineConfig(({ mode }) => {
       sourcemap: false,
       minify: 'esbuild', 
       cssMinify: true,
+      outDir: 'dist',
       rollupOptions: {
         output: {
           manualChunks: {
