@@ -40,6 +40,32 @@ export default defineConfig(({ mode }) => {
           global: 'globalThis'
         },
       }
+    },
+    build: {
+      sourcemap: false,
+      minify: 'esbuild', 
+      cssMinify: true,
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            vendor: ['react', 'react-dom', 'react-router-dom'],
+            ui: [
+              '@radix-ui/react-accordion',
+              '@radix-ui/react-alert-dialog',
+              '@radix-ui/react-avatar',
+              '@radix-ui/react-dialog',
+              '@radix-ui/react-dropdown-menu',
+              '@radix-ui/react-tabs',
+              '@radix-ui/react-toast',
+              'lucide-react',
+              'class-variance-authority',
+              'clsx',
+              'tailwind-merge'
+            ],
+            supabase: ['@supabase/supabase-js']
+          }
+        }
+      }
     }
   };
 });

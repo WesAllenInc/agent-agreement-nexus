@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState, ReactNode, createElement } from 'react';
+import React, { createContext, useContext, useEffect, useState, ReactNode, useCallback, memo, useMemo } from 'react';
 import { supabase } from '../integrations/supabase/client';
 import { UserRole } from '../lib/roles';
 import { User } from '@supabase/supabase-js';
@@ -33,10 +33,68 @@ interface AuthProviderProps {
   children: ReactNode;
 }
 
-export function AuthProvider({ children }: AuthProviderProps) {
+// Create a memoized version of the AuthProvider for better performance
+export const AuthProvider = memo(function AuthProviderComponent({ children }: AuthProviderProps) {
   const [user, setUser] = useState<User | null>(null);
   const [userRoles, setUserRoles] = useState<UserRole[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // Use useCallback for functions to prevent unnecessary re-renders
+  const fetchUserRoles = useCallback(async (userId: string) => {
+    try {
+      // Only log in development mode
+      if (process.env.NODE_ENV === 'development') {
+        console.log('Fetching roles for user:', userId);
+      }
+      
+      const { data, error } = await supabase
+        .from('user_roles')
+        .select('roles')
+        .eq('user_id', userId)
+        .single();
+
+      if (error) {
+        if (process.env.NODE_ENV === 'development') {
+          console.error('Error fetching user roles:', error);
+        }
+        throw error;
+      }
+
+      if (process.env.NODE_ENV === 'development') {
+        console.log('User roles data:', data);
+      }
+      
+      setUserRoles(data?.roles || ['user']);
+    } catch (error) {
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Error in fetchUserRoles:', error);
+      }
+      setUserRoles(['user']); // Default to user role
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const signIn = useCallback(async (email: string, password: string) => {
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+    if (error) throw error;
+  }, []);
+
+  const signUp = useCallback(async (email: string, password: string) => {
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+    });
+    if (error) throw error;
+  }, []);
+
+  const signOut = useCallback(async () => {
+    const { error } = await supabase.auth.signOut();
+    if (error) throw error;
+  }, []);
 
   useEffect(() => {
     // Get initial session
@@ -65,61 +123,17 @@ export function AuthProvider({ children }: AuthProviderProps) {
     return () => {
       subscription.unsubscribe();
     };
-  }, []);
+  }, [fetchUserRoles]);
 
-  const fetchUserRoles = async (userId: string) => {
-    try {
-      console.log('Fetching roles for user:', userId);
-      const { data, error } = await supabase
-        .from('user_roles')
-        .select('roles')
-        .eq('user_id', userId)
-        .single();
-
-      if (error) {
-        console.error('Error fetching user roles:', error);
-        throw error;
-      }
-
-      console.log('User roles data:', data);
-      setUserRoles(data?.roles || ['user']);
-    } catch (error) {
-      console.error('Error in fetchUserRoles:', error);
-      setUserRoles(['user']); // Default to user role
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const signIn = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-    if (error) throw error;
-  };
-
-  const signUp = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-    });
-    if (error) throw error;
-  };
-
-  const signOut = async () => {
-    const { error } = await supabase.auth.signOut();
-    if (error) throw error;
-  };
-
-  const value = {
+  // Memoize the context value to prevent unnecessary re-renders
+  const value = useMemo(() => ({
     user,
     userRoles,
     loading,
     signIn,
     signUp,
     signOut,
-  };
+  }), [user, userRoles, loading, signIn, signUp, signOut]);
 
-  return createElement(AuthContext.Provider, { value }, children);
-}
+  return React.createElement(AuthContext.Provider, { value }, children);
+});
