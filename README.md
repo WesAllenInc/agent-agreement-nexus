@@ -1,9 +1,8 @@
-
-# Ireland Pay Sales Agent Portal
+# Agent Agreement Nexus
 
 ## Project Overview
 
-This portal manages sales agent agreements for Ireland Pay, allowing administrators to manage agents and for agents to complete necessary documentation. The system handles invitations, agreement workflows, document management, and authentication.
+This portal manages PDF agreements for agents, allowing administrators to manage documents and for agents to view and sign necessary documentation. The system handles authentication, document management, and role-based access control.
 
 ## Tech Stack
 
@@ -11,8 +10,9 @@ This portal manages sales agent agreements for Ireland Pay, allowing administrat
 - **Styling**: Tailwind CSS, Shadcn UI
 - **State Management**: TanStack Query, React Context
 - **Routing**: React Router
-- **Backend**: Supabase (Auth, Database, Storage, Edge Functions)
-- **Charting**: Recharts
+- **Backend**: Supabase (Auth, Database, Storage)
+- **PDF Handling**: Custom PDF viewer with annotation capabilities
+- **Build Tool**: Vite with optimized production configuration
 
 ## Project Structure
 
@@ -22,20 +22,22 @@ This portal manages sales agent agreements for Ireland Pay, allowing administrat
 src/
 ├── components/          # Reusable UI components
 │   ├── admin/           # Admin-specific components
-│   ├── agent/           # Agent-specific components
-│   ├── agreement/       # Agreement form components
-│   ├── auth/            # Authentication components
-│   ├── layout/          # Layout components (Header, Navigation)
-│   └── ui/              # Base UI components (shadcn)
+│   ├── ui/              # Base UI components (shadcn)
+│   ├── pdf/             # PDF viewer and related components
+│   └── layout/          # Layout components (Header, Navigation)
 ├── contexts/            # React contexts
 ├── hooks/               # Custom React hooks
+│   ├── useAuth.ts       # Authentication hook with AuthProvider
+│   └── useAgreements.ts # Agreements management hook
 ├── integrations/        # External service integrations
 │   └── supabase/        # Supabase client and types
 ├── lib/                 # Utility functions
+│   ├── roles.ts         # User role definitions and utilities
+│   └── utils.ts         # General utility functions
 ├── pages/               # Page components
 │   ├── admin/           # Admin pages
-│   ├── agent/           # Agent pages
-│   └── auth/            # Auth pages
+│   ├── user/            # User pages
+│   └── auth/            # Authentication pages
 ├── types/               # TypeScript type definitions
 └── App.tsx              # Main app component with routes
 ```
@@ -44,80 +46,96 @@ src/
 
 The application uses these key tables in Supabase:
 - `profiles`: User profiles with role information
-- `invitations`: Sales agent invitations
-- `agreement_drafts`: Draft agreement data
-- `executed_agreements`: Finalized agreements
-- `physical_agreements`: Records of physically signed agreements
-- `activity_log`: System activity tracking
+- `user_roles`: User role assignments
+- `agreements`: PDF agreements and metadata
+- `agreement_signatures`: Records of signed agreements
+- `agreement_views`: Tracking when users view agreements
 
 ## Key Components
 
 ### Authentication & User Management
 
-- **AuthProvider** (`src/hooks/useAuth.tsx`): Manages authentication state
+- **AuthProvider** (`src/hooks/useAuth.ts`): Manages authentication state and user roles
 - **LoginForm** (`src/components/auth/LoginForm.tsx`): Handles user login
-- **AcceptInvitationForm** (`src/components/auth/AcceptInvitationForm.tsx`): Processes invitation acceptance
+- **SignUpForm** (`src/components/auth/SignUpForm.tsx`): Handles user registration
 
 ### Layout Components
 
 - **MainLayout** (`src/components/layout/MainLayout.tsx`): Main application layout wrapper
 - **Header** (`src/components/layout/Header.tsx`): Top navigation bar
-- **Navigation** (`src/components/layout/Navigation.tsx`): Sidebar navigation for admin users
+- **Navigation** (`src/components/layout/Navigation.tsx`): Sidebar navigation based on user role
 
 ### Admin Features
 
-- **Dashboard** (`src/pages/admin/Dashboard.tsx`): Admin overview with stats and charts
-- **Invitations** (`src/pages/admin/Invitations.tsx`): Manage agent invitations
-- **Agreements** (`src/pages/admin/Agreements.tsx`): View and manage agreements
-- **Agents** (`src/pages/admin/Agents.tsx`): Manage sales agents
+- **Dashboard** (`src/pages/admin/Dashboard.tsx`): Admin overview with stats
+- **Agreements** (`src/pages/admin/Agreements.tsx`): View and manage all agreements
+- **Users** (`src/pages/admin/Users.tsx`): Manage users and their roles
 
-### Agent Features
+### User Features
 
-- **AgentDashboard** (`src/pages/agent/AgentDashboard.tsx`): Agent portal home page
-- **Agreement** (`src/pages/agent/Agreement.tsx`): Agreement completion workflow
-- **DocumentUpload/Download** (`src/components/agent/dashboard/*.tsx`): Document management
-- **PhysicalAgreementUpload** (`src/components/agent/dashboard/PhysicalAgreementUpload.tsx`): Upload physically signed agreements
+- **UserDashboard** (`src/pages/user/Dashboard.tsx`): User portal home page
+- **UserAgreements** (`src/pages/user/Agreements.tsx`): View assigned agreements
+- **ViewAgreement** (`src/pages/user/ViewAgreement.tsx`): View and sign specific agreements
 
-### Agreement Components
+### PDF Components
 
-- **WizardStepper** (`src/components/agreement/WizardStepper.tsx`): Multi-step form navigation
-- **WizardContext** (`src/components/agreement/WizardContext.tsx`): Form state management
-- **SignatureCanvas** (`src/components/agreement/SignatureCanvas.tsx`): E-signature capture
+- **PdfViewer** (`src/components/pdf/PdfViewer.tsx`): Custom PDF viewer with navigation
+- **PdfAnnotation** (`src/components/pdf/PdfAnnotation.tsx`): PDF annotation capabilities
+- **SignatureField** (`src/components/pdf/SignatureField.tsx`): Signature capture for PDFs
 
-## Edge Functions
+## Performance Optimizations
 
-Supabase Edge Functions are used for:
-- **createUserFromInvitation**: Creates user accounts from invitation tokens
-- **sendInviteEmail**: Sends email invitations to new sales agents
-- **validateToken**: Validates invitation tokens
-
-## User Flows
-
-### Administrator Flow
-1. Admin logs in
-2. Admin manages invitations to new agents
-3. Admin tracks agreements and agent activity
-4. Admin generates reports and manages documentation
-
-### Sales Agent Flow
-1. Agent receives invitation via email
-2. Agent creates account via invitation link
-3. Agent completes multi-step agreement form
-4. Agent e-signs agreement or uploads physical agreement
-5. Agent accesses portal for document management
-
-## Development Notes
-
-- Local development uses mock implementations of Edge Functions (`src/api/mockEdgeFunctions.ts`)
-- Authentication and authorization are handled via Supabase Row Level Security policies
-- Database schema is defined in `src/database/schema.sql`
+- **Code Splitting**: Manual chunks configuration in Vite for optimal loading
+- **Component Memoization**: React.memo and useMemo for performance-critical components
+- **Callback Optimization**: useCallback for stable function references
+- **Build Optimization**: esbuild minification and CSS optimization
+- **Conditional Logging**: Development-only console logs
 
 ## Deployment
 
-Edge Functions should be deployed using the Supabase CLI:
+The application is configured for deployment on Netlify:
+
 ```bash
-cd supabase/functions/[function-name]
-supabase functions deploy [function-name]
+# Netlify configuration (netlify.toml)
+[build]
+  command = "npm ci && npm run build"
+  publish = "dist"
+  base = "/"
+
+[build.environment]
+  NODE_VERSION = "18.17.0"
+  NPM_FLAGS = "--no-optional --no-audit"
+  NETLIFY_USE_YARN = "false"
+  CI = "true"
 ```
 
-Required environment variables are documented in each Edge Function.
+## Development
+
+To run the project locally:
+
+```bash
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+
+# Build for production
+npm run build
+
+# Preview production build
+npm run preview
+```
+
+## Environment Setup
+
+Required environment variables:
+- `VITE_SUPABASE_URL`: Your Supabase project URL
+- `VITE_SUPABASE_ANON_KEY`: Your Supabase anonymous key
+
+## Security Features
+
+- **Row Level Security (RLS)**: Database-level security policies
+- **Role-Based Access Control**: Different views and capabilities based on user roles
+- **Secure File Storage**: Controlled access to PDF files
+- **Authentication**: Email/password authentication via Supabase
