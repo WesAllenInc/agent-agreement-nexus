@@ -33,3 +33,5 @@ dist-ssr
 # Context7
 .context7/
 context7-cache/
+
+*storybook.log

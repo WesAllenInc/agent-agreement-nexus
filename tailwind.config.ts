@@ -1,10 +1,10 @@
-import type { Config } from "tailwindcss"
+import type { Config } from 'tailwindcss';
 
 const config: Config = {
   darkMode: ["class"],
   content: [
-    "./src/**/*.{js,jsx,ts,tsx}",
-    "./index.html",
+    './src/**/*.{js,jsx,ts,tsx}',
+    './.storybook/**/*.{js,jsx,ts,tsx}',
   ],
   prefix: "",
   theme: {
@@ -25,16 +25,17 @@ const config: Config = {
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
-          50: '#f0fdfa',
-          100: '#ccfbf1',
-          200: '#99f6e4',
-          300: '#5eead4',
-          400: '#2dd4bf',
-          500: '#14b8a6',
-          600: '#0d9488',
-          700: '#0f766e',
-          800: '#115e59',
-          900: '#134e4a',
+          50: '#f0f9ff',
+          100: '#e0f2fe',
+          200: '#bae6fd',
+          300: '#7dd3fc',
+          400: '#38bdf8',
+          500: '#0ea5e9',
+          600: '#0284c7',
+          700: '#0369a1',
+          800: '#075985',
+          900: '#0c4a6e',
+          950: '#082f49',
         },
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
@@ -49,6 +50,7 @@ const config: Config = {
           700: '#334155',
           800: '#1e293b',
           900: '#0f172a',
+          950: '#020617',
         },
         destructive: {
           DEFAULT: "hsl(var(--destructive))",
@@ -70,11 +72,18 @@ const config: Config = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        'green-primary': '#2D8B7D',
+        'green-light': '#4CAF96',
+        'green-dark': '#1B5E54',
+        'blue-accent': '#3B82F6',
+        'blue-light': '#60A5FA',
       },
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
+        'xl': '1rem',
+        '2xl': '2rem',
       },
       keyframes: {
         "accordion-down": {
@@ -101,7 +110,24 @@ const config: Config = {
         xl: ['1.25rem', { lineHeight: '1.75rem' }],
         '2xl': ['1.5rem', { lineHeight: '2rem' }],
         '3xl': ['1.875rem', { lineHeight: '2.25rem' }],
-      }
+        '4xl': '2.25rem',
+        '5xl': '3rem',
+        'h1': ['2.5rem', { lineHeight: '1.2', fontWeight: '700' }],
+        'h2': ['2rem', { lineHeight: '1.3', fontWeight: '600' }],
+        'h3': ['1.5rem', { lineHeight: '1.4', fontWeight: '600' }],
+        'h4': ['1.25rem', { lineHeight: '1.5', fontWeight: '500' }],
+        'body': ['1rem', { lineHeight: '1.5', fontWeight: '400' }],
+        'caption': ['0.875rem', { lineHeight: '1.4', fontWeight: '400' }],
+      },
+      spacing: {
+        'xs': '0.5rem',
+        'sm': '1rem',
+        'md': '1.5rem',
+        'lg': '2rem',
+        '72': '18rem',
+        '84': '21rem',
+        '96': '24rem',
+      },
     },
   },
   plugins: [require("tailwindcss-animate"), require("@tailwindcss/forms")],
