@@ -1,8 +1,12 @@
 import type { Plugin } from 'vite'
 import { parse } from '@babel/parser'
-import traverse, { NodePath } from '@babel/traverse'
+import type { NodePath } from '@babel/traverse'
+import _traverse from '@babel/traverse'
 import * as t from '@babel/types'
-import type { ImportDeclaration, JSXIdentifier, ImportSpecifier, ImportDefaultSpecifier, ImportNamespaceSpecifier } from '@babel/types'
+import type { ImportDeclaration, JSXIdentifier } from '@babel/types'
+
+// @babel/traverse is a CommonJS module that exports default
+const traverse = (_traverse as any).default
 
 export function treeShakePlugin(): Plugin {
   const usedExports = new Set<string>()

@@ -1,138 +1,30 @@
-import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Menu, User, LogOut, ChevronDown, LayoutDashboard, UserCircle } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import { useIsMobile } from "@/hooks/use-mobile";
-import { useState } from "react";
-import { useAuth } from "@/hooks/useAuth";
-import { ThemeToggle } from "../ui/theme-toggle";
+import React from 'react';
+import { Bell, Settings, User } from 'lucide-react';
 
 interface HeaderProps {
   isAdmin?: boolean;
 }
 
 export default function Header({ isAdmin }: HeaderProps) {
-  const navigate = useNavigate();
-  const isMobile = useIsMobile();
-  const [showMobileMenu, setShowMobileMenu] = useState(false);
-  const { signOut } = useAuth();
-  
-  const handleLogout = () => {
-    signOut();
-    navigate("/auth");
-  };
-
   return (
-    <header className="bg-background border-b border-border shadow-md sticky top-0 z-40">
-      <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <img 
-            src="/lovable-uploads/692c0e22-35ce-4558-9822-df60e105764d.png" 
-            alt="Ireland Pay Logo" 
-            className="h-12"
-          />
-        </div>
-
-        <div className="flex items-center gap-4">
-          {/* Theme Toggle */}
-          <ThemeToggle />
-
-          {/* Mobile Menu Toggle */}
-          {isMobile && isAdmin && (
-            <Button 
-              variant="ghost" 
-              size="icon"
-              onClick={() => setShowMobileMenu(!showMobileMenu)}
-              className="rounded-full"
-            >
-              <Menu className="h-5 w-5" />
-            </Button>
-          )}
-
-          {/* User Menu */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="rounded-full">
-                <User className="h-5 w-5" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56">
-              <DropdownMenuItem onClick={() => navigate("/agent/dashboard")}>
-                <LayoutDashboard className="mr-2 h-4 w-4" />
-                Dashboard
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => navigate("/agent/profile")}>
-                <UserCircle className="mr-2 h-4 w-4" />
-                Profile
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem 
-                onClick={handleLogout} 
-                className="text-destructive focus:text-destructive-foreground"
-              >
-                <LogOut className="mr-2 h-4 w-4" />
-                Logout
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+    <header className="header">
+      <div className="flex-1">
+        <h1 className="text-h2 text-secondary-900">Agent Agreement Nexus</h1>
+      </div>
+      <div className="flex items-center space-x-4">
+        <button className="btn btn-secondary p-2">
+          <Bell className="w-5 h-5" />
+        </button>
+        <button className="btn btn-secondary p-2">
+          <Settings className="w-5 h-5" />
+        </button>
+        <div className="flex items-center space-x-3">
+          <div className="w-8 h-8 rounded-full bg-primary-100 flex items-center justify-center">
+            <User className="w-5 h-5 text-primary-600" />
+          </div>
+          <span className="text-sm font-medium">John Doe</span>
         </div>
       </div>
-      
-      {/* Mobile Menu */}
-      {isMobile && showMobileMenu && isAdmin && (
-        <div className="bg-background border-t border-border">
-          <nav className="container mx-auto px-4 py-3">
-            <ul className="space-y-2">
-              <li>
-                <Button 
-                  variant="ghost" 
-                  className="w-full justify-start text-foreground/80 hover:text-foreground" 
-                  onClick={() => {
-                    navigate("/dashboard");
-                    setShowMobileMenu(false);
-                  }}
-                >
-                  <LayoutDashboard className="mr-2 h-4 w-4" />
-                  Dashboard
-                </Button>
-              </li>
-              <li>
-                <Button 
-                  variant="ghost" 
-                  className="w-full justify-start text-foreground/80 hover:text-foreground" 
-                  onClick={() => {
-                    navigate("/invitations");
-                    setShowMobileMenu(false);
-                  }}
-                >
-                  <UserCircle className="mr-2 h-4 w-4" />
-                  Invitations
-                </Button>
-              </li>
-              <li>
-                <Button 
-                  variant="ghost" 
-                  className="w-full justify-start text-foreground/80 hover:text-foreground" 
-                  onClick={() => {
-                    navigate("/agreements");
-                    setShowMobileMenu(false);
-                  }}
-                >
-                  <LayoutDashboard className="mr-2 h-4 w-4" />
-                  Agreements
-                </Button>
-              </li>
-            </ul>
-          </nav>
-        </div>
-      )}
     </header>
   );
 }
-

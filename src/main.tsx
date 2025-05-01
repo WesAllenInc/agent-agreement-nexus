@@ -1,9 +1,9 @@
 import 'vite/modulepreload-polyfill'
 import { createRoot } from 'react-dom/client'
-import { BrowserRouter } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import App from './App.tsx'
-import './index.css'
+import './fonts.css'
+import './globals.css'
 import ErrorBoundary from './components/ErrorBoundary'
 
 // Create a client
@@ -26,11 +26,8 @@ if (!root) {
 
 createRoot(root).render(
   <ErrorBoundary>
-    <BrowserRouter>
-      <QueryClientProvider client={queryClient}>
-        <App />
-      </QueryClientProvider>
-    </BrowserRouter>
+    <QueryClientProvider client={queryClient}>
+      <App />
+    </QueryClientProvider>
   </ErrorBoundary>
 );
-

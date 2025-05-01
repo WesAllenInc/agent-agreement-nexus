@@ -27,7 +27,8 @@
     },
     
     /* Type Definitions */
-    "types": ["vite/client"]
+    "types": ["node"]
   },
-  "include": ["src", "src/env.d.ts"]
+  "include": ["src/**/*", "src/env.d.ts"],
+  "references": [{ "path": "./tsconfig.node.json" }]
 }
