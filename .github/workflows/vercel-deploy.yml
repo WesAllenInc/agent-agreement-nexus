@@ -1,4 +1,4 @@
-name: Deploy to Vercel with Context7 Documentation
+name: Deploy to Vercel
 
 on:
   push:
@@ -7,33 +7,8 @@ on:
     branches: [main]
 
 jobs:
-  document:
-    runs-on: ubuntu-latest
-    continue-on-error: true
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-      
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '18'
-          cache: 'npm'
-          
-      - name: Install dependencies
-        run: npm ci
-        
-      - name: Generate Context7 Documentation
-        id: context7-docs
-        continue-on-error: true
-        uses: context7/context7-action@main
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          
   deploy:
     runs-on: ubuntu-latest
-    needs: document
     steps:
       - uses: actions/checkout@v3
       
