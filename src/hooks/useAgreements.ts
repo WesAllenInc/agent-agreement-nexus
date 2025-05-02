@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../integrations/supabase/client';
 import { useToast } from '../components/ui/use-toast';
-import { Agreement, UploadAgreementParams } from '../types/agreement';
+import { Agreement, UploadAgreementParams, ExecuteAgreementParams } from '../types/agreement';
 
 export function useAgreements(userId?: string) {
   const { toast } = useToast();
@@ -59,6 +59,44 @@ export function useAgreements(userId?: string) {
     },
   });
 
+  const executeAgreement = useMutation({
+    mutationFn: async ({ agreementId, agentName, agentEmail, signatureData }: ExecuteAgreementParams) => {
+      // Get the current timestamp
+      const executedAt = new Date().toISOString();
+      
+      // Update the agreement record with execution details
+      const { error } = await supabase
+        .from('agreements')
+        .update({
+          status: 'executed',
+          executed_at: executedAt,
+          executed_by: userId,
+          signature_data: signatureData,
+          agent_name: agentName,
+          agent_email: agentEmail,
+        })
+        .eq('id', agreementId);
+      
+      if (error) throw error;
+      
+      return { agreementId, executedAt };
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['agreements'] });
+      toast({
+        title: 'Agreement Executed',
+        description: 'Sales agent agreement has been successfully executed',
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: 'Execution Failed',
+        description: error.message,
+        variant: 'destructive',
+      });
+    },
+  });
+
   const downloadAgreement = async (agreement: Agreement) => {
     try {
       const { data, error } = await supabase.storage
@@ -94,6 +132,7 @@ export function useAgreements(userId?: string) {
     agreements,
     isLoading,
     uploadAgreement,
+    executeAgreement,
     downloadAgreement,
   };
 }

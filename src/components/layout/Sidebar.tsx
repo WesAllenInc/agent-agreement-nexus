@@ -7,6 +7,7 @@ import {
   Settings,
   BarChart
 } from 'lucide-react';
+import './Sidebar.css';
 
 const navItems = [
   { icon: LayoutDashboard, label: 'Dashboard', path: '/dashboard' },

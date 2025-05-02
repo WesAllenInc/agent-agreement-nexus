@@ -23,6 +23,7 @@ export function PdfViewer({ url, onDownload }: PdfViewerProps) {
       try {
         setLoading(true);
         setError(null);
+        setPageNumber(1); // Reset page number when URL changes
         const result = typeof url === 'string' ? url : await url;
         if (!result) {
           throw new Error('Failed to load PDF URL');
@@ -39,7 +40,30 @@ export function PdfViewer({ url, onDownload }: PdfViewerProps) {
 
   useEffect(() => {
     if (iframeRef.current) {
-      iframeRef.current.onload = () => setLoading(false);
+      const iframe = iframeRef.current;
+      
+      iframe.onload = () => {
+        setLoading(false);
+        
+        // Try to get total pages from embedded PDF viewer
+        try {
+          setTimeout(() => {
+            const iframeDoc = iframe.contentDocument || iframe.contentWindow?.document;
+            if (iframeDoc) {
+              // Look for page count in PDF.js viewer
+              const pageCountElement = iframeDoc.querySelector('.page-count');
+              if (pageCountElement && pageCountElement.textContent) {
+                const count = parseInt(pageCountElement.textContent, 10);
+                if (!isNaN(count)) {
+                  setTotalPages(count);
+                }
+              }
+            }
+          }, 1000); // Give PDF.js time to initialize
+        } catch (e) {
+          console.error('Error getting page count:', e);
+        }
+      };
     }
   }, [resolvedUrl]);
 
@@ -68,7 +92,7 @@ export function PdfViewer({ url, onDownload }: PdfViewerProps) {
             variant="outline"
             size="icon"
             onClick={prevPage}
-            disabled={pageNumber === 1}
+            disabled={pageNumber === 1 || loading}
           >
             <ChevronLeft className="h-4 w-4" />
           </Button>
@@ -79,7 +103,7 @@ export function PdfViewer({ url, onDownload }: PdfViewerProps) {
             variant="outline"
             size="icon"
             onClick={nextPage}
-            disabled={pageNumber === totalPages}
+            disabled={pageNumber === totalPages || loading}
           >
             <ChevronRight className="h-4 w-4" />
           </Button>
@@ -90,7 +114,7 @@ export function PdfViewer({ url, onDownload }: PdfViewerProps) {
             variant="outline"
             size="icon"
             onClick={handleZoomOut}
-            disabled={scale <= 0.5}
+            disabled={scale <= 0.5 || loading}
           >
             <ZoomOut className="h-4 w-4" />
           </Button>
@@ -99,7 +123,7 @@ export function PdfViewer({ url, onDownload }: PdfViewerProps) {
             variant="outline"
             size="icon"
             onClick={handleZoomIn}
-            disabled={scale >= 2}
+            disabled={scale >= 2 || loading}
           >
             <ZoomIn className="h-4 w-4" />
           </Button>
@@ -109,6 +133,7 @@ export function PdfViewer({ url, onDownload }: PdfViewerProps) {
               variant="outline"
               size="icon"
               onClick={onDownload}
+              disabled={loading}
             >
               <Download className="h-4 w-4" />
             </Button>
@@ -125,7 +150,7 @@ export function PdfViewer({ url, onDownload }: PdfViewerProps) {
         }}
       >
         {loading && (
-          <div className="absolute inset-0 flex items-center justify-center bg-background/80">
+          <div className="absolute inset-0 flex items-center justify-center bg-background/80 z-10">
             <Loader2 className="h-6 w-6 animate-spin" />
           </div>
         )}
@@ -141,4 +166,3 @@ export function PdfViewer({ url, onDownload }: PdfViewerProps) {
     </Card>
   );
 }
-

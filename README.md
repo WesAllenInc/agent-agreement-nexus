@@ -93,20 +93,41 @@ The application uses these key tables in Supabase:
 
 ## Deployment
 
-The application is configured for deployment on Netlify:
+The application is configured for deployment on Vercel:
 
-```bash
-# Netlify configuration (netlify.toml)
-[build]
-  command = "npm ci && npm run build"
-  publish = "dist"
-  base = "/"
+```json
+// vercel.json configuration
+{
+  "version": 2,
+  "builds": [{ "src": "package.json", "use": "@vercel/static-build" }],
+  "routes": [
+    { "src": "^/assets/(.*)", "dest": "/assets/$1" },
+    { "src": "^/(.*)\\.(js|css|ico|png|jpg|jpeg|svg|webp|json|txt|woff|woff2|ttf|otf)", "dest": "/$1.$2" },
+    { "src": ".*", "dest": "/index.html" }
+  ]
+}
+```
 
-[build.environment]
-  NODE_VERSION = "18.17.0"
-  NPM_FLAGS = "--no-optional --no-audit"
-  NETLIFY_USE_YARN = "false"
-  CI = "true"
+Deployment is automated via GitHub Actions workflow:
+
+```yaml
+# .github/workflows/vercel-deploy.yml
+name: Deploy to Vercel with Context7 Documentation
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  document:
+    # Documentation generation with Context7
+    # ...
+
+  deploy:
+    # Vercel deployment
+    # ...
 ```
 
 ## Development

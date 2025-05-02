@@ -43,23 +43,35 @@ jobs:
       - name: Install dependencies
         run: npm ci
         
-      - name: Install Vercel CLI
-        run: npm install -g vercel
-        
       - name: Build project
         run: npm run build
         env:
           NODE_OPTIONS: '--max_old_space_size=3072'
           VITE_BUILD_MINIFY: 'true'
           VITE_BUILD_SOURCEMAP: 'false'
-          
-      - name: Deploy to Vercel
-        run: |
-          if [ "${{ github.event_name }}" == "push" ]; then
-            vercel --prod --token ${{ secrets.VERCEL_TOKEN }}
-          else
-            vercel --token ${{ secrets.VERCEL_TOKEN }}
-          fi
+      
+      # Note: The following steps may show context access warnings in IDE,
+      # but they will work correctly in the actual GitHub Actions environment.
+      # These warnings are due to GitHub's static analysis being cautious about
+      # how secrets are used in YAML files.
+      
+      # Install Vercel CLI
+      - name: Install Vercel CLI
+        run: npm install -g vercel@latest
+      
+      # Deploy to Vercel using the official approach
+      - name: Deploy to Vercel (Production)
+        if: github.event_name == 'push'
+        run: vercel --token ${VERCEL_TOKEN} --prod --yes
         env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+      
+      - name: Deploy to Vercel (Preview)
+        if: github.event_name == 'pull_request'
+        run: vercel --token ${VERCEL_TOKEN} --yes
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}

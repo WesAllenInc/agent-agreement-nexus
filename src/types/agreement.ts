@@ -1,4 +1,4 @@
-export type AgreementStatus = 'active' | 'archived';
+export type AgreementStatus = 'active' | 'archived' | 'executed';
 
 export interface Agreement {
   id: string;
@@ -10,9 +10,21 @@ export interface Agreement {
   status: AgreementStatus;
   created_at: string;
   updated_at: string;
+  executed_at?: string;
+  executed_by?: string;
+  signature_data?: string;
+  agent_name?: string;
+  agent_email?: string;
 }
 
 export interface UploadAgreementParams {
   file: File;
   userId: string;
+}
+
+export interface ExecuteAgreementParams {
+  agreementId: string;
+  agentName: string;
+  agentEmail: string;
+  signatureData: string;
 }

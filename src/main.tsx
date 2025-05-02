@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import App from './App.tsx'
 import './fonts.css'
+import './theme.css'
 import './globals.css'
 import ErrorBoundary from './components/ErrorBoundary'
 
