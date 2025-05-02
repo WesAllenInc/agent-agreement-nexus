@@ -9,6 +9,7 @@ on:
 jobs:
   document:
     runs-on: ubuntu-latest
+    continue-on-error: true
     steps:
       - uses: actions/checkout@v3
         with:
@@ -24,6 +25,8 @@ jobs:
         run: npm ci
         
       - name: Generate Context7 Documentation
+        id: context7-docs
+        continue-on-error: true
         uses: context7/context7-action@main
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
