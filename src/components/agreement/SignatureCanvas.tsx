@@ -1,5 +1,4 @@
-
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useCallback, memo } from "react";
 import { Button } from "@/components/ui/button";
 
 interface SignatureCanvasProps {
@@ -7,19 +6,24 @@ interface SignatureCanvasProps {
   existingSignature?: string;
 }
 
-export default function SignatureCanvas({ onSave, existingSignature }: SignatureCanvasProps) {
+const SignatureCanvas = memo(({ onSave, existingSignature }: SignatureCanvasProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isDrawing, setIsDrawing] = useState(false);
   const [hasSignature, setHasSignature] = useState(!!existingSignature);
-
+  const contextRef = useRef<CanvasRenderingContext2D | null>(null);
+  
+  // Initialize canvas once on mount
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const ctx = canvas.getContext("2d");
+    // Get and store the context
+    const ctx = canvas.getContext("2d", { willReadFrequently: true });
     if (!ctx) return;
+    
+    contextRef.current = ctx;
 
-    // Clear canvas
+    // Set white background
     ctx.fillStyle = "white";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -27,18 +31,24 @@ export default function SignatureCanvas({ onSave, existingSignature }: Signature
     if (existingSignature) {
       const img = new Image();
       img.onload = () => {
-        ctx.drawImage(img, 0, 0);
+        if (ctx) {
+          ctx.drawImage(img, 0, 0);
+        }
       };
       img.src = existingSignature;
     }
+    
+    // Cleanup function
+    return () => {
+      contextRef.current = null;
+    };
   }, [existingSignature]);
 
-  const startDrawing = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
+  // Memoize event handlers to prevent unnecessary re-renders
+  const startDrawing = useCallback((e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
-    
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
+    const ctx = contextRef.current;
+    if (!canvas || !ctx) return;
     
     setIsDrawing(true);
     
@@ -59,16 +69,14 @@ export default function SignatureCanvas({ onSave, existingSignature }: Signature
     
     ctx.beginPath();
     ctx.moveTo(x, y);
-  };
+  }, []);
 
-  const draw = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
+  const draw = useCallback((e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
     if (!isDrawing) return;
     
     const canvas = canvasRef.current;
-    if (!canvas) return;
-    
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
+    const ctx = contextRef.current;
+    if (!canvas || !ctx) return;
     
     // Get correct coordinates for both mouse and touch events
     let clientX, clientY;
@@ -94,32 +102,48 @@ export default function SignatureCanvas({ onSave, existingSignature }: Signature
     ctx.stroke();
     
     setHasSignature(true);
-  };
+  }, [isDrawing]);
 
-  const endDrawing = () => {
+  const endDrawing = useCallback(() => {
     setIsDrawing(false);
-  };
+  }, []);
 
-  const clearSignature = () => {
+  const clearSignature = useCallback(() => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
-    
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
+    const ctx = contextRef.current;
+    if (!canvas || !ctx) return;
     
     ctx.fillStyle = "white";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     
     setHasSignature(false);
-  };
+  }, []);
 
-  const saveSignature = () => {
+  const saveSignature = useCallback(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     
     const signatureData = canvas.toDataURL("image/png");
     onSave(signatureData);
-  };
+  }, [onSave]);
+
+  // Passive event listeners for better touch performance
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    
+    const options = { passive: false };
+    
+    const touchMoveHandler = (e: TouchEvent) => {
+      e.preventDefault();
+    };
+    
+    canvas.addEventListener('touchmove', touchMoveHandler, options);
+    
+    return () => {
+      canvas.removeEventListener('touchmove', touchMoveHandler);
+    };
+  }, []);
 
   return (
     <div className="signature-container">
@@ -156,5 +180,8 @@ export default function SignatureCanvas({ onSave, existingSignature }: Signature
       </div>
     </div>
   );
-}
+});
 
+SignatureCanvas.displayName = 'SignatureCanvas';
+
+export default SignatureCanvas;

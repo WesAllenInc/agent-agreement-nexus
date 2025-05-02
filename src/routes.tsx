@@ -21,6 +21,16 @@ const Help = React.lazy(() => import('./pages/Help'));
 const Templates = React.lazy(() => import('./pages/admin/Templates'));
 const AdvancedSearch = React.lazy(() => import('./pages/AdvancedSearch'));
 
+// New enterprise feature components
+const MainLayout = React.lazy(() => import('./layouts/MainLayout'));
+const Settings = React.lazy(() => import('./pages/settings/Settings'));
+const ProfileSettings = React.lazy(() => import('./pages/settings/Profile'));
+const SecuritySettings = React.lazy(() => import('./pages/settings/Security'));
+const Preferences = React.lazy(() => import('./pages/settings/Preferences'));
+const NotificationSettings = React.lazy(() => import('./pages/settings/Notifications'));
+const AuditLog = React.lazy(() => import('./pages/admin/AuditLog'));
+const ImportExport = React.lazy(() => import('./pages/admin/ImportExport'));
+
 // Improved loading component with skeleton UI
 const LoadingFallback = () => (
   <div className="flex items-center justify-center min-h-screen">
@@ -63,118 +73,106 @@ export const publicRoutes: RouteObject[] = [
 export const protectedRoutes: RouteObject[] = [
   {
     path: '/',
-    element: (
-      <ProtectedRoute>
-        {LazyWrapper(Index)}
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: '/agent/agreement',
-    element: (
-      <ProtectedRoute>
-        {LazyWrapper(Agreement)}
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: '/agent/dashboard',
-    element: (
-      <ProtectedRoute>
-        {LazyWrapper(AgentDashboard)}
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: '/agent/documents',
-    element: (
-      <ProtectedRoute>
-        {LazyWrapper(AgentDocuments)}
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: '/agent/profile',
-    element: (
-      <ProtectedRoute>
-        {LazyWrapper(Profile)}
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: '/advanced-search',
-    element: (
-      <ProtectedRoute>
-        {LazyWrapper(AdvancedSearch)}
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: '/test-upload',
-    element: (
-      <ProtectedRoute>
-        {LazyWrapper(TestAgreementUpload)}
-      </ProtectedRoute>
-    ),
+    element: <ProtectedRoute><Suspense fallback={<LoadingFallback />}><MainLayout /></Suspense></ProtectedRoute>,
+    children: [
+      {
+        path: '/',
+        element: LazyWrapper(Index),
+      },
+      {
+        path: '/agent/agreement',
+        element: LazyWrapper(Agreement),
+      },
+      {
+        path: '/agent/dashboard',
+        element: LazyWrapper(AgentDashboard),
+      },
+      {
+        path: '/agent/documents',
+        element: LazyWrapper(AgentDocuments),
+      },
+      {
+        path: '/agent/profile',
+        element: LazyWrapper(Profile),
+      },
+      {
+        path: '/advanced-search',
+        element: LazyWrapper(AdvancedSearch),
+      },
+      {
+        path: '/test-upload',
+        element: LazyWrapper(TestAgreementUpload),
+      },
+      // New settings routes
+      {
+        path: '/settings',
+        element: LazyWrapper(Settings),
+        children: [
+          {
+            path: 'profile',
+            element: LazyWrapper(ProfileSettings),
+          },
+          {
+            path: 'security',
+            element: LazyWrapper(SecuritySettings),
+          },
+          {
+            path: 'preferences',
+            element: LazyWrapper(Preferences),
+          },
+          {
+            path: 'notifications',
+            element: LazyWrapper(NotificationSettings),
+          },
+        ],
+      },
+    ],
   },
 ];
 
 // Admin routes (admin role required)
 export const adminRoutes: RouteObject[] = [
   {
-    path: '/dashboard',
-    element: (
-      <ProtectedRoute requiredRole="admin">
-        {LazyWrapper(Dashboard)}
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: '/users',
-    element: (
-      <ProtectedRoute requiredRole="admin">
-        {LazyWrapper(Users)}
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: '/invitations',
-    element: (
-      <ProtectedRoute requiredRole="admin">
-        {LazyWrapper(Invitations)}
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: '/agents',
-    element: (
-      <ProtectedRoute requiredRole="admin">
-        {LazyWrapper(Agents)}
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: '/agreements',
-    element: (
-      <ProtectedRoute requiredRole="admin">
-        {LazyWrapper(Agreements)}
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: '/agreements/:id',
-    element: (
-      <ProtectedRoute requiredRole="admin">
-        {LazyWrapper(AgreementDetails)}
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: '/templates',
-    element: (
-      <ProtectedRoute requiredRole="admin">
-        {LazyWrapper(Templates)}
-      </ProtectedRoute>
-    ),
+    path: '/',
+    element: <ProtectedRoute requiredRole="admin"><Suspense fallback={<LoadingFallback />}><MainLayout /></Suspense></ProtectedRoute>,
+    children: [
+      {
+        path: '/dashboard',
+        element: LazyWrapper(Dashboard),
+      },
+      {
+        path: '/users',
+        element: LazyWrapper(Users),
+      },
+      {
+        path: '/invitations',
+        element: LazyWrapper(Invitations),
+      },
+      {
+        path: '/agents',
+        element: LazyWrapper(Agents),
+      },
+      {
+        path: '/agreements',
+        element: LazyWrapper(Agreements),
+      },
+      {
+        path: '/agreements/:id',
+        element: LazyWrapper(AgreementDetails),
+      },
+      {
+        path: '/templates',
+        element: LazyWrapper(Templates),
+      },
+      // New admin routes
+      {
+        path: '/admin/audit-log',
+        element: LazyWrapper(AuditLog),
+      },
+      {
+        path: '/admin/import-export',
+        element: LazyWrapper(ImportExport),
+      },
+    ],
   },
 ];

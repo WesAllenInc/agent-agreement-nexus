@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, memo, useCallback } from "react";
+import { useState, useEffect, useRef, memo, useCallback, Suspense } from "react";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { Card, CardContent } from "@/components/ui/card";
@@ -274,14 +274,16 @@ const Thumbnail = memo(({
     )}
   >
     <div className="aspect-[3/4] bg-white rounded border shadow-sm overflow-hidden">
-      <Document file={pdfUrl} loading={null}>
-        <Page
-          pageNumber={index + 1}
-          width={100}
-          renderTextLayer={false}
-          renderAnnotationLayer={false}
-        />
-      </Document>
+      <Suspense fallback={<div>Loading...</div>}>
+        <Document file={pdfUrl} loading={null}>
+          <Page
+            pageNumber={index + 1}
+            width={100}
+            renderTextLayer={false}
+            renderAnnotationLayer={false}
+          />
+        </Document>
+      </Suspense>
     </div>
     <div className="text-xs mt-1 text-center">Page {index + 1}</div>
   </button>
@@ -522,21 +524,23 @@ const PdfViewer = memo(({ pdfUrl, className, onDownload }: PdfViewerProps) => {
         <div className="flex-1 overflow-auto bg-gray-100 flex items-center justify-center p-4">
           {loading && <PdfLoadingIndicator />}
           
-          <Document
-            file={pdfUrl}
-            onLoadSuccess={onDocumentLoadSuccess}
-            loading={null}
-            className="max-w-full"
-          >
-            <Page
-              pageNumber={pageNumber}
-              scale={scale}
-              rotate={rotation}
-              renderTextLayer={true}
-              renderAnnotationLayer={true}
-              className="shadow-lg"
-            />
-          </Document>
+          <Suspense fallback={<div>Loading...</div>}>
+            <Document
+              file={pdfUrl}
+              onLoadSuccess={onDocumentLoadSuccess}
+              loading={null}
+              className="max-w-full"
+            >
+              <Page
+                pageNumber={pageNumber}
+                scale={scale}
+                rotate={rotation}
+                renderTextLayer={true}
+                renderAnnotationLayer={true}
+                className="shadow-lg"
+              />
+            </Document>
+          </Suspense>
         </div>
       </div>
       
