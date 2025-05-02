@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, Outlet } from 'react-router-dom';
 import Layout from './components/layout/Layout';
 import Dashboard from './pages/Dashboard';
 import { Agreements } from './pages/Agreements';
@@ -7,6 +7,8 @@ import { AuthProvider } from './hooks/useAuth';
 import { Toaster } from './components/ui/toaster';
 import { useAuth } from './hooks/useAuth';
 import { UserRole } from './lib/roles';
+import Demo from './pages/Demo';
+import Landing from './pages/Landing';
 
 // Protected route component
 const ProtectedRoute = ({ element, requiredRoles = [] }: { element: React.ReactNode, requiredRoles?: UserRole[] }) => {
@@ -17,7 +19,7 @@ const ProtectedRoute = ({ element, requiredRoles = [] }: { element: React.ReactN
   }
   
   if (!user) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/" replace />;
   }
   
   if (requiredRoles.length > 0 && !requiredRoles.some(role => userRoles.includes(role as UserRole))) {
@@ -27,37 +29,26 @@ const ProtectedRoute = ({ element, requiredRoles = [] }: { element: React.ReactN
   return <>{element}</>;
 };
 
-// Admin routes
-const AdminRoutes = () => {
+// Layout wrapper component
+const LayoutWrapper = () => {
   return (
-    <Routes>
-      <Route path="/admin/agreements" element={<ProtectedRoute element={<div>Admin Agreements</div>} requiredRoles={['admin' as UserRole]} />} />
-      <Route path="/admin/users" element={<ProtectedRoute element={<div>Admin Users</div>} requiredRoles={['admin' as UserRole]} />} />
-      <Route path="/admin/*" element={<Navigate to="/admin/agreements" replace />} />
-    </Routes>
+    <Layout>
+      <Outlet />
+    </Layout>
   );
 };
 
 const App: React.FC = () => {
+  // Simplified App component for debugging
   return (
-    <AuthProvider>
-      <Router>
-        <Layout>
-          <Routes>
-            <Route path="/" element={<Navigate to="/dashboard" replace />} />
-            <Route path="/dashboard" element={<ProtectedRoute element={<Dashboard />} />} />
-            <Route path="/agreements" element={<ProtectedRoute element={<Agreements />} />} />
-            <Route path="/agents" element={<ProtectedRoute element={<div>Agents Page</div>} />} />
-            <Route path="/analytics" element={<ProtectedRoute element={<div>Analytics Page</div>} />} />
-            <Route path="/settings" element={<ProtectedRoute element={<div>Settings Page</div>} />} />
-            <Route path="/admin/*" element={<AdminRoutes />} />
-            <Route path="/login" element={<div>Login Page</div>} />
-            <Route path="*" element={<Navigate to="/dashboard" replace />} />
-          </Routes>
-        </Layout>
-        <Toaster />
-      </Router>
-    </AuthProvider>
+    <Router>
+      <Routes>
+        <Route path="/" element={<Landing />} />
+        <Route path="/demo" element={<Demo />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+      <Toaster />
+    </Router>
   );
 };
 

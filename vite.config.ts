@@ -5,6 +5,7 @@ import { visualizer } from "rollup-plugin-visualizer";
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  base: "/", // Explicitly set base path
   plugins: [
     react(),
     visualizer({
@@ -30,34 +31,84 @@ export default defineConfig({
     }
   },
   build: {
+    minify: 'terser',
+    terserOptions: {
+      compress: {
+        drop_console: false, // Keep console logs for debugging
+        drop_debugger: true,
+      },
+    },
     rollupOptions: {
-      external: ['react-pdf'],
+      // Remove external config that might be causing issues
+      // external: ['react-pdf'],
       output: {
-        manualChunks: {
-          'vendor': [
-            'react', 
-            'react-dom',
-            'react-router-dom'
-          ],
-          'ui': [
-            '@radix-ui/react-accordion',
-            '@radix-ui/react-alert-dialog',
-            '@radix-ui/react-avatar',
-            '@radix-ui/react-checkbox',
-            '@radix-ui/react-dialog',
-            '@radix-ui/react-dropdown-menu',
-            '@radix-ui/react-label',
-            '@radix-ui/react-popover',
-            '@radix-ui/react-select',
-            '@radix-ui/react-slot',
-            '@radix-ui/react-tabs',
-            '@radix-ui/react-toast'
-          ],
-          'charts': ['recharts'],
-          'animations': ['framer-motion'],
-          'forms': ['react-hook-form', '@hookform/resolvers', 'zod']
+        manualChunks: (id) => {
+          // Create dynamic chunks for node_modules
+          if (id.includes('node_modules')) {
+            if (id.includes('react') || id.includes('react-dom') || id.includes('react-router-dom')) {
+              return 'vendor-react';
+            }
+            
+            if (id.includes('@radix-ui')) {
+              return 'vendor-radix-ui';
+            }
+            
+            if (id.includes('recharts')) {
+              return 'vendor-charts';
+            }
+            
+            if (id.includes('framer-motion')) {
+              return 'vendor-animations';
+            }
+            
+            if (id.includes('react-hook-form') || id.includes('hookform') || id.includes('zod')) {
+              return 'vendor-forms';
+            }
+            
+            if (id.includes('lucide')) {
+              return 'vendor-icons';
+            }
+            
+            if (id.includes('date-fns')) {
+              return 'vendor-dates';
+            }
+            
+            // Group remaining node_modules
+            return 'vendor-others';
+          }
+          
+          // Group by feature area for application code
+          if (id.includes('/components/ui/')) {
+            return 'app-ui-components';
+          }
+          
+          if (id.includes('/components/common/')) {
+            return 'app-common-components';
+          }
+          
+          if (id.includes('/pages/admin/')) {
+            return 'app-admin-pages';
+          }
+          
+          if (id.includes('/pages/agent/')) {
+            return 'app-agent-pages';
+          }
         }
       }
+    }
+  },
+  optimizeDeps: {
+    include: ['react', 'react-dom', 'react-router-dom', 'framer-motion'],
+    // Remove exclude that might be causing issues
+    // exclude: ['react-pdf']
+  },
+  server: {
+    watch: {
+      usePolling: true
+    },
+    // Add more detailed error logging
+    hmr: {
+      overlay: true
     }
   }
 });
