@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, memo, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { Card, CardContent } from "@/components/ui/card";
@@ -26,9 +26,375 @@ pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/$
 interface PdfViewerProps {
   pdfUrl: string;
   className?: string;
+  onDownload?: () => void;
 }
 
-export default function PdfViewer({ pdfUrl, className }: PdfViewerProps) {
+interface ToolbarProps {
+  pageNumber: number;
+  numPages: number | null;
+  sidebarOpen: boolean;
+  isFullscreen: boolean;
+  handlePreviousPage: () => void;
+  handleNextPage: () => void;
+  handleZoomIn: () => void;
+  handleZoomOut: () => void;
+  handleRotate: () => void;
+  handleDownload: () => void;
+  handlePrint: () => void;
+  toggleFullscreen: () => void;
+  toggleSidebar: () => void;
+}
+
+interface ThumbnailProps {
+  index: number;
+  pageNumber: number;
+  pdfUrl: string;
+  setPageNumber: (pageNumber: number) => void;
+}
+
+interface SidebarProps {
+  sidebarOpen: boolean;
+  isMobile: boolean;
+  numPages: number | null;
+  pageNumber: number;
+  pdfUrl: string;
+  setPageNumber: React.Dispatch<React.SetStateAction<number>>;
+}
+
+interface MobileNavigationProps {
+  isMobile: boolean;
+  scale: number;
+  handleZoomOut: () => void;
+  handleZoomIn: () => void;
+  pageNumber: number;
+  setPageNumber: React.Dispatch<React.SetStateAction<number>>;
+  numPages: number | null;
+  handlePreviousPage: () => void;
+  handleNextPage: () => void;
+}
+
+// Loading indicator component
+const PdfLoadingIndicator = memo(() => (
+  <div className="flex flex-col items-center justify-center p-8">
+    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mb-4"></div>
+    <p className="text-muted-foreground">Loading PDF...</p>
+  </div>
+));
+PdfLoadingIndicator.displayName = 'PdfLoadingIndicator';
+
+// Toolbar component
+const Toolbar = memo(({
+  pageNumber, 
+  numPages, 
+  sidebarOpen, 
+  isFullscreen,
+  handlePreviousPage, 
+  handleNextPage, 
+  handleZoomIn, 
+  handleZoomOut, 
+  handleRotate, 
+  handleDownload, 
+  handlePrint, 
+  toggleFullscreen, 
+  toggleSidebar 
+}: ToolbarProps) => (
+  <div className="flex items-center justify-between p-2 border-b bg-gray-50">
+    <div className="flex items-center gap-1">
+      <Button 
+        variant="ghost" 
+        size="icon" 
+        onClick={toggleSidebar}
+        className="hidden md:flex"
+      >
+        {sidebarOpen ? <PanelLeftClose className="h-4 w-4" /> : <PanelLeftOpen className="h-4 w-4" />}
+      </Button>
+      
+      <div className="flex items-center">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={handlePreviousPage}
+          disabled={pageNumber <= 1}
+          className="h-8 px-2"
+        >
+          <ChevronLeft className="h-4 w-4" />
+        </Button>
+        
+        <span className="text-sm mx-2">
+          {pageNumber} / {numPages || "?"}
+        </span>
+        
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={handleNextPage}
+          disabled={numPages === null || pageNumber >= numPages}
+          className="h-8 px-2"
+        >
+          <ChevronRight className="h-4 w-4" />
+        </Button>
+      </div>
+    </div>
+    
+    <div className="hidden md:flex items-center gap-1">
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button variant="ghost" size="icon" onClick={handleZoomOut} disabled={false}>
+              <ZoomOut className="h-4 w-4" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>Zoom Out</TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+      
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button variant="ghost" size="icon" onClick={handleZoomIn} disabled={false}>
+              <ZoomIn className="h-4 w-4" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>Zoom In</TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+      
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button variant="ghost" size="icon" onClick={handleRotate}>
+              <RotateCw className="h-4 w-4" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>Rotate</TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+      
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button variant="ghost" size="icon" onClick={handleDownload}>
+              <Download className="h-4 w-4" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>Download</TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+      
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button variant="ghost" size="icon" onClick={handlePrint}>
+              <Printer className="h-4 w-4" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>Print</TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+      
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button variant="ghost" size="icon" onClick={toggleFullscreen}>
+              {isFullscreen ? <Minimize className="h-4 w-4" /> : <Maximize className="h-4 w-4" />}
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            {isFullscreen ? "Exit Fullscreen" : "Fullscreen"}
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+    </div>
+    
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild className="md:hidden">
+        <Button variant="ghost" size="icon">
+          <MoreVertical className="h-4 w-4" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        <DropdownMenuItem onClick={handleZoomIn}>
+          <ZoomIn className="h-4 w-4 mr-2" /> Zoom In
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={handleZoomOut}>
+          <ZoomOut className="h-4 w-4 mr-2" /> Zoom Out
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={handleRotate}>
+          <RotateCw className="h-4 w-4 mr-2" /> Rotate
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem onClick={handleDownload}>
+          <Download className="h-4 w-4 mr-2" /> Download
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={handlePrint}>
+          <Printer className="h-4 w-4 mr-2" /> Print
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem onClick={toggleFullscreen}>
+          {isFullscreen ? (
+            <>
+              <Minimize className="h-4 w-4 mr-2" /> Exit Fullscreen
+            </>
+          ) : (
+            <>
+              <Maximize className="h-4 w-4 mr-2" /> Fullscreen
+            </>
+          )}
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={toggleSidebar} className="md:hidden">
+          {sidebarOpen ? (
+            <>
+              <PanelLeftClose className="h-4 w-4 mr-2" /> Hide Sidebar
+            </>
+          ) : (
+            <>
+              <PanelLeftOpen className="h-4 w-4 mr-2" /> Show Sidebar
+            </>
+          )}
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  </div>
+));
+Toolbar.displayName = 'Toolbar';
+
+// Thumbnail component
+const Thumbnail = memo(({ 
+  index, 
+  pageNumber, 
+  pdfUrl, 
+  setPageNumber 
+}: ThumbnailProps) => (
+  <button
+    key={`thumb-${index}`}
+    onClick={() => setPageNumber(index + 1)}
+    className={cn(
+      "p-2 w-full transition-colors",
+      pageNumber === index + 1 ? "bg-primary-50 border-l-2 border-primary" : "hover:bg-gray-100"
+    )}
+  >
+    <div className="aspect-[3/4] bg-white rounded border shadow-sm overflow-hidden">
+      <Document file={pdfUrl} loading={null}>
+        <Page
+          pageNumber={index + 1}
+          width={100}
+          renderTextLayer={false}
+          renderAnnotationLayer={false}
+        />
+      </Document>
+    </div>
+    <div className="text-xs mt-1 text-center">Page {index + 1}</div>
+  </button>
+));
+Thumbnail.displayName = 'Thumbnail';
+
+// Sidebar component
+const Sidebar = memo(({ 
+  sidebarOpen, 
+  isMobile, 
+  numPages, 
+  pageNumber, 
+  pdfUrl, 
+  setPageNumber 
+}: SidebarProps) => {
+  if (!sidebarOpen || isMobile) return null;
+  
+  return (
+    <div className="w-[120px] border-r overflow-y-auto bg-gray-50 flex-shrink-0">
+      {numPages && Array.from(new Array(numPages)).map((_, index) => (
+        <Thumbnail 
+          key={index}
+          index={index}
+          pageNumber={pageNumber}
+          pdfUrl={pdfUrl}
+          setPageNumber={setPageNumber}
+        />
+      ))}
+    </div>
+  );
+});
+Sidebar.displayName = 'Sidebar';
+
+// Mobile navigation component
+const MobileNavigation = memo(({ 
+  isMobile, 
+  scale, 
+  handleZoomOut, 
+  handleZoomIn, 
+  pageNumber, 
+  setPageNumber, 
+  numPages, 
+  handlePreviousPage, 
+  handleNextPage 
+}: MobileNavigationProps) => {
+  if (!isMobile) return null;
+  
+  return (
+    <div className="p-2 border-t bg-gray-50 flex items-center justify-between">
+      <Button 
+        variant="outline" 
+        size="sm" 
+        onClick={handleZoomOut}
+        disabled={scale <= 0.5}
+      >
+        <ZoomOut className="h-4 w-4" />
+      </Button>
+      
+      <div className="flex items-center gap-1">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setPageNumber(1)}
+          disabled={pageNumber <= 1}
+        >
+          <ChevronsLeft className="h-4 w-4" />
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={handlePreviousPage}
+          disabled={pageNumber <= 1}
+        >
+          <ChevronLeft className="h-4 w-4" />
+        </Button>
+        
+        <span className="text-sm mx-2">
+          {pageNumber} / {numPages || "?"}
+        </span>
+        
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={handleNextPage}
+          disabled={numPages === null || pageNumber >= numPages}
+        >
+          <ChevronRight className="h-4 w-4" />
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => numPages && setPageNumber(numPages)}
+          disabled={numPages === null || pageNumber >= numPages}
+        >
+          <ChevronsRight className="h-4 w-4" />
+        </Button>
+      </div>
+      
+      <Button 
+        variant="outline" 
+        size="sm" 
+        onClick={handleZoomIn}
+        disabled={scale >= 3}
+      >
+        <ZoomIn className="h-4 w-4" />
+      </Button>
+    </div>
+  );
+});
+MobileNavigation.displayName = 'MobileNavigation';
+
+// Main PDF viewer component
+const PdfViewer = memo(({ pdfUrl, className, onDownload }: PdfViewerProps) => {
   const [numPages, setNumPages] = useState<number | null>(null);
   const [pageNumber, setPageNumber] = useState(1);
   const [scale, setScale] = useState(1);
@@ -58,47 +424,51 @@ export default function PdfViewer({ pdfUrl, className }: PdfViewerProps) {
     };
   }, []);
 
-  const onDocumentLoadSuccess = ({ numPages }: { numPages: number }) => {
+  const onDocumentLoadSuccess = useCallback(({ numPages }: { numPages: number }) => {
     setNumPages(numPages);
     setLoading(false);
-  };
+  }, []);
 
-  const handlePreviousPage = () => {
+  const handlePreviousPage = useCallback(() => {
     setPageNumber((prevPageNumber) => Math.max(prevPageNumber - 1, 1));
-  };
+  }, []);
 
-  const handleNextPage = () => {
+  const handleNextPage = useCallback(() => {
     setPageNumber((prevPageNumber) => 
       numPages ? Math.min(prevPageNumber + 1, numPages) : prevPageNumber
     );
-  };
+  }, [numPages]);
 
-  const handleZoomIn = () => {
+  const handleZoomIn = useCallback(() => {
     setScale((prevScale) => Math.min(prevScale + 0.2, 3));
-  };
+  }, []);
 
-  const handleZoomOut = () => {
+  const handleZoomOut = useCallback(() => {
     setScale((prevScale) => Math.max(prevScale - 0.2, 0.5));
-  };
+  }, []);
 
-  const handleRotate = () => {
+  const handleRotate = useCallback(() => {
     setRotation((prevRotation) => (prevRotation + 90) % 360);
-  };
+  }, []);
 
-  const handleDownload = () => {
-    window.open(pdfUrl, "_blank");
-  };
+  const handleDownload = useCallback(() => {
+    if (onDownload) {
+      onDownload();
+    } else {
+      window.open(pdfUrl, "_blank");
+    }
+  }, [onDownload, pdfUrl]);
 
-  const handlePrint = () => {
+  const handlePrint = useCallback(() => {
     const printWindow = window.open(pdfUrl);
     if (printWindow) {
       printWindow.addEventListener("load", () => {
         printWindow.print();
       });
     }
-  };
+  }, [pdfUrl]);
 
-  const toggleFullscreen = () => {
+  const toggleFullscreen = useCallback(() => {
     if (!isFullscreen) {
       if (containerRef.current?.requestFullscreen) {
         containerRef.current.requestFullscreen();
@@ -108,11 +478,11 @@ export default function PdfViewer({ pdfUrl, className }: PdfViewerProps) {
         document.exitFullscreen();
       }
     }
-  };
+  }, [isFullscreen]);
 
-  const toggleSidebar = () => {
-    setSidebarOpen(!sidebarOpen);
-  };
+  const toggleSidebar = useCallback(() => {
+    setSidebarOpen((prev) => !prev);
+  }, []);
 
   return (
     <div 
@@ -123,208 +493,34 @@ export default function PdfViewer({ pdfUrl, className }: PdfViewerProps) {
         className
       )}
     >
-      {/* Toolbar */}
-      <div className="flex items-center justify-between p-2 border-b bg-gray-50">
-        <div className="flex items-center gap-1">
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            onClick={toggleSidebar}
-            className="hidden md:flex"
-          >
-            {sidebarOpen ? <PanelLeftClose className="h-4 w-4" /> : <PanelLeftOpen className="h-4 w-4" />}
-          </Button>
-          
-          <div className="flex items-center">
-            <Button
-              variant="ghost"
-              size={isMobile ? "sm" : "icon"}
-              onClick={handlePreviousPage}
-              disabled={pageNumber <= 1}
-            >
-              <ChevronLeft className="h-4 w-4" />
-              {isMobile && <span className="ml-1">Prev</span>}
-            </Button>
-            
-            <span className="text-sm mx-2">
-              {pageNumber} / {numPages || "?"}
-            </span>
-            
-            <Button
-              variant="ghost"
-              size={isMobile ? "sm" : "icon"}
-              onClick={handleNextPage}
-              disabled={numPages === null || pageNumber >= numPages}
-            >
-              {isMobile && <span className="mr-1">Next</span>}
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-          </div>
-        </div>
-        
-        <div className="hidden sm:flex items-center gap-2">
-          <div className="flex items-center gap-1 mr-2">
-            <Button variant="ghost" size="icon" onClick={handleZoomOut} disabled={scale <= 0.5}>
-              <ZoomOut className="h-4 w-4" />
-            </Button>
-            <div className="w-24">
-              <Slider
-                value={[scale * 100]}
-                min={50}
-                max={300}
-                step={10}
-                onValueChange={(value) => setScale(value[0] / 100)}
-              />
-            </div>
-            <Button variant="ghost" size="icon" onClick={handleZoomIn} disabled={scale >= 3}>
-              <ZoomIn className="h-4 w-4" />
-            </Button>
-            <span className="text-xs ml-1 w-12">{Math.round(scale * 100)}%</span>
-          </div>
-          
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button variant="ghost" size="icon" onClick={handleRotate}>
-                  <RotateCw className="h-4 w-4" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Rotate</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-          
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button variant="ghost" size="icon" onClick={handleDownload}>
-                  <Download className="h-4 w-4" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Download</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-          
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button variant="ghost" size="icon" onClick={handlePrint}>
-                  <Printer className="h-4 w-4" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Print</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-          
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button variant="ghost" size="icon" onClick={toggleFullscreen}>
-                  {isFullscreen ? <Minimize className="h-4 w-4" /> : <Maximize className="h-4 w-4" />}
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>{isFullscreen ? "Exit Fullscreen" : "Fullscreen"}</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        </div>
-        
-        {/* Mobile toolbar dropdown */}
-        <div className="sm:hidden flex items-center">
-          <Button variant="ghost" size="sm" className="flex items-center gap-1">
-            <span>{Math.round(scale * 100)}%</span>
-            <ChevronDown className="h-4 w-4" />
-          </Button>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon">
-                <MoreVertical className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={handleZoomIn}>
-                <ZoomIn className="mr-2 h-4 w-4" />
-                Zoom In
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={handleZoomOut}>
-                <ZoomOut className="mr-2 h-4 w-4" />
-                Zoom Out
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={handleRotate}>
-                <RotateCw className="mr-2 h-4 w-4" />
-                Rotate
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={handleDownload}>
-                <Download className="mr-2 h-4 w-4" />
-                Download
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={handlePrint}>
-                <Printer className="mr-2 h-4 w-4" />
-                Print
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={toggleFullscreen}>
-                {isFullscreen ? (
-                  <>
-                    <Minimize className="mr-2 h-4 w-4" />
-                    Exit Fullscreen
-                  </>
-                ) : (
-                  <>
-                    <Maximize className="mr-2 h-4 w-4" />
-                    Fullscreen
-                  </>
-                )}
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-      </div>
+      <Toolbar 
+        pageNumber={pageNumber}
+        numPages={numPages}
+        sidebarOpen={sidebarOpen}
+        isFullscreen={isFullscreen}
+        handlePreviousPage={handlePreviousPage}
+        handleNextPage={handleNextPage}
+        handleZoomIn={handleZoomIn}
+        handleZoomOut={handleZoomOut}
+        handleRotate={handleRotate}
+        handleDownload={handleDownload}
+        handlePrint={handlePrint}
+        toggleFullscreen={toggleFullscreen}
+        toggleSidebar={toggleSidebar}
+      />
       
       <div className="flex flex-1 overflow-hidden">
-        {/* Thumbnails sidebar */}
-        {sidebarOpen && !isMobile && (
-          <div className="w-[120px] border-r overflow-y-auto bg-gray-50 flex-shrink-0">
-            {numPages && Array.from(new Array(numPages)).map((_, index) => (
-              <button
-                key={`thumb-${index}`}
-                onClick={() => setPageNumber(index + 1)}
-                className={cn(
-                  "p-2 w-full transition-colors",
-                  pageNumber === index + 1 ? "bg-primary-50 border-l-2 border-primary" : "hover:bg-gray-100"
-                )}
-              >
-                <div className="aspect-[3/4] bg-white rounded border shadow-sm overflow-hidden">
-                  <Document file={pdfUrl} loading={null}>
-                    <Page
-                      pageNumber={index + 1}
-                      width={100}
-                      renderTextLayer={false}
-                      renderAnnotationLayer={false}
-                    />
-                  </Document>
-                </div>
-                <div className="text-xs mt-1 text-center">Page {index + 1}</div>
-              </button>
-            ))}
-          </div>
-        )}
+        <Sidebar 
+          sidebarOpen={sidebarOpen}
+          isMobile={isMobile}
+          numPages={numPages}
+          pageNumber={pageNumber}
+          pdfUrl={pdfUrl}
+          setPageNumber={setPageNumber}
+        />
         
-        {/* Main PDF viewer */}
         <div className="flex-1 overflow-auto bg-gray-100 flex items-center justify-center p-4">
-          {loading && (
-            <div className="flex flex-col items-center justify-center p-8">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mb-4"></div>
-              <p className="text-muted-foreground">Loading PDF...</p>
-            </div>
-          )}
+          {loading && <PdfLoadingIndicator />}
           
           <Document
             file={pdfUrl}
@@ -344,68 +540,21 @@ export default function PdfViewer({ pdfUrl, className }: PdfViewerProps) {
         </div>
       </div>
       
-      {/* Mobile bottom navigation */}
-      {isMobile && (
-        <div className="p-2 border-t bg-gray-50 flex items-center justify-between">
-          <Button 
-            variant="outline" 
-            size="sm" 
-            onClick={handleZoomOut}
-            disabled={scale <= 0.5}
-          >
-            <ZoomOut className="h-4 w-4" />
-          </Button>
-          
-          <div className="flex items-center gap-1">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setPageNumber(1)}
-              disabled={pageNumber <= 1}
-            >
-              <ChevronsLeft className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handlePreviousPage}
-              disabled={pageNumber <= 1}
-            >
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
-            
-            <span className="text-sm mx-2">
-              {pageNumber} / {numPages || "?"}
-            </span>
-            
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleNextPage}
-              disabled={numPages === null || pageNumber >= numPages}
-            >
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => numPages && setPageNumber(numPages)}
-              disabled={numPages === null || pageNumber >= numPages}
-            >
-              <ChevronsRight className="h-4 w-4" />
-            </Button>
-          </div>
-          
-          <Button 
-            variant="outline" 
-            size="sm" 
-            onClick={handleZoomIn}
-            disabled={scale >= 3}
-          >
-            <ZoomIn className="h-4 w-4" />
-          </Button>
-        </div>
-      )}
+      <MobileNavigation 
+        isMobile={isMobile}
+        scale={scale}
+        handleZoomOut={handleZoomOut}
+        handleZoomIn={handleZoomIn}
+        pageNumber={pageNumber}
+        setPageNumber={setPageNumber}
+        numPages={numPages}
+        handlePreviousPage={handlePreviousPage}
+        handleNextPage={handleNextPage}
+      />
     </div>
   );
-}
+});
+
+PdfViewer.displayName = 'PdfViewer';
+
+export default PdfViewer;

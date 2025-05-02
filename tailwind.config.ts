@@ -1,9 +1,12 @@
 import type { Config } from 'tailwindcss';
+import tailwindcssAnimate from "tailwindcss-animate";
+import tailwindcssForms from "@tailwindcss/forms";
 
 const config: Config = {
   darkMode: ["class"],
   content: [
-    './src/**/*.{js,jsx,ts,tsx}',
+    './index.html',
+    './src/**/*.{js,jsx,ts,tsx,mdx}',
     './.storybook/**/*.{js,jsx,ts,tsx}',
   ],
   prefix: "",
@@ -130,7 +133,7 @@ const config: Config = {
       },
     },
   },
-  plugins: [require("tailwindcss-animate"), require("@tailwindcss/forms")],
+  plugins: [tailwindcssAnimate, tailwindcssForms],
 }
 
 export default config

@@ -1,29 +1,44 @@
 import { RouteObject } from 'react-router-dom';
-import Dashboard from './pages/admin/Dashboard';
-import Users from './pages/admin/Users';
-import Invitations from './pages/admin/Invitations';
-import Agreements from './pages/admin/Agreements';
-import AgreementDetails from './pages/admin/AgreementDetails';
-import Agreement from './pages/agent/Agreement';
-import AcceptInvitation from './pages/AcceptInvitation';
-import Agents from './pages/admin/Agents';
-import AgentDashboard from './pages/agent/AgentDashboard';
-import AgentDocuments from './pages/agent/AgentDocuments';
-import Auth from './pages/auth/Auth';
-import Index from './pages/Index';
-import { TestAgreementUpload } from './pages/TestAgreementUpload';
-import { ProtectedRoute } from './components/ProtectedRoute';
-// Import pages we've created
-import Profile from './pages/agent/Profile';
-// Use dynamic imports to resolve TypeScript errors
-const Help = React.lazy(() => import('./pages/Help.tsx'));
-const Templates = React.lazy(() => import('./pages/admin/Templates.tsx'));
-const AdvancedSearch = React.lazy(() => import('./pages/AdvancedSearch.tsx'));
 import React, { Suspense } from 'react';
+import { ProtectedRoute } from './components/ProtectedRoute';
 
-// Wrapper component for lazy-loaded components
+// Use lazy loading for all page components
+const Dashboard = React.lazy(() => import('./pages/admin/Dashboard'));
+const Users = React.lazy(() => import('./pages/admin/Users'));
+const Invitations = React.lazy(() => import('./pages/admin/Invitations'));
+const Agreements = React.lazy(() => import('./pages/admin/Agreements'));
+const AgreementDetails = React.lazy(() => import('./pages/admin/AgreementDetails'));
+const Agreement = React.lazy(() => import('./pages/agent/Agreement'));
+const AcceptInvitation = React.lazy(() => import('./pages/AcceptInvitation'));
+const Agents = React.lazy(() => import('./pages/admin/Agents'));
+const AgentDashboard = React.lazy(() => import('./pages/agent/AgentDashboard'));
+const AgentDocuments = React.lazy(() => import('./pages/agent/AgentDocuments'));
+const Auth = React.lazy(() => import('./pages/auth/Auth'));
+const Index = React.lazy(() => import('./pages/Index'));
+const TestAgreementUpload = React.lazy(() => import('./pages/TestAgreementUpload').then(module => ({ default: module.TestAgreementUpload })));
+const Profile = React.lazy(() => import('./pages/agent/Profile'));
+const Help = React.lazy(() => import('./pages/Help'));
+const Templates = React.lazy(() => import('./pages/admin/Templates'));
+const AdvancedSearch = React.lazy(() => import('./pages/AdvancedSearch'));
+
+// Improved loading component with skeleton UI
+const LoadingFallback = () => (
+  <div className="flex items-center justify-center min-h-screen">
+    <div className="w-full max-w-md p-4 space-y-4">
+      <div className="h-8 bg-gray-200 rounded animate-pulse"></div>
+      <div className="space-y-2">
+        <div className="h-4 bg-gray-200 rounded animate-pulse"></div>
+        <div className="h-4 bg-gray-200 rounded animate-pulse w-5/6"></div>
+        <div className="h-4 bg-gray-200 rounded animate-pulse w-4/6"></div>
+      </div>
+      <div className="h-32 bg-gray-200 rounded animate-pulse"></div>
+    </div>
+  </div>
+);
+
+// Wrapper component for lazy-loaded components with better fallback UI
 const LazyWrapper = (Component: React.ComponentType) => (
-  <Suspense fallback={<div>Loading...</div>}>
+  <Suspense fallback={<LoadingFallback />}>
     <Component />
   </Suspense>
 );
@@ -32,11 +47,11 @@ const LazyWrapper = (Component: React.ComponentType) => (
 export const publicRoutes: RouteObject[] = [
   {
     path: '/auth',
-    element: <Auth />,
+    element: LazyWrapper(Auth),
   },
   {
     path: '/invitation/accept',
-    element: <AcceptInvitation />,
+    element: LazyWrapper(AcceptInvitation),
   },
   {
     path: '/help',
@@ -50,7 +65,7 @@ export const protectedRoutes: RouteObject[] = [
     path: '/',
     element: (
       <ProtectedRoute>
-        <Index />
+        {LazyWrapper(Index)}
       </ProtectedRoute>
     ),
   },
@@ -58,7 +73,7 @@ export const protectedRoutes: RouteObject[] = [
     path: '/agent/agreement',
     element: (
       <ProtectedRoute>
-        <Agreement />
+        {LazyWrapper(Agreement)}
       </ProtectedRoute>
     ),
   },
@@ -66,7 +81,7 @@ export const protectedRoutes: RouteObject[] = [
     path: '/agent/dashboard',
     element: (
       <ProtectedRoute>
-        <AgentDashboard />
+        {LazyWrapper(AgentDashboard)}
       </ProtectedRoute>
     ),
   },
@@ -74,7 +89,7 @@ export const protectedRoutes: RouteObject[] = [
     path: '/agent/documents',
     element: (
       <ProtectedRoute>
-        <AgentDocuments />
+        {LazyWrapper(AgentDocuments)}
       </ProtectedRoute>
     ),
   },
@@ -82,7 +97,7 @@ export const protectedRoutes: RouteObject[] = [
     path: '/agent/profile',
     element: (
       <ProtectedRoute>
-        <Profile />
+        {LazyWrapper(Profile)}
       </ProtectedRoute>
     ),
   },
@@ -98,7 +113,7 @@ export const protectedRoutes: RouteObject[] = [
     path: '/test-upload',
     element: (
       <ProtectedRoute>
-        <TestAgreementUpload />
+        {LazyWrapper(TestAgreementUpload)}
       </ProtectedRoute>
     ),
   },
@@ -110,7 +125,7 @@ export const adminRoutes: RouteObject[] = [
     path: '/dashboard',
     element: (
       <ProtectedRoute requiredRole="admin">
-        <Dashboard />
+        {LazyWrapper(Dashboard)}
       </ProtectedRoute>
     ),
   },
@@ -118,7 +133,7 @@ export const adminRoutes: RouteObject[] = [
     path: '/users',
     element: (
       <ProtectedRoute requiredRole="admin">
-        <Users />
+        {LazyWrapper(Users)}
       </ProtectedRoute>
     ),
   },
@@ -126,7 +141,7 @@ export const adminRoutes: RouteObject[] = [
     path: '/invitations',
     element: (
       <ProtectedRoute requiredRole="admin">
-        <Invitations />
+        {LazyWrapper(Invitations)}
       </ProtectedRoute>
     ),
   },
@@ -134,7 +149,7 @@ export const adminRoutes: RouteObject[] = [
     path: '/agents',
     element: (
       <ProtectedRoute requiredRole="admin">
-        <Agents />
+        {LazyWrapper(Agents)}
       </ProtectedRoute>
     ),
   },
@@ -142,7 +157,7 @@ export const adminRoutes: RouteObject[] = [
     path: '/agreements',
     element: (
       <ProtectedRoute requiredRole="admin">
-        <Agreements />
+        {LazyWrapper(Agreements)}
       </ProtectedRoute>
     ),
   },
@@ -150,7 +165,7 @@ export const adminRoutes: RouteObject[] = [
     path: '/agreements/:id',
     element: (
       <ProtectedRoute requiredRole="admin">
-        <AgreementDetails />
+        {LazyWrapper(AgreementDetails)}
       </ProtectedRoute>
     ),
   },

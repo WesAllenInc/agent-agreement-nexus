@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useAgreements } from '../hooks/useAgreements';
 import { useAuth } from '../hooks/useAuth';
-import { PdfViewer } from '../components/PdfViewer';
+import PdfViewer from '../components/PdfViewer';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
 import {
@@ -238,7 +238,7 @@ export function Agreements() {
           <Card className="h-[600px]">
             {selectedAgreement ? (
               <PdfViewer
-                url={signedUrl || ''}
+                pdfUrl={signedUrl || ''}
                 onDownload={() => {
                   const agreement = agreements?.find(
                     (a) => a.id === selectedAgreement
