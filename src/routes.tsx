@@ -13,6 +13,20 @@ import Auth from './pages/auth/Auth';
 import Index from './pages/Index';
 import { TestAgreementUpload } from './pages/TestAgreementUpload';
 import { ProtectedRoute } from './components/ProtectedRoute';
+// Import pages we've created
+import Profile from './pages/agent/Profile';
+// Use dynamic imports to resolve TypeScript errors
+const Help = React.lazy(() => import('./pages/Help.tsx'));
+const Templates = React.lazy(() => import('./pages/admin/Templates.tsx'));
+const AdvancedSearch = React.lazy(() => import('./pages/AdvancedSearch.tsx'));
+import React, { Suspense } from 'react';
+
+// Wrapper component for lazy-loaded components
+const LazyWrapper = (Component: React.ComponentType) => (
+  <Suspense fallback={<div>Loading...</div>}>
+    <Component />
+  </Suspense>
+);
 
 // Public routes (no authentication required)
 export const publicRoutes: RouteObject[] = [
@@ -23,6 +37,10 @@ export const publicRoutes: RouteObject[] = [
   {
     path: '/invitation/accept',
     element: <AcceptInvitation />,
+  },
+  {
+    path: '/help',
+    element: LazyWrapper(Help),
   },
 ];
 
@@ -57,6 +75,22 @@ export const protectedRoutes: RouteObject[] = [
     element: (
       <ProtectedRoute>
         <AgentDocuments />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/agent/profile',
+    element: (
+      <ProtectedRoute>
+        <Profile />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/advanced-search',
+    element: (
+      <ProtectedRoute>
+        {LazyWrapper(AdvancedSearch)}
       </ProtectedRoute>
     ),
   },
@@ -120,5 +154,12 @@ export const adminRoutes: RouteObject[] = [
       </ProtectedRoute>
     ),
   },
+  {
+    path: '/templates',
+    element: (
+      <ProtectedRoute requiredRole="admin">
+        {LazyWrapper(Templates)}
+      </ProtectedRoute>
+    ),
+  },
 ];
-

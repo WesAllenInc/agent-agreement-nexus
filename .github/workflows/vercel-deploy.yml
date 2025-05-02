@@ -68,13 +68,13 @@ jobs:
         run: vercel --token ${VERCEL_TOKEN} --prod --yes
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+          VERCEL_ORG_ID: "9PO41YM0RiLQFgmtbifMV7pi"
+          VERCEL_PROJECT_ID: "prj_23mwwlPUNggifWktG7GzvcWHxV74"
       
       - name: Deploy to Vercel (Preview)
         if: github.event_name == 'pull_request'
         run: vercel --token ${VERCEL_TOKEN} --yes
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+          VERCEL_ORG_ID: "9PO41YM0RiLQFgmtbifMV7pi"
+          VERCEL_PROJECT_ID: "prj_23mwwlPUNggifWktG7GzvcWHxV74"
