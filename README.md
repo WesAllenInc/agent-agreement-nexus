@@ -85,83 +85,28 @@ The application uses these key tables in Supabase:
 
 ## Performance Optimizations
 
-- **Code Splitting**: Implemented manual chunks configuration in Vite for optimal loading (vendor, UI, charts, forms)
-- **Lazy Loading**: All routes now use React.lazy with improved loading skeletons
+- **Code Splitting**: Manual chunks configuration in Vite for optimal loading
 - **Component Memoization**: React.memo and useMemo for performance-critical components
 - **Callback Optimization**: useCallback for stable function references
-- **Bundle Size Reduction**: Reduced main bundle size by 50.2% (from 616.37 kB to 307.05 kB)
-- **Tree Shaking**: Added sideEffects: false to package.json for better dead code elimination
-- **ESM Support**: Added type: module to package.json for modern JavaScript module support
-- **Build Optimization**: Optimized Vite configuration for production builds
+- **Build Optimization**: esbuild minification and CSS optimization
 - **Conditional Logging**: Development-only console logs
 
 ## Deployment
 
-The application is deployed on Vercel with the following configuration:
+The application is configured for deployment on Netlify:
 
-### Deployment Branch
-- Production branch: `main`
-- Preview deployments: All pull requests
+```bash
+# Netlify configuration (netlify.toml)
+[build]
+  command = "npm ci && npm run build"
+  publish = "dist"
+  base = "/"
 
-### Environment Variables
-Required environment variables in Vercel:
-- `VITE_SUPABASE_URL`: Your Supabase project URL
-- `VITE_SUPABASE_ANON_KEY`: Your Supabase anonymous key
-- `SUPABASE_SERVICE_KEY`: Service key for server-side operations (Production/Preview only)
-- `AUTH_SECRET`: Secret for authentication (Production/Preview only)
-- `API_URL`: Base URL for API endpoints
-
-### GitHub Actions Integration
-Deployment is automated via GitHub Actions workflow:
-
-```yaml
-# .github/workflows/vercel-deploy.yml
-name: Deploy to Vercel with Context7 Documentation
-
-on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
-
-jobs:
-  document:
-    # Documentation generation with Context7
-    # ...
-
-  deploy:
-    # Vercel deployment using GitHub Actions
-    runs-on: ubuntu-latest
-    needs: document
-    steps:
-      - uses: actions/checkout@v3
-      - uses: vercel/actions/cli@master
-        with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }}
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-          vercel-args: ${{ github.event_name == 'push' && '--prod' || '' }}
-```
-
-### Build Settings
-- Build Command: `npm run build`
-- Output Directory: `dist`
-- Install Command: `npm install`
-- Node.js Version: 18.x (LTS)
-
-### Vercel Configuration
-```json
-{
-  "version": 2,
-  "buildCommand": "npm run build",
-  "outputDirectory": "dist",
-  "framework": "vite",
-  "routes": [
-    { "src": "^/assets/(.*)", "dest": "/assets/$1" },
-    { "src": "^/(.*)\\.(js|css|ico|png|jpg|jpeg|svg|webp|json|txt|woff|woff2|ttf|otf)", "dest": "/$1.$2" },
-    { "src": ".*", "dest": "/index.html" }
-  ]
-}
+[build.environment]
+  NODE_VERSION = "18.17.0"
+  NPM_FLAGS = "--no-optional --no-audit"
+  NETLIFY_USE_YARN = "false"
+  CI = "true"
 ```
 
 ## Development

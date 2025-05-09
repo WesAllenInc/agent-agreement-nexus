@@ -33,11 +33,3 @@ dist-ssr
 # Context7
 .context7/
 context7-cache/
-
-*storybook.log
-
-# Backups
-backups/
-*backup*/
-*.bak
-*-20250*

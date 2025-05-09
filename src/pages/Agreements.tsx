@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useAgreements } from '../hooks/useAgreements';
 import { useAuth } from '../hooks/useAuth';
-import PdfViewer from '../components/PdfViewer';
+import { PdfViewer } from '../components/PdfViewer';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
 import {
@@ -13,20 +13,17 @@ import {
   TableRow,
 } from '../components/ui/table';
 import { Input } from '../components/ui/input';
-import { Loader2, Upload, FileCheck } from 'lucide-react';
+import { Loader2, Upload } from 'lucide-react';
 import { format, isWithinInterval, startOfDay, endOfDay } from 'date-fns';
 import { supabase } from '../integrations/supabase/client';
 import { AgreementSearch, AgreementSearchFilters } from '../components/AgreementSearch';
 import { Agreement } from '../types/agreement';
-import { ExecuteAgreement } from '../components/ExecuteAgreement';
-import { Badge } from '../components/ui/badge';
 
 export function Agreements() {
   const { user } = useAuth();
-  const { agreements, isLoading, uploadAgreement, executeAgreement, downloadAgreement } = useAgreements(user?.id);
+  const { agreements, isLoading, uploadAgreement, downloadAgreement } = useAgreements();
   const [selectedAgreement, setSelectedAgreement] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
-  const [signedUrl, setSignedUrl] = useState<string | null>(null);
   const [filters, setFilters] = useState<AgreementSearchFilters>({
     searchTerm: '',
     status: 'all',
@@ -54,18 +51,6 @@ export function Agreements() {
       setUploading(false);
     }
   };
-
-  // Update signed URL when selected agreement changes
-  useEffect(() => {
-    if (selectedAgreement) {
-      const agreement = agreements?.find(a => a.id === selectedAgreement);
-      if (agreement) {
-        getSignedUrl(agreement.file_path).then(url => setSignedUrl(url));
-      }
-    } else {
-      setSignedUrl(null);
-    }
-  }, [selectedAgreement, agreements]);
 
   const filteredAgreements = agreements?.filter((agreement: Agreement) => {
     // Text search
@@ -108,19 +93,6 @@ export function Agreements() {
     } catch (error) {
       console.error('Error getting signed URL:', error);
       return null;
-    }
-  };
-
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case 'active':
-        return <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">Active</Badge>;
-      case 'executed':
-        return <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">Executed</Badge>;
-      case 'archived':
-        return <Badge variant="outline" className="bg-gray-50 text-gray-700 border-gray-200">Archived</Badge>;
-      default:
-        return <Badge variant="outline">{status}</Badge>;
     }
   };
 
@@ -169,7 +141,7 @@ export function Agreements() {
                 <TableRow>
                   <TableHead>File Name</TableHead>
                   <TableHead>Date</TableHead>
-                  <TableHead>Status</TableHead>
+                  <TableHead>Size</TableHead>
                   <TableHead>Actions</TableHead>
                 </TableRow>
               </TableHeader>
@@ -181,7 +153,7 @@ export function Agreements() {
                       {format(new Date(agreement.created_at), 'MMM d, yyyy')}
                     </TableCell>
                     <TableCell>
-                      {getStatusBadge(agreement.status)}
+                      {Math.round(agreement.file_size / 1024)} KB
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2">
@@ -192,27 +164,6 @@ export function Agreements() {
                         >
                           View
                         </Button>
-                        
-                        {agreement.status !== 'executed' && (
-                          <ExecuteAgreement
-                            agreementId={agreement.id}
-                            agreementName={agreement.file_name}
-                            onExecute={(params) => executeAgreement.mutate(params)}
-                            isExecuting={executeAgreement.isPending}
-                          />
-                        )}
-                        
-                        {agreement.status === 'executed' && (
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="flex items-center gap-1"
-                          >
-                            <FileCheck className="h-4 w-4" />
-                            Executed
-                          </Button>
-                        )}
-                        
                         <Button
                           variant="outline"
                           size="sm"
@@ -238,7 +189,9 @@ export function Agreements() {
           <Card className="h-[600px]">
             {selectedAgreement ? (
               <PdfViewer
-                pdfUrl={signedUrl || ''}
+                url={getSignedUrl(
+                  agreements?.find((a) => a.id === selectedAgreement)?.file_path || ''
+                )}
                 onDownload={() => {
                   const agreement = agreements?.find(
                     (a) => a.id === selectedAgreement
@@ -259,3 +212,4 @@ export function Agreements() {
     </div>
   );
 }
+
