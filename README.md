@@ -7,12 +7,13 @@ This portal manages PDF agreements for agents, allowing administrators to manage
 ## Tech Stack
 
 - **Frontend**: React, TypeScript
-- **Styling**: Tailwind CSS, Shadcn UI
+- **Styling**: Tailwind CSS, Shadcn UI (with Polyfront UI design integration)
 - **State Management**: TanStack Query, React Context
 - **Routing**: React Router
 - **Backend**: Supabase (Auth, Database, Storage)
 - **PDF Handling**: Custom PDF viewer with annotation capabilities
 - **Build Tool**: Vite with optimized production configuration
+- **Deployment**: Vercel with GitHub Actions CI/CD
 
 ## Project Structure
 
@@ -22,34 +23,83 @@ This portal manages PDF agreements for agents, allowing administrators to manage
 src/
 ├── components/          # Reusable UI components
 │   ├── admin/           # Admin-specific components
+│   │   ├── UserTable.tsx       # User management table
+│   │   ├── AgreementTable.tsx  # Agreement management table
+│   │   └── Stats.tsx           # Statistics display
 │   ├── ui/              # Base UI components (shadcn)
 │   ├── pdf/             # PDF viewer and related components
-│   └── layout/          # Layout components (Header, Navigation)
+│   │   ├── PdfViewer.tsx       # PDF viewing component
+│   │   ├── PdfAnnotation.tsx   # PDF annotation functionality
+│   │   └── SignatureField.tsx  # Signature capture for PDFs
+│   ├── auth/            # Authentication components
+│   │   ├── LoginForm.tsx       # User login form
+│   │   ├── SignUpForm.tsx      # User registration form
+│   │   └── ResetPassword.tsx   # Password reset functionality
+│   ├── user/            # User-specific components
+│   │   ├── AgreementCard.tsx   # Agreement card display
+│   │   └── ProfileForm.tsx     # Profile editing form
+│   └── layout/          # Layout components
+│       ├── MainLayout.tsx      # Main application layout
+│       ├── Header.tsx          # Application header
+│       ├── Navigation.tsx      # Navigation sidebar
+│       └── Footer.tsx          # Application footer
 ├── contexts/            # React contexts
 ├── hooks/               # Custom React hooks
 │   ├── useAuth.ts       # Authentication hook with AuthProvider
 │   └── useAgreements.ts # Agreements management hook
 ├── integrations/        # External service integrations
 │   └── supabase/        # Supabase client and types
+│       ├── client.ts          # Supabase client configuration
+│       └── types.ts           # TypeScript types for Supabase data
 ├── lib/                 # Utility functions
 │   ├── roles.ts         # User role definitions and utilities
-│   └── utils.ts         # General utility functions
+│   ├── utils.ts         # General utility functions
+│   ├── date-utils.ts    # Date formatting utilities
+│   └── validation.ts    # Form validation utilities
 ├── pages/               # Page components
 │   ├── admin/           # Admin pages
+│   │   ├── Dashboard.tsx      # Admin dashboard
+│   │   ├── Users.tsx          # User management
+│   │   └── Agreements.tsx     # Agreement management
 │   ├── user/            # User pages
+│   │   ├── Dashboard.tsx      # User dashboard
+│   │   ├── Agreements.tsx     # User agreements list
+│   │   ├── ViewAgreement.tsx  # Detailed agreement view
+│   │   └── Profile.tsx        # User profile management
 │   └── auth/            # Authentication pages
 ├── types/               # TypeScript type definitions
+│   ├── index.ts         # Common TypeScript types
+│   └── supabase.ts      # Supabase-specific types
 └── App.tsx              # Main app component with routes
 ```
+
+### Entry Points
+- `src/main.tsx` - Application entry point
+- `src/App.tsx` - Main application component with routing
+
+### Configuration Files
+- `vite.config.ts` - Vite build configuration with optimizations
+- `tailwind.config.js` - Tailwind CSS configuration
+- `tsconfig.json` - TypeScript configuration
 
 ### Database Schema Overview
 
 The application uses these key tables in Supabase:
-- `profiles`: User profiles with role information
-- `user_roles`: User role assignments
-- `agreements`: PDF agreements and metadata
-- `agreement_signatures`: Records of signed agreements
-- `agreement_views`: Tracking when users view agreements
+
+1. **profiles** - User profiles
+   - Fields: id, user_id, full_name, email, created_at, updated_at
+   
+2. **user_roles** - User role assignments
+   - Fields: id, user_id, roles, created_at, updated_at
+   
+3. **agreements** - PDF agreements
+   - Fields: id, title, description, file_path, created_by, created_at, updated_at
+   
+4. **agreement_signatures** - Signature records
+   - Fields: id, agreement_id, user_id, signature_data, signed_at
+   
+5. **agreement_views** - View tracking
+   - Fields: id, agreement_id, user_id, viewed_at
 
 ## Key Components
 
@@ -85,29 +135,33 @@ The application uses these key tables in Supabase:
 
 ## Performance Optimizations
 
-- **Code Splitting**: Manual chunks configuration in Vite for optimal loading
+The project has undergone comprehensive performance optimization:
+
+- **Code Splitting**: Manual chunks in Vite configuration:
+  - vendor: React, React Router
+  - ui: UI component libraries
+  - supabase: Supabase client
 - **Component Memoization**: React.memo and useMemo for performance-critical components
 - **Callback Optimization**: useCallback for stable function references
 - **Build Optimization**: esbuild minification and CSS optimization
 - **Conditional Logging**: Development-only console logs
+- **Asset Compression**: Optimized asset delivery
+- **Tree-Shaking**: Elimination of unused code
 
 ## Deployment
 
-The application is configured for deployment on Netlify:
+The application is deployed to Vercel using GitHub Actions:
 
-```bash
-# Netlify configuration (netlify.toml)
-[build]
-  command = "npm ci && npm run build"
-  publish = "dist"
-  base = "/"
+### GitHub Actions Workflow
 
-[build.environment]
-  NODE_VERSION = "18.17.0"
-  NPM_FLAGS = "--no-optional --no-audit"
-  NETLIFY_USE_YARN = "false"
-  CI = "true"
-```
+The project uses automated deployment to Vercel through GitHub Actions:
+
+- Production deployments trigger on push to the main branch
+- Preview deployments generate for pull requests
+- Environment variables for Vercel are securely passed (VERCEL_TOKEN, VERCEL_ORG_ID, VERCEL_PROJECT_ID)
+- Context7 documentation is generated before deployment
+
+> Note: The workflow file may show context access warnings in IDE static analysis, but these won't affect actual deployment functionality.
 
 ## Development
 
@@ -120,12 +174,22 @@ npm install
 # Start development server
 npm run dev
 
+# Run TypeScript type checking
+npm run lint
+
 # Build for production
 npm run build
+
+# Build for development environment
+npm run build:dev
 
 # Preview production build
 npm run preview
 ```
+
+### Node.js Requirements
+- Node.js ≥ 18.0.0
+- npm ≥ 8.0.0
 
 ## Environment Setup
 
