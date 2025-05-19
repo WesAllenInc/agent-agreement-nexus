@@ -7,7 +7,11 @@ import DashboardStats from "@/components/admin/DashboardStats";
 import AgreementStatusChart from "@/components/admin/AgreementStatusChart";
 import RecentSignupsChart from "@/components/admin/RecentSignupsChart";
 import AgentActivityDashboard from "@/components/admin/AgentActivityDashboard";
+import EnhancedAnalytics from "@/components/admin/EnhancedAnalytics";
+import AgentApprovalPanel from "@/components/admin/AgentApprovalPanel";
+import TrainingCompletionChart from "@/components/admin/TrainingCompletionChart";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Table,
   TableBody,
@@ -67,14 +71,39 @@ export default function AdminDashboard() {
           <h1 className="text-3xl font-bold">Admin Dashboard</h1>
         </div>
 
-        <DashboardStats />
-        
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <AgreementStatusChart />
-          <RecentSignupsChart />
-        </div>
-        
-        <AgentActivityDashboard />
+        <Tabs defaultValue="overview" className="w-full mb-6">
+          <TabsList>
+            <TabsTrigger value="overview">Overview</TabsTrigger>
+            <TabsTrigger value="analytics">Analytics</TabsTrigger>
+            <TabsTrigger value="approvals">Agent Approvals</TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="overview" className="pt-4">
+            <DashboardStats />
+            
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+              <AgreementStatusChart />
+              <RecentSignupsChart />
+            </div>
+            
+            <AgentActivityDashboard />
+          </TabsContent>
+          
+          <TabsContent value="analytics" className="pt-4">
+            <div className="grid grid-cols-1 gap-6">
+              <EnhancedAnalytics />
+              
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <TrainingCompletionChart />
+                <AgreementStatusChart />
+              </div>
+            </div>
+          </TabsContent>
+          
+          <TabsContent value="approvals" className="pt-4">
+            <AgentApprovalPanel />
+          </TabsContent>
+        </Tabs>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <Card>

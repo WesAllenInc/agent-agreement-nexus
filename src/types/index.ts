@@ -1,5 +1,5 @@
 
-export type UserRole = 'admin' | 'sales_agent';
+export type UserRole = 'admin' | 'agent' | 'senior_agent';
 
 export interface User {
   id: string;
@@ -16,6 +16,9 @@ export interface Invitation {
   created_at: string;
   created_by: string;
   status: 'pending' | 'accepted' | 'expired';
+  accepted_at?: string;
+  user_id?: string;
+  metadata?: Record<string, any>;
 }
 
 export interface Agreement {

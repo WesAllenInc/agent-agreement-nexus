@@ -3,16 +3,23 @@ import Dashboard from './pages/admin/Dashboard';
 import Users from './pages/admin/Users';
 import Invitations from './pages/admin/Invitations';
 import Agreements from './pages/admin/Agreements';
+import PendingApproval from './pages/PendingApproval';
 import AgreementDetails from './pages/admin/AgreementDetails';
+import TrainingManager from './pages/admin/TrainingManager';
 import Agreement from './pages/agent/Agreement';
 import AcceptInvitation from './pages/AcceptInvitation';
 import Agents from './pages/admin/Agents';
 import AgentDashboard from './pages/agent/AgentDashboard';
 import AgentDocuments from './pages/agent/AgentDocuments';
+import AgentTraining from './pages/agent/Training';
 import Auth from './pages/auth/Auth';
 import Index from './pages/Index';
 import { TestAgreementUpload } from './pages/TestAgreementUpload';
 import { ProtectedRoute } from './components/ProtectedRoute';
+import SeniorAgentDashboard from './pages/dashboard/sr-agent';
+import AgreementsList from './pages/agreements/index';
+import AgreementView from './pages/agreements/AgreementView';
+import ProfileSettings from './pages/profile';
 
 // Public routes (no authentication required)
 export const publicRoutes: RouteObject[] = [
@@ -23,6 +30,10 @@ export const publicRoutes: RouteObject[] = [
   {
     path: '/invitation/accept',
     element: <AcceptInvitation />,
+  },
+  {
+    path: '/pending-approval',
+    element: <PendingApproval />,
   },
 ];
 
@@ -65,6 +76,58 @@ export const protectedRoutes: RouteObject[] = [
     element: (
       <ProtectedRoute>
         <TestAgreementUpload />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/agreements',
+    element: (
+      <ProtectedRoute>
+        <AgreementsList />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/agreements/:id',
+    element: (
+      <ProtectedRoute>
+        <AgreementView />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/agent/training',
+    element: (
+      <ProtectedRoute>
+        <AgentTraining />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/agent/training/:moduleId/:materialId',
+    element: (
+      <ProtectedRoute>
+        <AgentTraining />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/profile',
+    element: (
+      <ProtectedRoute>
+        <ProfileSettings />
+      </ProtectedRoute>
+    ),
+  },
+];
+
+// Senior agent routes
+export const seniorAgentRoutes: RouteObject[] = [
+  {
+    path: '/dashboard/sr-agent',
+    element: (
+      <ProtectedRoute requiredRole="senior_agent">
+        <SeniorAgentDashboard />
       </ProtectedRoute>
     ),
   },
@@ -117,6 +180,14 @@ export const adminRoutes: RouteObject[] = [
     element: (
       <ProtectedRoute requiredRole="admin">
         <AgreementDetails />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/training',
+    element: (
+      <ProtectedRoute requiredRole="admin">
+        <TrainingManager />
       </ProtectedRoute>
     ),
   },

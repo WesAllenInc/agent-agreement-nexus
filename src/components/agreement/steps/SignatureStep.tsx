@@ -1,29 +1,61 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useWizard } from "../WizardContext";
 import SignatureCanvas from "../SignatureCanvas";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { useNavigate } from "react-router-dom";
+import { useAgreementSignature } from "@/hooks/useAgreementSignature";
+import { useAuth } from "@/hooks/useAuth";
+import { Loader2, AlertCircle, CheckCircle } from "lucide-react";
 
 export default function SignatureStep() {
   const { formData, setFormData, goToPreviousStep, setIsComplete } = useWizard();
   const navigate = useNavigate();
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { user } = useAuth();
   const [signatureDate, setSignatureDate] = useState(
     format(new Date(), "yyyy-MM-dd")
   );
+  const [error, setError] = useState<string | null>(null);
+  // Create a mock agreement ID for demonstration purposes
+  // In a real implementation, this would come from the URL params or context
+  const [agreementId, setAgreementId] = useState<string>(
+    `mock-agreement-${Date.now()}`
+  );
+  
+  // Use the agreement signature hook
+  const { signature, loading, fetchSignature, saveSignature } = useAgreementSignature(agreementId);
+  
+  // Fetch any existing signature when the component loads
+  useEffect(() => {
+    const getExistingSignature = async () => {
+      try {
+        const existingSignature = await fetchSignature();
+        if (existingSignature) {
+          // If we have an existing signature, update the form data
+          toast.info("This agreement has already been signed");
+        }
+      } catch (err) {
+        console.error("Error fetching existing signature:", err);
+      }
+    };
+    
+    if (agreementId) {
+      getExistingSignature();
+    }
+  }, [agreementId, fetchSignature]);
 
   const handleSaveSignature = (signatureData: string) => {
     setFormData({
       ...formData,
       signature_data: signatureData,
     });
-    toast.success("Signature saved");
+    toast.success("Signature saved locally");
   };
 
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -38,27 +70,22 @@ export default function SignatureStep() {
       return;
     }
     
-    setIsSubmitting(true);
+    setError(null);
     
     try {
-      // Mock submission - would be replaced with Supabase call
-      // This is just for demo purposes
-      setTimeout(() => {
+      // Use the saveSignature method from the hook to save to Supabase
+      const result = await saveSignature(formData.signature_data);
+      
+      if (result) {
         setIsComplete(true);
-        setIsSubmitting(false);
         toast.success("Agreement signed successfully!");
         navigate("/agent/confirmation");
-      }, 1500);
-      
-      // In real implementation with Supabase:
-      // 1. Save agreement data to database
-      // 2. Upload signature image to storage
-      // 3. Update agreement status to 'signed'
-      // 4. Navigate to confirmation page
-      
+      } else {
+        throw new Error("Failed to save signature");
+      }
     } catch (error: any) {
-      toast.error("Failed to submit agreement: " + (error.message || "Please try again"));
-      setIsSubmitting(false);
+      console.error("Error submitting signature:", error);
+      setError("Failed to submit agreement: " + (error.message || "Please try again"));
     }
   };
 
@@ -137,27 +164,60 @@ export default function SignatureStep() {
                 By signing below, I acknowledge that I have read and agree to the terms and conditions of the Sales Agent Agreement, Partner Application, and ACH Authorization Form.
               </p>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <Label htmlFor="signature_date">Date</Label>
-                  <Input
-                    id="signature_date"
-                    type="date"
-                    value={signatureDate}
-                    onChange={handleDateChange}
-                    required
-                  />
-                </div>
-                <div className="md:col-span-2">
-                  <Label>Signature</Label>
-                  <div className="mt-2">
-                    <SignatureCanvas
-                      onSave={handleSaveSignature}
-                      existingSignature={formData.signature_data}
+              {error && (
+                <Alert variant="destructive" className="mb-4">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertTitle>Error</AlertTitle>
+                  <AlertDescription>{error}</AlertDescription>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="mt-2" 
+                    onClick={() => setError(null)}
+                  >
+                    Try Again
+                  </Button>
+                </Alert>
+              )}
+              
+              {signature ? (
+                <Alert className="mb-4 bg-green-50">
+                  <CheckCircle className="h-4 w-4 text-green-600" />
+                  <AlertTitle>Agreement Already Signed</AlertTitle>
+                  <AlertDescription>
+                    This agreement was signed on {format(new Date(signature.signed_at), "PPP")}.
+                  </AlertDescription>
+                </Alert>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <Label htmlFor="signature_date">Date</Label>
+                    <Input
+                      id="signature_date"
+                      type="date"
+                      value={signatureDate}
+                      onChange={handleDateChange}
+                      required
+                      disabled={loading}
                     />
                   </div>
+                  <div className="md:col-span-2">
+                    <Label>Signature</Label>
+                    <div className="mt-2">
+                      {loading ? (
+                        <div className="flex items-center justify-center h-40 border rounded-md">
+                          <Loader2 className="h-8 w-8 animate-spin" />
+                        </div>
+                      ) : (
+                        <SignatureCanvas
+                          onSave={handleSaveSignature}
+                          existingSignature={formData.signature_data}
+                        />
+                      )}
+                    </div>
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           </div>
         </CardContent>
@@ -165,9 +225,25 @@ export default function SignatureStep() {
           <Button type="button" variant="outline" onClick={goToPreviousStep}>
             Back
           </Button>
-          <Button type="submit" disabled={isSubmitting || !formData.signature_data}>
-            {isSubmitting ? "Submitting..." : "Submit Agreement"}
-          </Button>
+          {signature ? (
+            <Button type="button" onClick={() => navigate("/agent/confirmation")}>
+              Continue
+            </Button>
+          ) : (
+            <Button 
+              type="submit" 
+              disabled={loading || !formData.signature_data}
+            >
+              {loading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Submitting...
+                </>
+              ) : (
+                "Submit Agreement"
+              )}
+            </Button>
+          )}
         </CardFooter>
       </Card>
     </form>

@@ -1,20 +1,22 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import Layout from './components/layout/Layout';
-import Dashboard from './pages/Dashboard';
+import { useRoutes } from 'react-router-dom';
+import { AuthProvider } from './contexts/AuthContext';
+import { NotificationProvider } from './providers/NotificationProvider';
+import { publicRoutes, protectedRoutes, adminRoutes, seniorAgentRoutes } from './routes';
+import { Toaster } from './components/ui/toaster';
 
 const App: React.FC = () => {
+  // Combine all routes
+  const allRoutes = [...publicRoutes, ...protectedRoutes, ...adminRoutes, ...seniorAgentRoutes];
+  const element = useRoutes(allRoutes);
+  
   return (
-    <Router>
-      <Layout>
-        <Routes>
-          <Route path="/" element={<Navigate to="/dashboard" replace />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          {/* Add other routes as they are implemented */}
-          <Route path="*" element={<Navigate to="/dashboard" replace />} />
-        </Routes>
-      </Layout>
-    </Router>
+    <AuthProvider>
+      <NotificationProvider>
+        {element}
+        <Toaster />
+      </NotificationProvider>
+    </AuthProvider>
   );
 };
 

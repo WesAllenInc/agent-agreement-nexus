@@ -1,5 +1,6 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -13,39 +14,35 @@ import { Badge } from "@/components/ui/badge";
 import { Invitation } from "@/types";
 import { format } from "date-fns";
 
-// Sample data for demonstration
-const sampleInvitations: Invitation[] = [
-  {
-    id: "1",
-    email: "john.doe@example.com",
-    token: "token1",
-    expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-    created_at: new Date().toISOString(),
-    created_by: "admin-user-id",
-    status: "pending",
-  },
-  {
-    id: "2",
-    email: "jane.smith@example.com",
-    token: "token2",
-    expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-    created_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-    created_by: "admin-user-id",
-    status: "accepted",
-  },
-  {
-    id: "3",
-    email: "mark.wilson@example.com",
-    token: "token3",
-    expires_at: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
-    created_at: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(),
-    created_by: "admin-user-id",
-    status: "expired",
-  },
-];
+
 
 export default function InvitationsList() {
-  const [invitations, setInvitations] = useState<Invitation[]>(sampleInvitations);
+  const [invitations, setInvitations] = useState<Invitation[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchInvitations();
+  }, []);
+
+  const fetchInvitations = async () => {
+    try {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from('invitations')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        throw error;
+      }
+
+      setInvitations(data || []);
+    } catch (error: any) {
+      console.error('Error fetching invitations:', error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -60,20 +57,34 @@ export default function InvitationsList() {
     }
   };
 
-  const handleResendInvitation = (invitation: Invitation) => {
-    // Mock resend invitation - would be replaced with actual function call
-    const updatedInvitations = invitations.map((inv) =>
-      inv.id === invitation.id
-        ? {
-            ...inv,
-            expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-            status: "pending" as const,
-          }
-        : inv
-    );
-    
-    setInvitations(updatedInvitations);
+  const handleResendInvitation = async (invitation: Invitation) => {
+    try {
+      // Update the invitation in the database
+      const newExpiryDate = new Date();
+      newExpiryDate.setDate(newExpiryDate.getDate() + 7); // 7 days from now
+
+      const { error } = await supabase
+        .from('invitations')
+        .update({
+          expires_at: newExpiryDate.toISOString(),
+          status: 'pending'
+        })
+        .eq('id', invitation.id);
+
+      if (error) {
+        throw error;
+      }
+
+      // Refresh the invitations list
+      fetchInvitations();
+    } catch (error: any) {
+      console.error('Error resending invitation:', error.message);
+    }
   };
+
+  if (loading) {
+    return <div className="text-center py-4">Loading invitations...</div>;
+  }
 
   return (
     <div className="rounded-md border">

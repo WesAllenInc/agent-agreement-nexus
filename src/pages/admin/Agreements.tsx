@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import MainLayout from "@/components/layout/MainLayout";
 import {
   Table,
@@ -20,105 +20,124 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
 import { useNavigate } from "react-router-dom";
+import { useAgreements } from "@/hooks/useAgreements";
+import { supabase } from "@/integrations/supabase/client";
+import { Agreement } from "@/types/agreement";
+import { Loader2, AlertCircle } from "lucide-react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
-interface AgreementData {
+interface AgentProfile {
   id: string;
-  agent_name: string;
-  business_name: string;
+  first_name: string;
+  last_name: string;
   email: string;
-  status: "draft" | "submitted" | "signed";
-  created_at: string;
-  updated_at: string;
+  business_name?: string;
 }
 
-// Sample data
-const sampleAgreements: AgreementData[] = [
-  {
-    id: "agr-001",
-    agent_name: "John Smith",
-    business_name: "Smith Enterprises LLC",
-    email: "john.smith@example.com",
-    status: "signed",
-    created_at: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString(),
-    updated_at: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(),
-  },
-  {
-    id: "agr-002",
-    agent_name: "Maria Garcia",
-    business_name: "Garcia Solutions",
-    email: "maria.garcia@example.com",
-    status: "signed",
-    created_at: new Date(Date.now() - 12 * 24 * 60 * 60 * 1000).toISOString(),
-    updated_at: new Date(Date.now() - 8 * 24 * 60 * 60 * 1000).toISOString(),
-  },
-  {
-    id: "agr-003",
-    agent_name: "William Chen",
-    business_name: "Chen Consulting",
-    email: "william.chen@example.com",
-    status: "submitted",
-    created_at: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
-    updated_at: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
-  },
-  {
-    id: "agr-004",
-    agent_name: "Samantha Lee",
-    business_name: "Lee Trading Co",
-    email: "samantha.lee@example.com",
-    status: "draft",
-    created_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-    updated_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-  },
-  {
-    id: "agr-005",
-    agent_name: "Robert Johnson",
-    business_name: "Johnson Industries Inc",
-    email: "robert.johnson@example.com",
-    status: "signed",
-    created_at: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
-    updated_at: new Date(Date.now() - 28 * 24 * 60 * 60 * 1000).toISOString(),
-  },
-];
+interface AgreementWithAgent extends Agreement {
+  agent?: AgentProfile;
+}
 
 export default function Agreements() {
-  const [agreements, setAgreements] = useState<AgreementData[]>(sampleAgreements);
+  const { agreements, isLoading } = useAgreements();
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [searchTerm, setSearchTerm] = useState<string>("");
+  const [agreementsWithAgents, setAgreementsWithAgents] = useState<AgreementWithAgent[]>([]);
+  const [isLoadingProfiles, setIsLoadingProfiles] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  const filteredAgreements = agreements.filter((agreement) => {
+  // Fetch agent profiles for each agreement
+  useEffect(() => {
+    const fetchAgentProfiles = async () => {
+      if (!agreements || agreements.length === 0) return;
+      
+      setIsLoadingProfiles(true);
+      setError(null);
+      
+      try {
+        // Get unique user IDs from agreements
+        const userIds = [...new Set(agreements.map(a => a.user_id))];
+        
+        // Fetch profiles for these users
+        const { data: profiles, error } = await supabase
+          .from('profiles')
+          .select('id, first_name, last_name, email, business_name')
+          .in('id', userIds);
+        
+        if (error) throw error;
+        
+        // Create a map of user_id to profile for quick lookup
+        const profileMap = new Map<string, AgentProfile>();
+        profiles?.forEach(profile => profileMap.set(profile.id, profile));
+        
+        // Combine agreements with agent profiles
+        const enrichedAgreements = agreements.map(agreement => ({
+          ...agreement,
+          agent: profileMap.get(agreement.user_id)
+        }));
+        
+        setAgreementsWithAgents(enrichedAgreements);
+      } catch (err) {
+        console.error('Error fetching agent profiles:', err);
+        setError('Failed to load agent information. Please try again.');
+      } finally {
+        setIsLoadingProfiles(false);
+      }
+    };
+    
+    fetchAgentProfiles();
+  }, [agreements]);
+
+  const filteredAgreements = agreementsWithAgents.filter((agreement) => {
     const matchesStatus = statusFilter === "all" || agreement.status === statusFilter;
-    const matchesSearch =
-      agreement.agent_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      agreement.business_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      agreement.email.toLowerCase().includes(searchTerm.toLowerCase());
+    const agentName = agreement.agent ? 
+      `${agreement.agent.first_name} ${agreement.agent.last_name}`.toLowerCase() : "";
+    const agentEmail = agreement.agent?.email?.toLowerCase() || "";
+    const businessName = agreement.agent?.business_name?.toLowerCase() || "";
+    const fileName = agreement.file_name.toLowerCase();
+    
+    const matchesSearch = searchTerm === "" || 
+      agentName.includes(searchTerm.toLowerCase()) ||
+      agentEmail.includes(searchTerm.toLowerCase()) ||
+      businessName.includes(searchTerm.toLowerCase()) ||
+      fileName.includes(searchTerm.toLowerCase());
+      
     return matchesStatus && matchesSearch;
   });
 
   const getStatusBadge = (status: string) => {
     switch (status) {
-      case "draft":
+      case "active":
         return (
-          <Badge className="bg-yellow-100 text-yellow-800 border-yellow-200">
-            Draft
+          <Badge className="bg-green-100 text-green-800 border-green-200">
+            Active
           </Badge>
         );
-      case "submitted":
+      case "pending":
         return (
-          <Badge className="bg-blue-100 text-blue-800 border-blue-200">
-            Submitted
+          <Badge className="bg-yellow-100 text-yellow-800 border-yellow-200">
+            Pending
           </Badge>
         );
       case "signed":
         return (
-          <Badge className="bg-green-100 text-green-800 border-green-200">
+          <Badge className="bg-blue-100 text-blue-800 border-blue-200">
             Signed
           </Badge>
         );
+      case "archived":
+        return (
+          <Badge className="bg-gray-100 text-gray-800 border-gray-200">
+            Archived
+          </Badge>
+        );
       default:
-        return <Badge>Unknown</Badge>;
+        return <Badge>{status || "Unknown"}</Badge>;
     }
   };
+
+  const isLoaderVisible = isLoading || isLoadingProfiles;
 
   return (
     <MainLayout isAdmin>
@@ -128,6 +147,14 @@ export default function Agreements() {
           {/* Add agreement button would go here in a real app */}
         </div>
 
+        {error && (
+          <Alert variant="destructive">
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle>Error</AlertTitle>
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        )}
+
         <div className="flex flex-col sm:flex-row gap-4">
           <div className="w-full sm:w-64">
             <Select value={statusFilter} onValueChange={setStatusFilter}>
@@ -136,15 +163,16 @@ export default function Agreements() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Status</SelectItem>
-                <SelectItem value="draft">Draft</SelectItem>
-                <SelectItem value="submitted">Submitted</SelectItem>
+                <SelectItem value="active">Active</SelectItem>
+                <SelectItem value="pending">Pending</SelectItem>
                 <SelectItem value="signed">Signed</SelectItem>
+                <SelectItem value="archived">Archived</SelectItem>
               </SelectContent>
             </Select>
           </div>
           <div className="flex-1">
             <Input
-              placeholder="Search by name, business, or email"
+              placeholder="Search by agent name, email, or file name"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -155,18 +183,26 @@ export default function Agreements() {
           <Table>
             <TableHeader>
               <TableRow>
+                <TableHead>Title</TableHead>
                 <TableHead>Agent</TableHead>
-                <TableHead>Business Name</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Created</TableHead>
-                <TableHead>Last Updated</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredAgreements.length === 0 ? (
+              {isLoaderVisible ? (
                 <TableRow>
-                  <TableCell colSpan={6} className="text-center py-8">
+                  <TableCell colSpan={5} className="text-center py-8">
+                    <div className="flex justify-center items-center">
+                      <Loader2 className="h-6 w-6 animate-spin mr-2" />
+                      <span>Loading agreements...</span>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ) : filteredAgreements.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={5} className="text-center py-8">
                     No agreements found matching your filters.
                   </TableCell>
                 </TableRow>
@@ -174,15 +210,31 @@ export default function Agreements() {
                 filteredAgreements.map((agreement) => (
                   <TableRow key={agreement.id}>
                     <TableCell>
-                      <div>
-                        <div className="font-medium">{agreement.agent_name}</div>
-                        <div className="text-sm text-gray-500">{agreement.email}</div>
+                      <div className="font-medium">{agreement.file_name}</div>
+                      <div className="text-sm text-muted-foreground">
+                        {(agreement.file_size / 1024).toFixed(1)} KB
                       </div>
                     </TableCell>
-                    <TableCell>{agreement.business_name}</TableCell>
+                    <TableCell>
+                      {agreement.agent ? (
+                        <div>
+                          <div className="font-medium">
+                            {agreement.agent.first_name} {agreement.agent.last_name}
+                          </div>
+                          <div className="text-sm text-muted-foreground">
+                            {agreement.agent.email}
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="text-muted-foreground italic">
+                          Unknown Agent
+                        </div>
+                      )}
+                    </TableCell>
                     <TableCell>{getStatusBadge(agreement.status)}</TableCell>
-                    <TableCell>{format(new Date(agreement.created_at), "MMM d, yyyy")}</TableCell>
-                    <TableCell>{format(new Date(agreement.updated_at), "MMM d, yyyy")}</TableCell>
+                    <TableCell>
+                      {format(new Date(agreement.created_at), "MMM d, yyyy")}
+                    </TableCell>
                     <TableCell className="text-right">
                       <Button
                         variant="outline"

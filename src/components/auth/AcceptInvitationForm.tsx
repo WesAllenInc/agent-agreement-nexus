@@ -5,7 +5,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { createUserFromInvitation } from "@/api/mockEdgeFunctions";
-import { Loader2, Eye, EyeOff, Lock, Mail } from "lucide-react";
+import { Loader2, Eye, EyeOff, Lock, Mail, Percent } from "lucide-react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { useFormValidation } from "@/hooks/useFormValidation";
 import PasswordStrengthMeter from "./PasswordStrengthMeter";
 import { motion, AnimatePresence } from "framer-motion";
@@ -13,9 +15,11 @@ import { motion, AnimatePresence } from "framer-motion";
 interface AcceptInvitationFormProps {
   token: string;
   email: string;
+  residualPercentage?: number;
+  metadata?: Record<string, any>;
 }
 
-export default function AcceptInvitationForm({ token, email }: AcceptInvitationFormProps) {
+export default function AcceptInvitationForm({ token, email, residualPercentage = 0, metadata = {} }: AcceptInvitationFormProps) {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -98,7 +102,41 @@ export default function AcceptInvitationForm({ token, email }: AcceptInvitationF
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <div className="space-y-6 w-[400px]">
+      {/* Invitation Details Card */}
+      <Card className="border-brand-100 shadow-sm">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-lg font-medium">Invitation Details</CardTitle>
+          <CardDescription>You've been invited with the following terms</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <Percent className="h-4 w-4 text-brand-600" />
+                <span className="text-sm font-medium">Residual Percentage</span>
+              </div>
+              <Badge variant="outline" className="bg-brand-50 text-brand-700 border-brand-200">
+                {residualPercentage}%
+              </Badge>
+            </div>
+            
+            {metadata?.role && (
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <Mail className="h-4 w-4 text-brand-600" />
+                  <span className="text-sm font-medium">Role</span>
+                </div>
+                <Badge variant="outline" className="bg-gray-50 text-gray-700 border-gray-200">
+                  {metadata.role}
+                </Badge>
+              </div>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+      
+      <form onSubmit={handleSubmit} className="space-y-6">
       <div className="space-y-2">
         <Label htmlFor="email">Email</Label>
         <div className="relative">
@@ -200,7 +238,8 @@ export default function AcceptInvitationForm({ token, email }: AcceptInvitationF
           "Create Account"
         )}
       </Button>
-    </form>
+      </form>
+    </div>
   );
 }
 

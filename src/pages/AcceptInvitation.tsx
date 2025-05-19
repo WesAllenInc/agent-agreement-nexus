@@ -13,6 +13,10 @@ export default function AcceptInvitation() {
   const [token, setToken] = useState("");
   const [isValidating, setIsValidating] = useState(true);
   const [isValid, setIsValid] = useState(false);
+  const [invitationData, setInvitationData] = useState<{
+    residualPercentage?: number;
+    metadata?: Record<string, any>;
+  }>({});
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -35,9 +39,30 @@ export default function AcceptInvitation() {
       try {
         console.log("Debug: Validating token...", { token: tokenParam, email: emailParam });
         
+        // First validate the token
         const { data, error } = await supabase.functions.invoke('validateToken', {
           body: { token: tokenParam, email: emailParam }
         });
+        
+        // If token is valid, fetch the invitation details
+        if (data?.valid && !error) {
+          const { data: invitationData, error: invitationError } = await supabase
+            .from('invitations')
+            .select('residual_percentage, metadata')
+            .eq('token', tokenParam)
+            .eq('email', emailParam)
+            .single();
+            
+          if (!invitationError && invitationData) {
+            setInvitationData({
+              residualPercentage: invitationData.residual_percentage,
+              metadata: invitationData.metadata
+            });
+            console.log("Debug: Invitation data fetched:", invitationData);
+          } else {
+            console.error("Debug: Error fetching invitation details:", invitationError);
+          }
+        }
 
         console.log("Debug: Validation response:", { data, error });
         
@@ -88,7 +113,12 @@ export default function AcceptInvitation() {
       );
     }
 
-    return <AcceptInvitationForm email={email} token={token} />;
+    return <AcceptInvitationForm 
+      email={email} 
+      token={token} 
+      residualPercentage={invitationData.residualPercentage} 
+      metadata={invitationData.metadata} 
+    />;
   };
 
   return (
