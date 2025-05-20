@@ -2,6 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer utilities {
+  .bg-secondary-100 {
+    background-color: #E2E8F0;
+  }
+}
+
 @layer base {
   :root {
     --color-secondary-50: #f8fafc;
