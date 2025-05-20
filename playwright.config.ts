@@ -2,6 +2,9 @@ import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
   testDir: './src/test',
+  testMatch: '**/*.test.{ts,tsx}',
+  testIgnore: ['**/node_modules/**', '**/dist/**'],
+  timeout: 30000,
   fullyParallel: false,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
