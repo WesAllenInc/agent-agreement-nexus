@@ -15,42 +15,47 @@ export default defineConfig(({ mode }) => ({
       gzipSize: true,
       brotliSize: true,
     }),
-    VitePWA({
-      strategies: 'injectManifest',
-      srcDir: 'src',
-      filename: 'service-worker.ts',
-      registerType: 'prompt',
-      includeAssets: ['favicon.ico', 'robots.txt', 'apple-touch-icon.png'],
-      manifest: {
-        name: 'Agent Agreement Nexus',
-        short_name: 'AgentNexus',
-        description: 'Manage agent agreements efficiently',
-        theme_color: '#ffffff',
-        background_color: '#ffffff',
-        display: 'standalone',
-        icons: [
-          {
-            src: 'pwa-192x192.png',
-            sizes: '192x192',
-            type: 'image/png',
-          },
-          {
-            src: 'pwa-512x512.png',
-            sizes: '512x512',
-            type: 'image/png',
-          },
-          {
-            src: 'pwa-512x512.png',
-            sizes: '512x512',
-            type: 'image/png',
-            purpose: 'maskable',
-          },
-        ],
-      },
-    }),
+    // PWA plugin temporarily disabled to isolate build issues
+    // VitePWA({
+    //   strategies: 'generateSW',
+    //   registerType: 'prompt',
+    //   includeAssets: ['favicon.ico', 'robots.txt', 'apple-touch-icon.png'],
+    //   workbox: {
+    //     globPatterns: ['**/*.{js,css,html,ico,png,svg,jpg,jpeg,gif,webp}'],
+    //     navigateFallback: 'index.html',
+    //     navigateFallbackDenylist: [/\/api\//],
+    //   },
+    //   manifest: {
+    //     name: 'Agent Agreement Nexus',
+    //     short_name: 'AgentNexus',
+    //     description: 'Manage agent agreements efficiently',
+    //     theme_color: '#ffffff',
+    //     background_color: '#ffffff',
+    //     display: 'standalone',
+    //     icons: [
+    //       {
+    //         src: 'pwa-192x192.png',
+    //         sizes: '192x192',
+    //         type: 'image/png',
+    //       },
+    //       {
+    //         src: 'pwa-512x512.png',
+    //         sizes: '512x512',
+    //         type: 'image/png',
+    //       },
+    //       {
+    //         src: 'pwa-512x512.png',
+    //         sizes: '512x512',
+    //         type: 'image/png',
+    //         purpose: 'maskable',
+    //       },
+    //     ],
+    //   },
+    // }),
   ].filter(Boolean),  // Filter out false values
   css: {
-    postcss: './postcss.config.js'
+    postcss: './postcss.config.js',
+    devSourcemap: true,
   },
   resolve: {
     alias: {
@@ -68,13 +73,35 @@ export default defineConfig(({ mode }) => ({
     // Optimize chunk size and splitting
     rollupOptions: {
       output: {
-        manualChunks: {
-          // Split vendor chunks
-          'vendor-react': ['react', 'react-dom', 'react-router-dom'],
-          'vendor-ui': ['@/components/ui'],
-          'vendor-utils': ['@/utils', '@/lib'],
-          'vendor-query': ['@tanstack/react-query'],
-          'vendor-supabase': ['@supabase/supabase-js'],
+        manualChunks: (id) => {
+          // Create chunks based on module path patterns
+          if (id.includes('node_modules')) {
+            if (id.includes('react') || id.includes('react-dom') || id.includes('react-router')) {
+              return 'vendor-react';
+            }
+            if (id.includes('@tanstack/react-query')) {
+              return 'vendor-query';
+            }
+            if (id.includes('@supabase/supabase-js')) {
+              return 'vendor-supabase';
+            }
+            if (id.includes('@radix-ui') || id.includes('class-variance-authority') || 
+                id.includes('clsx') || id.includes('tailwind-merge')) {
+              return 'vendor-ui-libs';
+            }
+            // Group remaining node_modules into a common vendor chunk
+            return 'vendor';
+          }
+          
+          // Group application code
+          if (id.includes('/components/ui/')) {
+            return 'app-ui';
+          }
+          if (id.includes('/lib/') || id.includes('/utils/')) {
+            return 'app-utils';
+          }
+          // Let other modules be chunked automatically
+          return null;
         },
       },
     },
