@@ -1,7 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 import { corsHeaders } from '../_shared/cors.ts'
-import { createTransport } from 'https://esm.sh/nodemailer@6.9.1'
+import { Resend } from 'https://esm.sh/resend@1.0.0'
 import { rateLimit } from '../_shared/rateLimit.ts'
 
 console.log("Email Notification Service initialized")
@@ -297,23 +297,36 @@ const logEmailNotification = async (
 
 // Retry mechanism for email sending
 const sendEmailWithRetry = async (
-  transporter: any,
-  mailOptions: any,
+  resend: Resend,
+  emailOptions: {
+    from: string;
+    to: string | string[];
+    subject: string;
+    html: string;
+    text?: string;
+    cc?: string | string[];
+    bcc?: string | string[];
+  },
   maxRetries = 3,
   delay = 1000
-): Promise<boolean> => {
+): Promise<{success: boolean, id?: string, error?: any}> => {
   let retries = 0;
   
   while (retries < maxRetries) {
     try {
-      await transporter.sendMail(mailOptions);
-      return true;
+      const { data, error } = await resend.emails.send(emailOptions);
+      
+      if (error) {
+        throw error;
+      }
+      
+      return { success: true, id: data?.id };
     } catch (error) {
       retries++;
       console.error(`Email send attempt ${retries} failed:`, error);
       
       if (retries >= maxRetries) {
-        throw error;
+        return { success: false, error };
       }
       
       // Wait before retrying
@@ -321,7 +334,7 @@ const sendEmailWithRetry = async (
     }
   }
   
-  return false;
+  return { success: false, error: new Error('Max retries reached') };
 };
 
 serve(async (req) => {
@@ -359,16 +372,19 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
 
-    // Create email transporter
-    const transporter = createTransport({
-      host: Deno.env.get('SMTP_HOST'),
-      port: Number(Deno.env.get('SMTP_PORT')),
-      secure: true,
-      auth: {
-        user: Deno.env.get('SMTP_USER'),
-        pass: Deno.env.get('SMTP_PASS')
-      }
-    });
+    // Initialize Resend with API key
+    const resend = new Resend(Deno.env.get('RESEND_API_KEY') ?? '');
+    
+    // Get company name from settings or use default
+    const { data: settings, error: settingsError } = await supabaseClient
+      .from("settings")
+      .select("company_name")
+      .limit(1)
+      .single();
+    
+    const companyName = settingsError || !settings?.company_name
+      ? "Agent Agreement Nexus"
+      : settings.company_name;
 
     // Get the email template
     const template = emailTemplates[templateType];
@@ -380,8 +396,8 @@ serve(async (req) => {
     const html = template(templateData);
 
     // Prepare email options
-    const mailOptions = {
-      from: `"Ireland Pay" <${Deno.env.get('SMTP_FROM')}>`,
+    const emailOptions = {
+      from: `${companyName} <${Deno.env.get('RESEND_FROM_EMAIL') || 'notifications@agent-agreement-nexus.com'}>`,
       to,
       subject,
       html,
@@ -390,7 +406,11 @@ serve(async (req) => {
     };
 
     // Send email with retry mechanism
-    await sendEmailWithRetry(transporter, mailOptions);
+    const sendResult = await sendEmailWithRetry(resend, emailOptions);
+    
+    if (!sendResult.success) {
+      throw sendResult.error || new Error('Failed to send email');
+    }
 
     // Log successful email
     await logEmailNotification(supabaseClient, templateType, to, 'success');

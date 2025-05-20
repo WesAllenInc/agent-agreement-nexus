@@ -10,10 +10,24 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/componen
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Separator } from '@/components/ui/separator';
 import { format } from 'date-fns';
-import { Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
+import { CheckCircle2 } from 'lucide-react';
 import { toast } from 'sonner';
+import AgreementAttachments from '@/components/agreements/AgreementAttachments';
+import { Loading } from '@/components/ui/loading';
+import { ErrorMessage } from '@/components/ui/error-message';
+import AuthErrorHandler from '@/components/auth/AuthErrorHandler';
 
 export default function AgreementView() {
+  // Show auth errors if any
+  return (
+    <>
+      <AuthErrorHandler />
+      <AgreementViewContent />
+    </>
+  );
+}
+
+function AgreementViewContent() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -63,22 +77,19 @@ export default function AgreementView() {
   };
 
   if (agreementLoading || signatureLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-[70vh]">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-        <span className="ml-2">Loading agreement...</span>
-      </div>
-    );
+    return <Loading text="Loading agreement..." size={32} fullPage />
   }
 
   if (error || !agreement) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[70vh] text-center">
-        <AlertCircle className="h-12 w-12 text-destructive mb-4" />
-        <h2 className="text-2xl font-bold mb-2">Agreement Not Found</h2>
-        <p className="text-muted-foreground mb-6">{error || 'The requested agreement could not be found'}</p>
-        <Button onClick={() => navigate('/dashboard')}>Return to Dashboard</Button>
-      </div>
+      <ErrorMessage
+        title="Agreement Not Found"
+        message={error || 'The requested agreement could not be found'}
+        fullPage
+        action={
+          <Button onClick={() => navigate('/dashboard')}>Return to Dashboard</Button>
+        }
+      />
     );
   }
 
@@ -114,6 +125,7 @@ export default function AgreementView() {
           <TabsTrigger value="document">Document</TabsTrigger>
           <TabsTrigger value="sign" disabled={isSigned}>Sign</TabsTrigger>
           {isSigned && <TabsTrigger value="signature">Signature</TabsTrigger>}
+          <TabsTrigger value="attachments">Attachments</TabsTrigger>
         </TabsList>
 
         <TabsContent value="document" className="min-h-[70vh]">
@@ -188,6 +200,13 @@ export default function AgreementView() {
             </Card>
           </TabsContent>
         )}
+        
+        <TabsContent value="attachments">
+          <AgreementAttachments 
+            agreementId={id || ''} 
+            showUploadControls={isSigned} 
+          />
+        </TabsContent>
       </Tabs>
     </div>
   );

@@ -15,11 +15,11 @@ import { motion, AnimatePresence } from "framer-motion";
 interface AcceptInvitationFormProps {
   token: string;
   email: string;
-  residualPercentage?: number;
+  residualPercent?: number;
   metadata?: Record<string, any>;
 }
 
-export default function AcceptInvitationForm({ token, email, residualPercentage = 0, metadata = {} }: AcceptInvitationFormProps) {
+export default function AcceptInvitationForm({ token, email, residualPercent = 0, metadata = {} }: AcceptInvitationFormProps) {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -117,7 +117,7 @@ export default function AcceptInvitationForm({ token, email, residualPercentage 
                 <span className="text-sm font-medium">Residual Percentage</span>
               </div>
               <Badge variant="outline" className="bg-brand-50 text-brand-700 border-brand-200">
-                {residualPercentage}%
+                {residualPercent}%
               </Badge>
             </div>
             
@@ -185,7 +185,7 @@ export default function AcceptInvitationForm({ token, email, residualPercentage 
             </motion.p>
           )}
         </AnimatePresence>
-        <PasswordStrengthMeter strength={passwordStrength} />
+        <PasswordStrengthMeter score={passwordStrength.score} requirements={passwordStrength.requirements} />
       </div>
       
       <div className="space-y-2">

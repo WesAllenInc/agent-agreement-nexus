@@ -20,24 +20,82 @@ export default function AgreementStatusChart() {
   const { data, isLoading, error } = useQuery({
     queryKey: ['agreement-status-chart', timeFrame],
     queryFn: async () => {
-      // In a real app, we would fetch this data from the database
-      // For now, we'll use mock data
-      const mockData = [
-        { name: "Jan", draft: 4, submitted: 5, signed: 2 },
-        { name: "Feb", draft: 3, submitted: 7, signed: 4 },
-        { name: "Mar", draft: 5, submitted: 4, signed: 8 },
-        { name: "Apr", draft: 6, submitted: 3, signed: 10 },
-        { name: "May", draft: 7, submitted: 7, signed: 12 },
-        { name: "Jun", draft: 8, submitted: 9, signed: 15 },
-        { name: "Jul", draft: 10, submitted: 11, signed: 17 },
-        { name: "Aug", draft: 12, submitted: 8, signed: 19 },
-        { name: "Sep", draft: 11, submitted: 10, signed: 21 },
-        { name: "Oct", draft: 9, submitted: 12, signed: 24 },
-        { name: "Nov", draft: 8, submitted: 14, signed: 26 },
-        { name: "Dec", draft: 7, submitted: 15, signed: 29 }
-      ];
+      // Get current date and calculate date ranges based on timeFrame
+      const now = new Date();
+      const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
       
-      return mockData;
+      // Fetch agreements data
+      const { data: agreementsData, error: agreementsError } = await supabase
+        .from('agreements')
+        .select('id, status, created_at');
+      
+      if (agreementsError) throw agreementsError;
+      
+      // Fetch agreement signatures data
+      const { data: signaturesData, error: signaturesError } = await supabase
+        .from('agreement_signatures')
+        .select('id, agreement_id, signed_at');
+      
+      if (signaturesError) throw signaturesError;
+      
+      // Create a map of agreement IDs to their signature status
+      const signatureMap = new Map();
+      signaturesData?.forEach(signature => {
+        signatureMap.set(signature.agreement_id, signature);
+      });
+      
+      // Process data based on timeFrame
+      let chartData = [];
+      
+      if (timeFrame === 'monthly') {
+        // Create monthly data for the past 12 months
+        chartData = Array.from({ length: 12 }, (_, i) => {
+          const monthIndex = (now.getMonth() - 11 + i + 12) % 12;
+          return { name: months[monthIndex], draft: 0, submitted: 0, signed: 0 };
+        });
+        
+        agreementsData?.forEach(agreement => {
+          const agreementDate = new Date(agreement.created_at);
+          const monthDiff = (now.getMonth() - agreementDate.getMonth() + 12) % 12;
+          
+          if (monthDiff < 12) {
+            const monthIndex = 11 - monthDiff;
+            
+            if (signatureMap.has(agreement.id)) {
+              chartData[monthIndex].signed++;
+            } else if (agreement.status === 'submitted') {
+              chartData[monthIndex].submitted++;
+            } else {
+              chartData[monthIndex].draft++;
+            }
+          }
+        });
+      } else {
+        // Default to last 12 months
+        chartData = Array.from({ length: 12 }, (_, i) => {
+          const monthIndex = (now.getMonth() - 11 + i + 12) % 12;
+          return { name: months[monthIndex], draft: 0, submitted: 0, signed: 0 };
+        });
+        
+        agreementsData?.forEach(agreement => {
+          const agreementDate = new Date(agreement.created_at);
+          const monthDiff = (now.getMonth() - agreementDate.getMonth() + 12) % 12;
+          
+          if (monthDiff < 12) {
+            const monthIndex = 11 - monthDiff;
+            
+            if (signatureMap.has(agreement.id)) {
+              chartData[monthIndex].signed++;
+            } else if (agreement.status === 'submitted') {
+              chartData[monthIndex].submitted++;
+            } else {
+              chartData[monthIndex].draft++;
+            }
+          }
+        });
+      }
+      
+      return chartData;
     }
   });
 

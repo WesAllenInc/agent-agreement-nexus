@@ -6,7 +6,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { AnimatedBackground } from "@/components/ui/animated-background";
 import { motion, AnimatePresence } from "framer-motion";
-import { Loader2 } from "lucide-react";
+import { Loader2, AlertCircle } from "lucide-react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 export default function AcceptInvitation() {
   const [email, setEmail] = useState("");
@@ -14,7 +15,8 @@ export default function AcceptInvitation() {
   const [isValidating, setIsValidating] = useState(true);
   const [isValid, setIsValid] = useState(false);
   const [invitationData, setInvitationData] = useState<{
-    residualPercentage?: number;
+    residualPercent?: number;
+    expiresAt?: string;
     metadata?: Record<string, any>;
   }>({});
   const navigate = useNavigate();
@@ -48,28 +50,24 @@ export default function AcceptInvitation() {
         if (data?.valid && !error) {
           const { data: invitationData, error: invitationError } = await supabase
             .from('invitations')
-            .select('residual_percentage, metadata')
+            .select('residual_percent, expires_at, metadata')
             .eq('token', tokenParam)
             .eq('email', emailParam)
             .single();
             
           if (!invitationError && invitationData) {
             setInvitationData({
-              residualPercentage: invitationData.residual_percentage,
-              metadata: invitationData.metadata
+              residualPercent: invitationData.residual_percent,
+              expiresAt: invitationData.expires_at,
+              metadata: invitationData.metadata || {}
             });
             console.log("Debug: Invitation data fetched:", invitationData);
           } else {
             console.error("Debug: Error fetching invitation details:", invitationError);
+            throw new Error("Could not retrieve invitation details");
           }
-        }
-
-        console.log("Debug: Validation response:", { data, error });
-        
-        if (error || !data?.valid) {
-          toast.error(error?.message || data?.error || "This invitation link has expired or is invalid");
-          setIsValidating(false);
-          return;
+        } else {
+          throw new Error(error?.message || data?.error || "This invitation link has expired or is invalid");
         }
         
         setIsValid(true);
@@ -85,13 +83,26 @@ export default function AcceptInvitation() {
     checkToken();
   }, [location.search, navigate]);
 
+  const formatExpiryDate = (dateString?: string) => {
+    if (!dateString) return "";
+    const date = new Date(dateString);
+    return new Intl.DateTimeFormat('en-US', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: 'numeric',
+    }).format(date);
+  };
+
   const renderContent = () => {
     if (isValidating) {
       return (
-        <Card className="w-[400px] shadow-lg">
+        <Card className="w-[450px] shadow-lg">
           <CardHeader>
             <CardTitle className="text-center">Validating Invitation</CardTitle>
-            <CardDescription className="text-center">Please wait...</CardDescription>
+            <CardDescription className="text-center">Please wait while we verify your invitation...</CardDescription>
           </CardHeader>
           <CardContent className="flex justify-center p-6">
             <Loader2 className="h-8 w-8 animate-spin" />
@@ -102,28 +113,57 @@ export default function AcceptInvitation() {
 
     if (!isValid) {
       return (
-        <Card className="w-[400px] shadow-lg">
+        <Card className="w-[450px] shadow-lg">
           <CardHeader>
-            <CardTitle className="text-center">Invalid Invitation</CardTitle>
+            <CardTitle className="text-center text-red-600">Invalid Invitation</CardTitle>
             <CardDescription className="text-center">
               This invitation link has expired or is invalid. Please request a new invitation.
             </CardDescription>
           </CardHeader>
+          <CardContent>
+            <Alert variant="destructive" className="mt-4">
+              <AlertCircle className="h-4 w-4" />
+              <AlertTitle>Invitation Error</AlertTitle>
+              <AlertDescription>
+                The invitation link you're trying to use is no longer valid. This could be because:
+                <ul className="list-disc pl-5 mt-2 space-y-1">
+                  <li>The invitation has expired</li>
+                  <li>The invitation has already been used</li>
+                  <li>The invitation was canceled</li>
+                </ul>
+              </AlertDescription>
+            </Alert>
+          </CardContent>
         </Card>
       );
     }
 
-    return <AcceptInvitationForm 
-      email={email} 
-      token={token} 
-      residualPercentage={invitationData.residualPercentage} 
-      metadata={invitationData.metadata} 
-    />;
+    return (
+      <>
+        <Card className="w-[450px] shadow-lg mb-4">
+          <CardHeader>
+            <CardTitle className="text-center">Accept Your Invitation</CardTitle>
+            <CardDescription className="text-center">
+              You've been invited to join Agent Agreement Nexus as an agent with a {invitationData.residualPercent}% residual.
+              <p className="mt-2 text-sm text-amber-600">
+                This invitation expires on {formatExpiryDate(invitationData.expiresAt)}
+              </p>
+            </CardDescription>
+          </CardHeader>
+        </Card>
+        <AcceptInvitationForm 
+          email={email} 
+          token={token} 
+          residualPercent={invitationData.residualPercent} 
+          metadata={invitationData.metadata} 
+        />
+      </>
+    );
   };
 
   return (
     <AnimatedBackground>
-      <AnimatePresence mode="wait">
+      <AnimatePresence initial={false} mode="wait">
         <motion.div
           key={isValidating ? 'validating' : isValid ? 'valid' : 'invalid'}
           initial={{ opacity: 0, y: 20 }}

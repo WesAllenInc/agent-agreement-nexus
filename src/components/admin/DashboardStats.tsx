@@ -14,29 +14,52 @@ export default function DashboardStats() {
   const { data: stats, isLoading, error } = useQuery({
     queryKey: ['dashboard-stats'],
     queryFn: async () => {
-      const [agentsResult, agreementsResult, officesResult, invitationsResult] = await Promise.all([
+      // Fetch agents, offices, and invitations data
+      const [agentsResult, officesResult, invitationsResult] = await Promise.all([
         supabase.from('sub_agents').select('count'),
-        supabase.from('executed_agreements').select('count, status'),
         supabase.from('sub_offices').select('count'),
         supabase.from('profiles').select('count').eq('role', 'sales_agent')
       ]);
 
+      // Fetch agreements data
+      const { data: agreementsData, error: agreementsError } = await supabase
+        .from('agreements')
+        .select('id, status');
+      
+      if (agreementsError) throw agreementsError;
+      
+      // Fetch agreement signatures data
+      const { data: signaturesData, error: signaturesError } = await supabase
+        .from('agreement_signatures')
+        .select('id, agreement_id');
+      
+      if (signaturesError) throw signaturesError;
+      
+      // Create a set of signed agreement IDs
+      const signedAgreementIds = new Set(signaturesData?.map(sig => sig.agreement_id) || []);
+      
       // Calculate counts for different agreement statuses
       let pendingCount = 0;
-      let signedCount = 0;
+      let signedCount = signedAgreementIds.size; // Count from signatures table
       let draftCount = 0;
       
-      if (agreementsResult.data && agreementsResult.data.length > 0) {
-        agreementsResult.data.forEach(row => {
-          if (row.status === 'submitted') pendingCount++;
-          else if (row.status === 'signed') signedCount++;
-          else if (row.status === 'draft') draftCount++;
-        });
-      }
+      // Count agreements by status
+      agreementsData?.forEach(agreement => {
+        if (signedAgreementIds.has(agreement.id)) {
+          // Already counted in signedCount
+        } else if (agreement.status === 'submitted') {
+          pendingCount++;
+        } else if (agreement.status === 'draft') {
+          draftCount++;
+        }
+      });
+      
+      // Total agreements count
+      const totalAgreements = agreementsData?.length || 0;
 
       return {
         totalAgents: agentsResult.data?.[0]?.count || 0,
-        totalAgreements: agreementsResult.data?.[0]?.count || 0,
+        totalAgreements: totalAgreements,
         totalOffices: officesResult.data?.[0]?.count || 0,
         pendingInvitations: invitationsResult.data?.[0]?.count || 0,
         submittedAgreements: pendingCount,

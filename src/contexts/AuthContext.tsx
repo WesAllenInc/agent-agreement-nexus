@@ -1,16 +1,19 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/integrations/supabase/client';
 import type { User } from '@supabase/supabase-js';
 import { UserRole, isAdmin as checkIsAdmin, isAgent as checkIsAgent, isSeniorAgent as checkIsSeniorAgent } from '@/lib/roles';
+import { toast } from 'sonner';
 
 interface AuthContextType {
   user: User | null;
   userRoles: UserRole[];
   loading: boolean;
+  error: Error | null;
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
+  resetError: () => void;
   isAdmin: boolean;
   isAgent: boolean;
   isSeniorAgent: boolean;
@@ -24,6 +27,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [userRoles, setUserRoles] = useState<UserRole[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isAgent, setIsAgent] = useState(false);
   const [isSeniorAgent, setIsSeniorAgent] = useState(false);
@@ -31,9 +35,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [userStatus, setUserStatus] = useState<'pending' | 'approved' | 'rejected' | 'review' | null>(null);
   const navigate = useNavigate();
 
+  const resetError = useCallback(() => {
+    setError(null);
+  }, []);
+
   // Use useCallback for functions to prevent unnecessary re-renders
   const fetchUserData = useCallback(async (userId: string) => {
     try {
+      setError(null);
+      setLoading(true);
+      
       if (process.env.NODE_ENV === 'development') {
         console.log('Fetching data for user:', userId);
       }
@@ -47,6 +58,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       if (rolesError && rolesError.code !== 'PGRST116') {
         console.error('Error fetching user roles:', rolesError);
+        throw new Error(`Failed to fetch user roles: ${rolesError.message}`);
       }
 
       const roles = userRolesData?.roles || ['user'];
@@ -66,6 +78,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       if (profileError && profileError.code !== 'PGRST116') {
         console.error('Error fetching user profile:', profileError);
+        throw new Error(`Failed to fetch user profile: ${profileError.message}`);
       }
 
       // Set approval status
@@ -80,31 +93,76 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } catch (error) {
       console.error('Error in fetchUserData:', error);
       setUserRoles(['user']); // Default to user role
+      setError(error instanceof Error ? error : new Error(String(error)));
+      toast.error('Failed to load user data');
     } finally {
       setLoading(false);
     }
   }, [navigate]);
 
   const signIn = useCallback(async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-    if (error) throw error;
+    try {
+      setError(null);
+      setLoading(true);
+      
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      
+      if (error) throw error;
+      
+      toast.success('Signed in successfully');
+    } catch (error) {
+      console.error('Sign in error:', error);
+      setError(error instanceof Error ? error : new Error(String(error)));
+      toast.error('Failed to sign in');
+      throw error;
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
   const signUp = useCallback(async (email: string, password: string) => {
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-    });
-    if (error) throw error;
+    try {
+      setError(null);
+      setLoading(true);
+      
+      const { error } = await supabase.auth.signUp({
+        email,
+        password,
+      });
+      
+      if (error) throw error;
+      
+      toast.success('Account created successfully');
+    } catch (error) {
+      console.error('Sign up error:', error);
+      setError(error instanceof Error ? error : new Error(String(error)));
+      toast.error('Failed to create account');
+      throw error;
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
   const signOut = useCallback(async () => {
-    const { error } = await supabase.auth.signOut();
-    if (error) throw error;
-    navigate('/auth');
+    try {
+      setError(null);
+      setLoading(true);
+      
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      
+      navigate('/auth');
+      toast.success('Signed out successfully');
+    } catch (error) {
+      console.error('Sign out error:', error);
+      setError(error instanceof Error ? error : new Error(String(error)));
+      toast.error('Failed to sign out');
+    } finally {
+      setLoading(false);
+    }
   }, [navigate]);
 
   useEffect(() => {
@@ -146,15 +204,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     user,
     userRoles,
     loading,
+    error,
     signIn,
     signUp,
     signOut,
+    resetError,
     isAdmin,
     isAgent,
     isSeniorAgent,
     isApproved,
     userStatus,
-  }), [user, userRoles, loading, signIn, signUp, signOut, isAdmin, isAgent, isSeniorAgent, isApproved, userStatus]);
+  }), [user, userRoles, loading, error, signIn, signUp, signOut, resetError, isAdmin, isAgent, isSeniorAgent, isApproved, userStatus]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

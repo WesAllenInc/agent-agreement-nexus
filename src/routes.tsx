@@ -12,6 +12,7 @@ import Agents from './pages/admin/Agents';
 import AgentDashboard from './pages/agent/AgentDashboard';
 import AgentDocuments from './pages/agent/AgentDocuments';
 import AgentTraining from './pages/agent/Training';
+import BankingInfo from './pages/agent/BankingInfo';
 import Auth from './pages/auth/Auth';
 import Index from './pages/Index';
 import { TestAgreementUpload } from './pages/TestAgreementUpload';
@@ -119,6 +120,14 @@ export const protectedRoutes: RouteObject[] = [
       </ProtectedRoute>
     ),
   },
+  {
+    path: '/agent/banking',
+    element: (
+      <ProtectedRoute>
+        <BankingInfo />
+      </ProtectedRoute>
+    ),
+  },
 ];
 
 // Senior agent routes
@@ -128,6 +137,14 @@ export const seniorAgentRoutes: RouteObject[] = [
     element: (
       <ProtectedRoute requiredRole="senior_agent">
         <SeniorAgentDashboard />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/invitations',
+    element: (
+      <ProtectedRoute requiredRole="senior_agent">
+        <Invitations />
       </ProtectedRoute>
     ),
   },

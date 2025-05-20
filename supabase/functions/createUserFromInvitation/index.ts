@@ -69,7 +69,7 @@ serve(async (req) => {
     // Verify the invitation is valid
     const { data: invitation, error: invitationError } = await supabaseClient
       .from('invitations')
-      .select('*')
+      .select('*, residual_percent')
       .eq('token', sanitizedToken)
       .eq('email', sanitizedEmail)
       .eq('status', 'pending')
@@ -109,16 +109,18 @@ serve(async (req) => {
       throw createUserError
     }
 
-    // Create the user profile with role
+    // Create the user profile with role and residual percentage
     const { error: createProfileError } = await supabaseClient
       .from('profiles')
       .insert({
         id: userData.user.id,
         email: userData.user.email,
-        role: 'sales_agent',
+        role: 'agent', // Using 'agent' role as per the existing system
         first_name: '',
         last_name: '',
-        created_at: new Date().toISOString()
+        residual_percent: invitation.residual_percent,
+        created_at: new Date().toISOString(),
+        status: 'active'
       })
 
     if (createProfileError) {
@@ -175,7 +177,8 @@ serve(async (req) => {
         user: {
           id: userData.user.id,
           email: userData.user.email,
-          role: 'sales_agent'
+          role: 'agent',
+          residualPercent: invitation.residual_percent
         }
       } as CreateUserFromInvitationResponse),
       { headers, status: 200 }

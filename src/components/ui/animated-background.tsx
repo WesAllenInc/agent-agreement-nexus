@@ -1,7 +1,11 @@
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, ReactNode } from 'react';
 
-export const AnimatedBackground = () => {
+interface AnimatedBackgroundProps {
+  children: ReactNode;
+}
+
+export const AnimatedBackground = ({ children }: AnimatedBackgroundProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -74,11 +78,14 @@ export const AnimatedBackground = () => {
   }, []);
 
   return (
-    <canvas
-      ref={canvasRef}
-      className="fixed inset-0 pointer-events-none"
-      style={{ background: 'transparent' }}
-    />
+    <div className="relative min-h-screen flex items-center justify-center">
+      <canvas
+        ref={canvasRef}
+        className="fixed inset-0 pointer-events-none"
+        style={{ background: 'transparent' }}
+      />
+      <div className="relative z-10">{children}</div>
+    </div>
   );
 };
 
