@@ -12,10 +12,15 @@ import {
   Legend,
   ResponsiveContainer
 } from "recharts";
-import { useState } from "react";
+import { useState, useMemo, useCallback } from "react";
 
 export default function AgreementStatusChart() {
   const [timeFrame, setTimeFrame] = useState("monthly");
+  
+  // Memoize the time frame change handler
+  const handleTimeFrameChange = useCallback((newTimeFrame: string) => {
+    setTimeFrame(newTimeFrame);
+  }, []);
   
   const { data, isLoading, error } = useQuery({
     queryKey: ['agreement-status-chart', timeFrame],
@@ -127,45 +132,68 @@ export default function AgreementStatusChart() {
     );
   }
 
+  // Memoize the chart component to prevent unnecessary re-renders
+  const chartComponent = useMemo(() => {
+    if (!data) return null;
+    
+    return (
+      <ResponsiveContainer width="100%" height="100%">
+        <LineChart
+          data={data}
+          margin={{
+            top: 5,
+            right: 30,
+            left: 20,
+            bottom: 5,
+          }}
+        >
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey="name" />
+          <YAxis />
+          <Tooltip />
+          <Legend />
+          <Line
+            type="monotone"
+            dataKey="draft"
+            stroke="#FFC107"
+            activeDot={{ r: 8 }}
+          />
+          <Line 
+            type="monotone" 
+            dataKey="submitted" 
+            stroke="#2196F3" 
+          />
+          <Line 
+            type="monotone" 
+            dataKey="signed" 
+            stroke="#4CAF50" 
+          />
+        </LineChart>
+      </ResponsiveContainer>
+    );
+  }, [data]);
+
   return (
     <Card>
-      <CardHeader>
+      <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle>Agreement Status Trend</CardTitle>
+        <div className="flex space-x-2">
+          <button
+            onClick={() => handleTimeFrameChange("monthly")}
+            className={`px-3 py-1 text-sm rounded-md ${timeFrame === "monthly" ? "bg-primary text-primary-foreground" : "bg-muted"}`}
+          >
+            Monthly
+          </button>
+          <button
+            onClick={() => handleTimeFrameChange("quarterly")}
+            className={`px-3 py-1 text-sm rounded-md ${timeFrame === "quarterly" ? "bg-primary text-primary-foreground" : "bg-muted"}`}
+          >
+            Quarterly
+          </button>
+        </div>
       </CardHeader>
       <CardContent className="h-80">
-        <ResponsiveContainer width="100%" height="100%">
-          <LineChart
-            data={data}
-            margin={{
-              top: 5,
-              right: 30,
-              left: 20,
-              bottom: 5,
-            }}
-          >
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="name" />
-            <YAxis />
-            <Tooltip />
-            <Legend />
-            <Line
-              type="monotone"
-              dataKey="draft"
-              stroke="#FFC107"
-              activeDot={{ r: 8 }}
-            />
-            <Line 
-              type="monotone" 
-              dataKey="submitted" 
-              stroke="#2196F3" 
-            />
-            <Line 
-              type="monotone" 
-              dataKey="signed" 
-              stroke="#4CAF50" 
-            />
-          </LineChart>
-        </ResponsiveContainer>
+        {chartComponent}
       </CardContent>
     </Card>
   );

@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/card";
 import { Users, FileText, Building, MailPlus } from "lucide-react";
 import { format } from "date-fns";
+import { useMemo } from "react";
 
 export default function DashboardStats() {
   const { data: stats, isLoading, error } = useQuery({
@@ -93,55 +94,64 @@ export default function DashboardStats() {
     );
   }
 
+  // Memoize the stats cards to prevent unnecessary re-renders
+  const statsCards = useMemo(() => {
+    if (!stats) return null;
+    
+    const cards = [
+      {
+        title: "Total Agents",
+        value: stats.totalAgents,
+        description: "Sales agents onboarded",
+        icon: <Users className="h-4 w-4 text-muted-foreground" />
+      },
+      {
+        title: "Pending Invitations",
+        value: stats.pendingInvitations,
+        description: "Awaiting acceptance",
+        icon: <MailPlus className="h-4 w-4 text-muted-foreground" />
+      },
+      {
+        title: "Total Offices",
+        value: stats.totalOffices,
+        description: "Registered locations",
+        icon: <Building className="h-4 w-4 text-muted-foreground" />
+      },
+      {
+        title: "Agreements",
+        value: stats.totalAgreements,
+        description: (
+          <div className="flex justify-between text-xs text-muted-foreground mt-1">
+            <span>Signed: {stats.signedAgreements}</span>
+            <span>Pending: {stats.submittedAgreements}</span>
+            <span>Draft: {stats.draftAgreements}</span>
+          </div>
+        ),
+        icon: <FileText className="h-4 w-4 text-muted-foreground" />
+      }
+    ];
+    
+    return cards.map((card, index) => (
+      <Card key={index} className="sm:max-w-full md:max-w-xs">
+        <CardHeader className="flex flex-row items-center justify-between pb-2">
+          <CardTitle className="text-sm font-medium">{card.title}</CardTitle>
+          {card.icon}
+        </CardHeader>
+        <CardContent>
+          <p className="text-2xl font-bold">{card.value}</p>
+          {typeof card.description === 'string' ? (
+            <p className="text-xs text-muted-foreground mt-1">{card.description}</p>
+          ) : (
+            card.description
+          )}
+        </CardContent>
+      </Card>
+    ));
+  }, [stats]);
+
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between pb-2">
-          <CardTitle className="text-sm font-medium">Total Agents</CardTitle>
-          <Users className="h-4 w-4 text-muted-foreground" />
-        </CardHeader>
-        <CardContent>
-          <p className="text-2xl font-bold">{stats?.totalAgents}</p>
-          <p className="text-xs text-muted-foreground mt-1">Sales agents onboarded</p>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between pb-2">
-          <CardTitle className="text-sm font-medium">Pending Invitations</CardTitle>
-          <MailPlus className="h-4 w-4 text-muted-foreground" />
-        </CardHeader>
-        <CardContent>
-          <p className="text-2xl font-bold">{stats?.pendingInvitations}</p>
-          <p className="text-xs text-muted-foreground mt-1">Awaiting acceptance</p>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between pb-2">
-          <CardTitle className="text-sm font-medium">Total Offices</CardTitle>
-          <Building className="h-4 w-4 text-muted-foreground" />
-        </CardHeader>
-        <CardContent>
-          <p className="text-2xl font-bold">{stats?.totalOffices}</p>
-          <p className="text-xs text-muted-foreground mt-1">Registered locations</p>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between pb-2">
-          <CardTitle className="text-sm font-medium">Agreements</CardTitle>
-          <FileText className="h-4 w-4 text-muted-foreground" />
-        </CardHeader>
-        <CardContent>
-          <p className="text-2xl font-bold">{stats?.totalAgreements}</p>
-          <div className="flex justify-between text-xs text-muted-foreground mt-1">
-            <span>Signed: {stats?.signedAgreements}</span>
-            <span>Pending: {stats?.submittedAgreements}</span>
-            <span>Draft: {stats?.draftAgreements}</span>
-          </div>
-        </CardContent>
-      </Card>
+      {statsCards}
     </div>
   );
 }

@@ -1,40 +1,51 @@
 import { RouteObject } from 'react-router-dom';
-import Dashboard from './pages/admin/Dashboard';
-import Users from './pages/admin/Users';
-import Invitations from './pages/admin/Invitations';
-import Agreements from './pages/admin/Agreements';
-import PendingApproval from './pages/PendingApproval';
-import AgreementDetails from './pages/admin/AgreementDetails';
-import TrainingManager from './pages/admin/TrainingManager';
-import Agreement from './pages/agent/Agreement';
-import AcceptInvitation from './pages/AcceptInvitation';
-import Agents from './pages/admin/Agents';
-import AgentDashboard from './pages/agent/AgentDashboard';
-import AgentDocuments from './pages/agent/AgentDocuments';
-import AgentTraining from './pages/agent/Training';
-import BankingInfo from './pages/agent/BankingInfo';
-import Auth from './pages/auth/Auth';
-import Index from './pages/Index';
-import { TestAgreementUpload } from './pages/TestAgreementUpload';
+import { lazy, Suspense } from 'react';
 import { ProtectedRoute } from './components/ProtectedRoute';
-import SeniorAgentDashboard from './pages/dashboard/sr-agent';
-import AgreementsList from './pages/agreements/index';
-import AgreementView from './pages/agreements/AgreementView';
-import ProfileSettings from './pages/profile';
+import { Loading } from './components/ui/loading';
+
+// Lazy load page components for code splitting
+const Dashboard = lazy(() => import('./pages/admin/Dashboard'));
+const Users = lazy(() => import('./pages/admin/Users'));
+const Invitations = lazy(() => import('./pages/admin/Invitations'));
+const Agreements = lazy(() => import('./pages/admin/Agreements'));
+const PendingApproval = lazy(() => import('./pages/PendingApproval'));
+const AgreementDetails = lazy(() => import('./pages/admin/AgreementDetails'));
+const TrainingManager = lazy(() => import('./pages/admin/TrainingManager'));
+const Agreement = lazy(() => import('./pages/agent/Agreement'));
+const AcceptInvitation = lazy(() => import('./pages/AcceptInvitation'));
+const Agents = lazy(() => import('./pages/admin/Agents'));
+const AgentDashboard = lazy(() => import('./pages/agent/AgentDashboard'));
+const AgentDocuments = lazy(() => import('./pages/agent/AgentDocuments'));
+const AgentTraining = lazy(() => import('./pages/agent/Training'));
+const BankingInfo = lazy(() => import('./pages/agent/BankingInfo'));
+const Auth = lazy(() => import('./pages/auth/Auth'));
+const Index = lazy(() => import('./pages/Index'));
+const TestAgreementUpload = lazy(() => import('./pages/TestAgreementUpload').then(module => ({ default: module.TestAgreementUpload })));
+const SeniorAgentDashboard = lazy(() => import('./pages/dashboard/sr-agent'));
+const AgreementsList = lazy(() => import('./pages/agreements/index'));
+const AgreementView = lazy(() => import('./pages/agreements/AgreementView'));
+const ProfileSettings = lazy(() => import('./pages/profile'));
+
+// Suspense wrapper component
+const SuspenseWrapper = ({ children }: { children: React.ReactNode }) => (
+  <Suspense fallback={<Loading className="h-screen" />}>
+    {children}
+  </Suspense>
+);
 
 // Public routes (no authentication required)
 export const publicRoutes: RouteObject[] = [
   {
     path: '/auth',
-    element: <Auth />,
+    element: <SuspenseWrapper><Auth /></SuspenseWrapper>,
   },
   {
     path: '/invitation/accept',
-    element: <AcceptInvitation />,
+    element: <SuspenseWrapper><AcceptInvitation /></SuspenseWrapper>,
   },
   {
     path: '/pending-approval',
-    element: <PendingApproval />,
+    element: <SuspenseWrapper><PendingApproval /></SuspenseWrapper>,
   },
 ];
 
@@ -44,7 +55,9 @@ export const protectedRoutes: RouteObject[] = [
     path: '/',
     element: (
       <ProtectedRoute>
-        <Index />
+        <SuspenseWrapper>
+          <Index />
+        </SuspenseWrapper>
       </ProtectedRoute>
     ),
   },
@@ -52,7 +65,9 @@ export const protectedRoutes: RouteObject[] = [
     path: '/agent/agreement',
     element: (
       <ProtectedRoute>
-        <Agreement />
+        <SuspenseWrapper>
+          <Agreement />
+        </SuspenseWrapper>
       </ProtectedRoute>
     ),
   },
@@ -60,7 +75,9 @@ export const protectedRoutes: RouteObject[] = [
     path: '/agent/dashboard',
     element: (
       <ProtectedRoute>
-        <AgentDashboard />
+        <SuspenseWrapper>
+          <AgentDashboard />
+        </SuspenseWrapper>
       </ProtectedRoute>
     ),
   },
@@ -68,7 +85,9 @@ export const protectedRoutes: RouteObject[] = [
     path: '/agent/documents',
     element: (
       <ProtectedRoute>
-        <AgentDocuments />
+        <SuspenseWrapper>
+          <AgentDocuments />
+        </SuspenseWrapper>
       </ProtectedRoute>
     ),
   },
@@ -76,7 +95,9 @@ export const protectedRoutes: RouteObject[] = [
     path: '/test-upload',
     element: (
       <ProtectedRoute>
-        <TestAgreementUpload />
+        <SuspenseWrapper>
+          <TestAgreementUpload />
+        </SuspenseWrapper>
       </ProtectedRoute>
     ),
   },
@@ -84,7 +105,9 @@ export const protectedRoutes: RouteObject[] = [
     path: '/agreements',
     element: (
       <ProtectedRoute>
-        <AgreementsList />
+        <SuspenseWrapper>
+          <AgreementsList />
+        </SuspenseWrapper>
       </ProtectedRoute>
     ),
   },
@@ -92,7 +115,9 @@ export const protectedRoutes: RouteObject[] = [
     path: '/agreements/:id',
     element: (
       <ProtectedRoute>
-        <AgreementView />
+        <SuspenseWrapper>
+          <AgreementView />
+        </SuspenseWrapper>
       </ProtectedRoute>
     ),
   },
@@ -108,7 +133,9 @@ export const protectedRoutes: RouteObject[] = [
     path: '/agent/training/:moduleId/:materialId',
     element: (
       <ProtectedRoute>
-        <AgentTraining />
+        <SuspenseWrapper>
+          <AgentTraining />
+        </SuspenseWrapper>
       </ProtectedRoute>
     ),
   },
@@ -116,7 +143,9 @@ export const protectedRoutes: RouteObject[] = [
     path: '/profile',
     element: (
       <ProtectedRoute>
-        <ProfileSettings />
+        <SuspenseWrapper>
+          <ProfileSettings />
+        </SuspenseWrapper>
       </ProtectedRoute>
     ),
   },
@@ -124,7 +153,9 @@ export const protectedRoutes: RouteObject[] = [
     path: '/agent/banking',
     element: (
       <ProtectedRoute>
-        <BankingInfo />
+        <SuspenseWrapper>
+          <BankingInfo />
+        </SuspenseWrapper>
       </ProtectedRoute>
     ),
   },
@@ -136,7 +167,9 @@ export const seniorAgentRoutes: RouteObject[] = [
     path: '/dashboard/sr-agent',
     element: (
       <ProtectedRoute requiredRole="senior_agent">
-        <SeniorAgentDashboard />
+        <SuspenseWrapper>
+          <SeniorAgentDashboard />
+        </SuspenseWrapper>
       </ProtectedRoute>
     ),
   },
@@ -144,7 +177,9 @@ export const seniorAgentRoutes: RouteObject[] = [
     path: '/invitations',
     element: (
       <ProtectedRoute requiredRole="senior_agent">
-        <Invitations />
+        <SuspenseWrapper>
+          <Invitations />
+        </SuspenseWrapper>
       </ProtectedRoute>
     ),
   },
@@ -156,7 +191,9 @@ export const adminRoutes: RouteObject[] = [
     path: '/dashboard',
     element: (
       <ProtectedRoute requiredRole="admin">
-        <Dashboard />
+        <SuspenseWrapper>
+          <Dashboard />
+        </SuspenseWrapper>
       </ProtectedRoute>
     ),
   },
@@ -164,7 +201,9 @@ export const adminRoutes: RouteObject[] = [
     path: '/users',
     element: (
       <ProtectedRoute requiredRole="admin">
-        <Users />
+        <SuspenseWrapper>
+          <Users />
+        </SuspenseWrapper>
       </ProtectedRoute>
     ),
   },
@@ -172,7 +211,9 @@ export const adminRoutes: RouteObject[] = [
     path: '/invitations',
     element: (
       <ProtectedRoute requiredRole="admin">
-        <Invitations />
+        <SuspenseWrapper>
+          <Invitations />
+        </SuspenseWrapper>
       </ProtectedRoute>
     ),
   },
@@ -180,7 +221,9 @@ export const adminRoutes: RouteObject[] = [
     path: '/agents',
     element: (
       <ProtectedRoute requiredRole="admin">
-        <Agents />
+        <SuspenseWrapper>
+          <Agents />
+        </SuspenseWrapper>
       </ProtectedRoute>
     ),
   },
@@ -188,7 +231,9 @@ export const adminRoutes: RouteObject[] = [
     path: '/agreements',
     element: (
       <ProtectedRoute requiredRole="admin">
-        <Agreements />
+        <SuspenseWrapper>
+          <Agreements />
+        </SuspenseWrapper>
       </ProtectedRoute>
     ),
   },
@@ -196,7 +241,9 @@ export const adminRoutes: RouteObject[] = [
     path: '/agreements/:id',
     element: (
       <ProtectedRoute requiredRole="admin">
-        <AgreementDetails />
+        <SuspenseWrapper>
+          <AgreementDetails />
+        </SuspenseWrapper>
       </ProtectedRoute>
     ),
   },
@@ -204,7 +251,9 @@ export const adminRoutes: RouteObject[] = [
     path: '/training',
     element: (
       <ProtectedRoute requiredRole="admin">
-        <TrainingManager />
+        <SuspenseWrapper>
+          <TrainingManager />
+        </SuspenseWrapper>
       </ProtectedRoute>
     ),
   },
