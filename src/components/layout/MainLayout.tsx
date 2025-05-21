@@ -3,6 +3,7 @@ import Navigation from "./Navigation";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { useAuth } from "@/contexts/AuthContext";
 import { NotificationBadge } from "@/components/notifications/NotificationBadge";
+import { OfflineNotification } from "@/components/ui/offline-notification";
 
 interface MainLayoutProps {
   children: ReactNode;
@@ -26,6 +27,7 @@ export default function MainLayout({ children, isAdmin, isSeniorAgent }: MainLay
         </div>
         {children}
       </main>
+      <OfflineNotification />
     </div>
   );
 }

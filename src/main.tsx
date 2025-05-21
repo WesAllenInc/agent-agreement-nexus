@@ -10,8 +10,7 @@ import './fonts.css'
 import './globals.css'
 import ErrorBoundary from './components/ErrorBoundary'
 import { initializeSentry, captureException, setUser } from './utils/errorTracking'
-import { register as registerServiceWorker } from './serviceWorkerRegistration'
-import { Workbox } from 'workbox-window'
+import { registerServiceWorker } from './utils/pwa-utils'
 import { setupWebVitalsTracking } from './utils/performanceMonitoring'
 
 // Initialize Sentry for error tracking with our enhanced configuration
@@ -123,59 +122,41 @@ createRoot(root).render(<SentryApp />);
 
 // Register service worker for offline capabilities and caching
 if (import.meta.env.PROD && 'serviceWorker' in navigator) {
-  const wb = new Workbox(`${import.meta.env.BASE_URL}service-worker.js`);
-
-  // Add event listeners for service worker lifecycle events
-  wb.addEventListener('installed', event => {
-    console.log('Service worker installed:', event);
+  try {
+    // Register the service worker using our utility
+    const { update } = registerServiceWorker();
+    
+    // Log successful registration
+    console.log('Service worker registered successfully');
     Sentry.addBreadcrumb({
       category: 'service-worker',
-      message: 'Service worker installed',
+      message: 'Service worker registered successfully',
       level: 'info'
     });
-  });
-
-  wb.addEventListener('activated', event => {
-    console.log('Service worker activated:', event);
-    Sentry.addBreadcrumb({
-      category: 'service-worker',
-      message: 'Service worker activated',
-      level: 'info'
+    
+    // Listen for online/offline events to update Sentry breadcrumbs
+    window.addEventListener('online', () => {
+      Sentry.addBreadcrumb({
+        category: 'connectivity',
+        message: 'Application is online',
+        level: 'info'
+      });
     });
-  });
-
-  wb.addEventListener('waiting', event => {
-    console.log('Service worker waiting:', event);
-    // When a new service worker is waiting, show the update notification
-    wb.register().then(registration => {
-      if (registration) {
-        import('./components/ServiceWorkerUpdateNotification').then(({ default: ServiceWorkerUpdateNotification }) => {
-          const root = document.createElement('div');
-          document.body.appendChild(root);
-          createRoot(root).render(<ServiceWorkerUpdateNotification registration={registration} />);
-        });
-      }
+    
+    window.addEventListener('offline', () => {
+      Sentry.addBreadcrumb({
+        category: 'connectivity',
+        message: 'Application is offline',
+        level: 'warning'
+      });
     });
-  });
-
-  wb.addEventListener('redundant', event => {
-    console.log('Service worker redundant:', event);
-    Sentry.addBreadcrumb({
-      category: 'service-worker',
-      message: 'Service worker redundant',
-      level: 'error'
-    });
-  });
-
-  // Register the service worker
-  wb.register().then(registration => {
-    console.log('Service worker registered:', registration);
-  }).catch(error => {
+    
+  } catch (error) {
     console.error('Service worker registration failed:', error);
     Sentry.captureException(error, {
       tags: {
         source: 'service-worker-registration'
       }
     });
-  });
+  }
 }

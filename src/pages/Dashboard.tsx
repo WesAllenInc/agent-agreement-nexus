@@ -6,6 +6,8 @@ import {
   Clock,
   AlertCircle
 } from 'lucide-react';
+import { PWAStatus } from '@/components';
+import { PWADevTools } from '@/components/dev/PWADevTools';
 
 const metrics = [
   {
@@ -55,6 +57,9 @@ const recentActivity = [
 const Dashboard: React.FC = () => {
   return (
     <div className="space-y-6">
+      {/* PWA Status Component */}
+      <PWAStatus />
+      
       <div className="flex items-center justify-between">
         <h1 className="text-h1">Dashboard</h1>
         <button className="btn btn-primary">
@@ -111,6 +116,9 @@ const Dashboard: React.FC = () => {
           ))}
         </div>
       </div>
+      
+      {/* PWA Developer Tools - Only visible in development mode */}
+      <PWADevTools />
     </div>
   );
 };

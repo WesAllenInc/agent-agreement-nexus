@@ -29,3 +29,4 @@ export {
 } from './useTrainingCompletions';
 
 export * from './useTrainingMaterials';
+export * from './usePWA';

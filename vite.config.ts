@@ -15,43 +15,46 @@ export default defineConfig(({ mode }) => ({
       gzipSize: true,
       brotliSize: true,
     }),
-    // PWA plugin temporarily disabled to isolate build issues
-    // VitePWA({
-    //   strategies: 'generateSW',
-    //   registerType: 'prompt',
-    //   includeAssets: ['favicon.ico', 'robots.txt', 'apple-touch-icon.png'],
-    //   workbox: {
-    //     globPatterns: ['**/*.{js,css,html,ico,png,svg,jpg,jpeg,gif,webp}'],
-    //     navigateFallback: 'index.html',
-    //     navigateFallbackDenylist: [/\/api\//],
-    //   },
-    //   manifest: {
-    //     name: 'Agent Agreement Nexus',
-    //     short_name: 'AgentNexus',
-    //     description: 'Manage agent agreements efficiently',
-    //     theme_color: '#ffffff',
-    //     background_color: '#ffffff',
-    //     display: 'standalone',
-    //     icons: [
-    //       {
-    //         src: 'pwa-192x192.png',
-    //         sizes: '192x192',
-    //         type: 'image/png',
-    //       },
-    //       {
-    //         src: 'pwa-512x512.png',
-    //         sizes: '512x512',
-    //         type: 'image/png',
-    //       },
-    //       {
-    //         src: 'pwa-512x512.png',
-    //         sizes: '512x512',
-    //         type: 'image/png',
-    //         purpose: 'maskable',
-    //       },
-    //     ],
-    //   },
-    // }),
+    // Re-enabled PWA plugin with injectManifest strategy for better offline support
+    VitePWA({
+      srcDir: 'src',
+      filename: 'service-worker.ts',
+      strategies: 'injectManifest',
+      injectManifest: {
+        swSrc: 'src/service-worker.ts',
+        globPatterns: ['**/*.{js,css,html,png,svg}'],
+      },
+      workbox: {
+        cleanupOutdatedCaches: true,
+        sourcemap: true,
+      },
+      manifest: {
+        name: 'Agent Agreement Nexus',
+        short_name: 'AgentNexus',
+        description: 'Manage agent agreements efficiently',
+        theme_color: '#ffffff',
+        background_color: '#ffffff',
+        display: 'standalone',
+        icons: [
+          {
+            src: 'pwa-192x192.png',
+            sizes: '192x192',
+            type: 'image/png',
+          },
+          {
+            src: 'pwa-512x512.png',
+            sizes: '512x512',
+            type: 'image/png',
+          },
+          {
+            src: 'pwa-512x512.png',
+            sizes: '512x512',
+            type: 'image/png',
+            purpose: 'maskable',
+          },
+        ],
+      },
+    }),
   ].filter(Boolean),  // Filter out false values
   css: {
     postcss: './postcss.config.js',
