@@ -23,6 +23,10 @@ export default defineConfig(({ mode }) => ({
       injectManifest: {
         swSrc: 'src/service-worker.ts',
         globPatterns: ['**/*.{js,css,html,png,svg}'],
+        // Raise maximum cache size to 5 MiB
+        maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
+        // Exclude stats.html from precache
+        globIgnores: ['stats.html']
       },
       workbox: {
         cleanupOutdatedCaches: true,
