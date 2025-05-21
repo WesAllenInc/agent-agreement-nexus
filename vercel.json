@@ -7,9 +7,9 @@
     "silent": true
   },
   "env": {
-    "VITE_SUPABASE_URL": "@vite_supabase_url",
-    "VITE_SUPABASE_ANON_KEY": "@vite_supabase_anon_key",
-    "PUBLIC_APP_URL": "@public_app_url",
-    "NODE_ENV": "production"
+    "vite_supabase_url": "@vite_supabase_url",
+    "vite_supabase_anon_key": "@vite_supabase_anon_key",
+    "public_app_url": "@public_app_url",
+    "node_env": "production"
   }
 }
