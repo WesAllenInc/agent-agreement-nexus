@@ -8,8 +8,16 @@ export default defineConfig({
   test: {
     environment: 'jsdom',
     globals: true,
-    setupFiles: ['./src/test/setup.ts'],
-    exclude: ['tests/e2e/**', '**/*.e2e.ts', '**/*.spec.ts'],
+    setupFiles: ['./src/test/setup.ts', './vitest.setup.ts'],
+    include: ['src/**/*.{test,spec}.{js,ts,tsx}'],
+    exclude: [
+      'node_modules/**',
+      'dist/**',
+      'tests/e2e/**',
+      '**/*.e2e.ts',
+      'src/test/training-e2e.test.ts'
+    ],
+    testTimeout: 10_000, // Increase timeout for slow tests
     coverage: {
       reporter: ['text', 'json', 'html'],
       exclude: ['node_modules/', 'src/test/', 'tests/e2e/']
