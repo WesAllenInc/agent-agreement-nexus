@@ -14,6 +14,15 @@ const agentCredentials = {
   password: process.env.TEST_AGENT_PASSWORD || 'password123',
 };
 
+// Helper function to debug page state
+async function debugPageState(page, message) {
+  if (process.env.DEBUG) {
+    console.log(`DEBUG: ${message}`);
+    console.log(`Current URL: ${page.url()}`);
+    console.log(await page.content());
+  }
+}
+
 const testModule = {
   title: `Test Module ${uuidv4().substring(0, 8)}`,
   description: 'This is a test training module created for E2E testing',
@@ -73,14 +82,27 @@ test.describe('Training Module End-to-End Test', () => {
 
   test('Admin can create a training module and upload material', async ({ page }) => {
     // Login as admin
-    await page.goto('/auth/login', { waitUntil: 'networkidle' });
+    await page.goto('/auth/login');
     
-    // Make sure the email input is there
-    await page.waitForSelector('input[type="email"]', { timeout: 10000 });
+    // Wait for the page to be fully loaded
+    await page.waitForLoadState('networkidle');
     
-    // Now fill it
-    await page.fill('input[type="email"]', adminCredentials.email);
-    await page.fill('input[type="password"]', adminCredentials.password);
+    // Debug: Output the page content to see what's actually rendered
+    if (process.env.DEBUG) {
+      console.log('DEBUG: Login page content');
+      console.log(await page.content());
+    }
+    
+    // Make sure the email input is there - using id selector which is more reliable
+    await page.waitForSelector('input#email', { timeout: 10000 });
+    
+    // Now fill it - using label text is more resilient to UI changes
+    await page.waitForSelector('label:has-text("Email")');
+    await page.fill('input#email', adminCredentials.email);
+    await page.fill('input#password', adminCredentials.password);
+    
+    // Wait for the button to be enabled before clicking
+    await page.waitForSelector('button[type="submit"]:not([disabled])');
     await page.click('button[type="submit"]');
     
     // Wait for navigation to dashboard
@@ -168,8 +190,25 @@ test.describe('Training Module End-to-End Test', () => {
     
     // Login as agent
     await page.goto('/auth/login');
-    await page.fill('input[type="email"]', agentCredentials.email);
-    await page.fill('input[type="password"]', agentCredentials.password);
+    
+    // Wait for the page to be fully loaded
+    await page.waitForLoadState('networkidle');
+    
+    // Debug: Output the page content to see what's actually rendered
+    if (process.env.DEBUG) {
+      console.log('DEBUG: Agent login page content');
+      console.log(await page.content());
+    }
+    
+    // Wait for the email input to be available
+    await page.waitForSelector('input#email', { timeout: 10000 });
+    
+    // Fill the login form
+    await page.fill('input#email', agentCredentials.email);
+    await page.fill('input#password', agentCredentials.password);
+    
+    // Wait for the button to be enabled before clicking
+    await page.waitForSelector('button[type="submit"]:not([disabled])');
     await page.click('button[type="submit"]');
     
     // Wait for navigation to dashboard
