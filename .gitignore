@@ -36,3 +36,4 @@ dist-ssr
 context7-cache/
 
 .vercel
+.env*.local
