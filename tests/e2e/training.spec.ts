@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
-import { supabase } from '../../src/lib/supabase';
+// Import test-specific Supabase client
+import { supabase } from '../utils/test-supabase';
 import { v4 as uuidv4 } from 'uuid';
 
 // Test data
