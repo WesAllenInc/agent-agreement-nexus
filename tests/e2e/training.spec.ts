@@ -73,7 +73,12 @@ test.describe('Training Module End-to-End Test', () => {
 
   test('Admin can create a training module and upload material', async ({ page }) => {
     // Login as admin
-    await page.goto('/auth/login');
+    await page.goto('/auth/login', { waitUntil: 'networkidle' });
+    
+    // Make sure the email input is there
+    await page.waitForSelector('input[type="email"]', { timeout: 10000 });
+    
+    // Now fill it
     await page.fill('input[type="email"]', adminCredentials.email);
     await page.fill('input[type="password"]', adminCredentials.password);
     await page.click('button[type="submit"]');
