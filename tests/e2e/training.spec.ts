@@ -75,6 +75,16 @@ async function cleanupTestData(moduleId: string) {
     .eq('id', moduleId);
 }
 
+// Add a debug test that just pauses for interactive debugging
+test('Debug login page with inspector', async ({ page }) => {
+  test.skip(!process.env.DEBUG_INSPECTOR, 'Only run this test with DEBUG_INSPECTOR=true');
+  
+  await page.goto('/auth/login');
+  await page.waitForLoadState('networkidle');
+  console.log('Opening inspector for debugging. Press "Resume" to continue.');
+  await page.pause(); // This will open the inspector UI
+});
+
 test.describe('Training Module End-to-End Test', () => {
   let moduleId: string;
   let materialId: string;
@@ -87,19 +97,61 @@ test.describe('Training Module End-to-End Test', () => {
     // Wait for the page to be fully loaded
     await page.waitForLoadState('networkidle');
     
-    // Debug: Output the page content to see what's actually rendered
-    if (process.env.DEBUG) {
-      console.log('DEBUG: Login page content');
-      console.log(await page.content());
+    // Always dump HTML to logs for debugging
+    console.log("LOGIN PAGE HTML:\n", await page.content());
+    
+    // Take a screenshot for visual inspection
+    await page.screenshot({ path: 'login-page-admin.png', fullPage: true });
+    
+    // Try multiple selector strategies to find the email input
+    try {
+      // Make sure the email input is there - try different selectors
+      await Promise.any([
+        page.waitForSelector('input#email', { timeout: 5000 }),
+        page.waitForSelector('input[type="email"]', { timeout: 5000 }),
+        page.waitForSelector('input[name="email"]', { timeout: 5000 }),
+        page.waitForSelector('input[placeholder*="@"]', { timeout: 5000 })
+      ]);
+    } catch (error) {
+      console.error('Failed to find email input with any selector strategy');
+      // Take another screenshot at failure point
+      await page.screenshot({ path: 'login-page-admin-failure.png', fullPage: true });
+      throw error;
     }
     
-    // Make sure the email input is there - using id selector which is more reliable
-    await page.waitForSelector('input#email', { timeout: 10000 });
+    // Try to find and use the most appropriate selector for filling
+    try {
+      // Try to use the accessibility-friendly getByLabel method first
+      await page.getByLabel(/email/i).fill(adminCredentials.email);
+    } catch (error) {
+      console.log('Falling back to direct selectors for email field');
+      // Fall back to direct selectors if getByLabel fails
+      if (await page.locator('input#email').count() > 0) {
+        await page.fill('input#email', adminCredentials.email);
+      } else if (await page.locator('input[name="email"]').count() > 0) {
+        await page.fill('input[name="email"]', adminCredentials.email);
+      } else if (await page.locator('input[type="email"]').count() > 0) {
+        await page.fill('input[type="email"]', adminCredentials.email);
+      } else {
+        throw new Error('Could not find email input with any selector');
+      }
+    }
     
-    // Now fill it - using label text is more resilient to UI changes
-    await page.waitForSelector('label:has-text("Email")');
-    await page.fill('input#email', adminCredentials.email);
-    await page.fill('input#password', adminCredentials.password);
+    // Similar approach for password
+    try {
+      await page.getByLabel(/password/i).fill(adminCredentials.password);
+    } catch (error) {
+      console.log('Falling back to direct selectors for password field');
+      if (await page.locator('input#password').count() > 0) {
+        await page.fill('input#password', adminCredentials.password);
+      } else if (await page.locator('input[name="password"]').count() > 0) {
+        await page.fill('input[name="password"]', adminCredentials.password);
+      } else if (await page.locator('input[type="password"]').count() > 0) {
+        await page.fill('input[type="password"]', adminCredentials.password);
+      } else {
+        throw new Error('Could not find password input with any selector');
+      }
+    }
     
     // Wait for the button to be enabled before clicking
     await page.waitForSelector('button[type="submit"]:not([disabled])');
@@ -194,18 +246,61 @@ test.describe('Training Module End-to-End Test', () => {
     // Wait for the page to be fully loaded
     await page.waitForLoadState('networkidle');
     
-    // Debug: Output the page content to see what's actually rendered
-    if (process.env.DEBUG) {
-      console.log('DEBUG: Agent login page content');
-      console.log(await page.content());
+    // Always dump HTML to logs for debugging
+    console.log("AGENT LOGIN PAGE HTML:\n", await page.content());
+    
+    // Take a screenshot for visual inspection
+    await page.screenshot({ path: 'login-page-agent.png', fullPage: true });
+    
+    // Try multiple selector strategies to find the email input
+    try {
+      // Make sure the email input is there - try different selectors
+      await Promise.any([
+        page.waitForSelector('input#email', { timeout: 5000 }),
+        page.waitForSelector('input[type="email"]', { timeout: 5000 }),
+        page.waitForSelector('input[name="email"]', { timeout: 5000 }),
+        page.waitForSelector('input[placeholder*="@"]', { timeout: 5000 })
+      ]);
+    } catch (error) {
+      console.error('Failed to find email input with any selector strategy');
+      // Take another screenshot at failure point
+      await page.screenshot({ path: 'login-page-agent-failure.png', fullPage: true });
+      throw error;
     }
     
-    // Wait for the email input to be available
-    await page.waitForSelector('input#email', { timeout: 10000 });
+    // Try to find and use the most appropriate selector for filling
+    try {
+      // Try to use the accessibility-friendly getByLabel method first
+      await page.getByLabel(/email/i).fill(agentCredentials.email);
+    } catch (error) {
+      console.log('Falling back to direct selectors for email field');
+      // Fall back to direct selectors if getByLabel fails
+      if (await page.locator('input#email').count() > 0) {
+        await page.fill('input#email', agentCredentials.email);
+      } else if (await page.locator('input[name="email"]').count() > 0) {
+        await page.fill('input[name="email"]', agentCredentials.email);
+      } else if (await page.locator('input[type="email"]').count() > 0) {
+        await page.fill('input[type="email"]', agentCredentials.email);
+      } else {
+        throw new Error('Could not find email input with any selector');
+      }
+    }
     
-    // Fill the login form
-    await page.fill('input#email', agentCredentials.email);
-    await page.fill('input#password', agentCredentials.password);
+    // Similar approach for password
+    try {
+      await page.getByLabel(/password/i).fill(agentCredentials.password);
+    } catch (error) {
+      console.log('Falling back to direct selectors for password field');
+      if (await page.locator('input#password').count() > 0) {
+        await page.fill('input#password', agentCredentials.password);
+      } else if (await page.locator('input[name="password"]').count() > 0) {
+        await page.fill('input[name="password"]', agentCredentials.password);
+      } else if (await page.locator('input[type="password"]').count() > 0) {
+        await page.fill('input[type="password"]', agentCredentials.password);
+      } else {
+        throw new Error('Could not find password input with any selector');
+      }
+    }
     
     // Wait for the button to be enabled before clicking
     await page.waitForSelector('button[type="submit"]:not([disabled])');
