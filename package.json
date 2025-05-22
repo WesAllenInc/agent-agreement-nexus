@@ -18,7 +18,7 @@
     "test:e2e:training": "playwright test training.spec.ts",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build -o storybook-static",
-    "chromatic": "chromatic --project-token=$CHROMATIC_PROJECT_TOKEN --storybook-build-dir=storybook-static --skip-storybook-build --exit-zero-on-changes --allow-console-errors",
+    "chromatic": "chromatic --project-token=%CHROMATIC_PROJECT_TOKEN% --storybook-build-dir=storybook-static --skip-storybook-build --exit-zero-on-changes --allow-console-errors",
     "bun:dev": "bun run --bun dev",
     "bun:build": "bun run --bun build",
     "bun:test": "bun test",
