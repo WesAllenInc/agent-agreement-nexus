@@ -29,8 +29,8 @@ jobs:
         
       - name: Publish Storybook to Chromatic
         env:
-          CHROMATIC_TOKEN: ${{ secrets.CHROMATIC_TOKEN }}
-        run: npx chromatic --project-token=$CHROMATIC_TOKEN --exit-zero-on-changes
+          CHROMATIC_PROJECT_TOKEN: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+        run: npm run chromatic
           
       - name: Upload test results
         uses: actions/upload-artifact@v4
