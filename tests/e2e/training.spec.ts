@@ -89,6 +89,7 @@ test.describe('Training Module End-to-End Test', () => {
   let moduleId: string;
   let materialId: string;
   let agentId: string;
+  let completionId: string;
 
   test('Admin can create a training module and upload material', async ({ page }) => {
     // Login as admin
@@ -344,6 +345,108 @@ test.describe('Training Module End-to-End Test', () => {
     expect(completions).toHaveLength(1);
     expect(completions?.[0].status).toBe('completed');
     expect(completions?.[0].completed_at).not.toBeNull();
+    
+    // Store completion ID for later verification
+    if (completions && completions.length > 0) {
+      completionId = completions[0].id;
+    }
+  });
+  
+  test('Admin can view training completion in activity logs', async ({ page }) => {
+    // Skip if completion wasn't created
+    test.skip(!completionId, 'Training completion not created in previous test');
+    
+    // Login as admin
+    await page.goto('/auth/login');
+    await page.waitForLoadState('networkidle');
+    
+    try {
+      await page.getByLabel(/email/i).fill(adminCredentials.email);
+      await page.getByLabel(/password/i).fill(adminCredentials.password);
+    } catch (error) {
+      console.log('Falling back to direct selectors');
+      await page.fill('input[type="email"]', adminCredentials.email);
+      await page.fill('input[type="password"]', adminCredentials.password);
+    }
+    
+    await page.click('button[type="submit"]');
+    await page.waitForURL('**/dashboard');
+    
+    // Navigate to activity logs
+    await page.goto('/activity-logs');
+    await page.waitForSelector('h1:has-text("Activity Logs")');
+    
+    // Wait for logs to load
+    await page.waitForSelector('table');
+    
+    // Filter logs to show only training-related activities
+    await page.click('button:has-text("Entity Type")');
+    await page.click('div[role="option"]:has-text("training")');
+    
+    // Verify the training completion appears in the logs
+    await page.waitForSelector(`tr:has-text("${agentCredentials.email}"):has-text("training")`);
+    
+    // Verify log details
+    const logRow = page.locator(`tr:has-text("${agentCredentials.email}"):has-text("training")`).first();
+    await expect(logRow).toContainText('completed');
+    
+    // Click on the details button to view log details
+    await logRow.locator('button:has-text("View")').click();
+    
+    // Verify the toast appears with details
+    await page.waitForSelector('div[role="status"]:has-text("material_id")'); 
+    
+    // Verify the log contains the material ID
+    const toastContent = await page.locator('div[role="status"]').textContent();
+    expect(toastContent).toContain(materialId);
+  });
+
+  test('Agent can view training progress and certification status', async ({ page }) => {
+    // Skip if completion wasn't created
+    test.skip(!completionId, 'Training completion not created in previous test');
+    
+    // Login as agent
+    await page.goto('/auth/login');
+    await page.waitForLoadState('networkidle');
+    
+    try {
+      await page.getByLabel(/email/i).fill(agentCredentials.email);
+      await page.getByLabel(/password/i).fill(agentCredentials.password);
+    } catch (error) {
+      console.log('Falling back to direct selectors');
+      await page.fill('input[type="email"]', agentCredentials.email);
+      await page.fill('input[type="password"]', agentCredentials.password);
+    }
+    
+    await page.click('button[type="submit"]');
+    await page.waitForURL('**/dashboard');
+    
+    // Navigate to dashboard where TrainingProgress component should be visible
+    await page.goto('/dashboard');
+    
+    // Wait for the TrainingProgress component to load
+    await page.waitForSelector('h3:has-text("Training Progress")');
+    
+    // Verify the training module appears in the progress section
+    await page.waitForSelector(`div:has-text("${testModule.title}")`);
+    
+    // Verify completion status is shown
+    const progressElement = page.locator(`div:has-text("${testModule.title}")`).first();
+    await expect(progressElement).toContainText('Completed');
+    
+    // Check if there's a progress indicator showing 100%
+    const progressBar = progressElement.locator('div[role="progressbar"]');
+    const ariaValueNow = await progressBar.getAttribute('aria-valuenow');
+    expect(ariaValueNow).toBe('100');
+    
+    // If there's a certificate generation option, test that too
+    if (await page.locator('button:has-text("Generate Certificate")').count() > 0) {
+      await page.click('button:has-text("Generate Certificate")');
+      await page.waitForSelector('div[role="status"]:has-text("Certificate generated")'); 
+      
+      // Verify certificate is downloadable
+      await expect(page.locator('a:has-text("Download Certificate")')).toBeVisible();
+    }
   });
 
   test.afterAll(async () => {

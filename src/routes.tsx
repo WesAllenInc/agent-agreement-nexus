@@ -25,6 +25,7 @@ const SeniorAgentDashboard = lazy(() => import('./pages/dashboard/sr-agent'));
 const AgreementsList = lazy(() => import('./pages/agreements/index'));
 const AgreementView = lazy(() => import('./pages/agreements/AgreementView'));
 const ProfileSettings = lazy(() => import('./pages/profile'));
+const ActivityLogs = lazy(() => import('./pages/admin/ActivityLogs'));
 
 // Suspense wrapper component
 const SuspenseWrapper = ({ children }: { children: React.ReactNode }) => (
@@ -243,6 +244,16 @@ export const adminRoutes: RouteObject[] = [
       <ProtectedRoute requiredRole="admin">
         <SuspenseWrapper>
           <AgreementDetails />
+        </SuspenseWrapper>
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/activity-logs',
+    element: (
+      <ProtectedRoute requiredRole="admin">
+        <SuspenseWrapper>
+          <ActivityLogs />
         </SuspenseWrapper>
       </ProtectedRoute>
     ),

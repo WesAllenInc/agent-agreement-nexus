@@ -182,11 +182,40 @@ export function useAgreementSignature(agreementId: string) {
     return new Blob([uInt8Array], { type: contentType });
   };
 
-  // Get the signature URL
-  const getSignatureUrl = async (path: string) => {
-    if (!path) return null;
+  // Check if signature exists for this agreement and user
+  const signatureExists = async () => {
+    if (!user) return false;
     
     try {
+      const { data, error } = await supabase
+        .from('agreement_signatures')
+        .select('id')
+        .eq('agreement_id', agreementId)
+        .eq('user_id', user.id)
+        .single();
+      
+      if (error) return false;
+      return !!data;
+    } catch (error: any) {
+      console.error('Error checking signature existence:', error.message);
+      return false;
+    }
+  };
+
+  // Get the signature URL
+  const getSignatureUrl = async (path?: string) => {
+    try {
+      // If no path provided, fetch the signature first
+      if (!path && !signature) {
+        const signatureData = await fetchSignature();
+        if (!signatureData) return null;
+        path = signatureData.signature_path;
+      } else if (!path && signature) {
+        path = signature.signature_path;
+      }
+      
+      if (!path) return null;
+      
       const { data, error } = await supabase.storage
         .from('agreements')
         .createSignedUrl(path, 60 * 60); // 1 hour expiry
@@ -202,9 +231,10 @@ export function useAgreementSignature(agreementId: string) {
 
   return {
     signature,
-    loading,
+    isLoading: loading,
     fetchSignature,
     saveSignature,
-    getSignatureUrl
+    getSignatureUrl,
+    signatureExists
   };
 }
