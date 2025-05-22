@@ -27,12 +27,10 @@ jobs:
       - name: Build Storybook
         run: npm run build-storybook
         
-      - name: Publish to Chromatic
-        uses: chromaui/action@v1
-        with:
-          projectToken: chpt_29d9d3f461ad26f
-          storybookBuildDir: storybook-static
-          exitZeroOnChanges: true # Optional: prevents the workflow from failing on UI changes
+      - name: Publish Storybook to Chromatic
+        env:
+          CHROMATIC_TOKEN: ${{ secrets.CHROMATIC_TOKEN }}
+        run: npx chromatic --project-token=$CHROMATIC_TOKEN --exit-zero-on-changes
           
       - name: Upload test results
         uses: actions/upload-artifact@v4
