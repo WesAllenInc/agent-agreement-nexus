@@ -6,10 +6,10 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "build:dev": "tsc && vite build --mode development",
-    "build:docs": "echo 'Generating documentation...' && npm run build",
+    "build:docs": "echo 'Generating documentation...' && bun run build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "postinstall": "npm run build",
+    "postinstall": "bun run build",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
@@ -18,7 +18,11 @@
     "test:e2e:training": "playwright test training.spec.ts",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
-    "chromatic": "npx chromatic --exit-zero-on-changes --storybook-build-dir=storybook-static"
+    "chromatic": "bunx chromatic --exit-zero-on-changes --storybook-build-dir=storybook-static",
+    "bun:dev": "bun run --bun dev",
+    "bun:build": "bun run --bun build",
+    "bun:test": "bun test",
+    "bun:storybook": "bunx storybook dev -p 6006"
   },
   "engines": {
     "node": ">=18.0.0",
