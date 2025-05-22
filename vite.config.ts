@@ -15,8 +15,9 @@ export default defineConfig(({ mode }) => ({
       gzipSize: true,
       brotliSize: true,
     }),
-    // Re-enabled PWA plugin with injectManifest strategy for better offline support
-    VitePWA({
+    // PWA plugin with injectManifest strategy for better offline support
+    // Disable for Storybook builds
+    process.env.STORYBOOK !== 'true' && VitePWA({
       srcDir: 'src',
       filename: 'service-worker.ts',
       strategies: 'injectManifest',
@@ -59,7 +60,7 @@ export default defineConfig(({ mode }) => ({
         ],
       },
     }),
-  ].filter(Boolean),  // Filter out false values
+  ].filter(Boolean),  // Filter out false values (including disabled PWA plugin for Storybook)
   css: {
     postcss: './postcss.config.js',
     devSourcemap: true,

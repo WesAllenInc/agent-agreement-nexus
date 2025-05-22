@@ -16,13 +16,13 @@
     "test:ui": "vitest --ui",
     "test:e2e": "playwright test",
     "test:e2e:training": "playwright test training.spec.ts",
-    "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build -o storybook-static",
-    "chromatic": "chromatic --project-token=%CHROMATIC_PROJECT_TOKEN% --exit-zero-on-changes --allow-console-errors",
+    "storybook": "cross-env VITE_SUPABASE_URL=$VITE_SUPABASE_URL VITE_SUPABASE_ANON_KEY=$VITE_SUPABASE_ANON_KEY storybook dev -p 6006",
+    "build-storybook": "cross-env VITE_SUPABASE_URL=$VITE_SUPABASE_URL VITE_SUPABASE_ANON_KEY=$VITE_SUPABASE_ANON_KEY storybook build -o storybook-static",
+    "chromatic": "npx chromatic --project-token=$CHROMATIC_PROJECT_TOKEN --storybook-build-dir=storybook-static --exit-zero-on-changes --allow-console-errors --skip-storybook-build",
     "bun:dev": "bun run --bun dev",
     "bun:build": "bun run --bun build",
     "bun:test": "bun test",
-    "bun:storybook": "bunx storybook dev -p 6006"
+    "bun:storybook": "bunx cross-env VITE_SUPABASE_URL=$VITE_SUPABASE_URL VITE_SUPABASE_ANON_KEY=$VITE_SUPABASE_ANON_KEY storybook dev -p 6006"
   },
   "engines": {
     "node": ">=18.0.0",

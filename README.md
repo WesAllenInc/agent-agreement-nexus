@@ -258,6 +258,69 @@ npm run build:dev
 
 # Preview production build
 npm run preview
+
+# Start Storybook development server
+npm run storybook
+
+# Build Storybook static site
+npm run build-storybook
+
+# Publish to Chromatic
+npm run chromatic
+```
+
+## Storybook & Chromatic Integration
+
+The project uses Storybook for component development and Chromatic for visual testing and UI review.
+
+### Storybook Configuration
+
+Storybook is configured in the `.storybook/` directory with the following files:
+
+- `main.jsx` - Main configuration for stories, addons, and Vite settings
+- `preview.jsx` - Global decorators and parameters for all stories
+- `vitest.setup.ts` - Test configuration for Storybook components
+
+### Running Storybook Locally
+
+```bash
+# Start Storybook development server
+npm run storybook
+
+# Build Storybook static site
+npm run build-storybook
+```
+
+Storybook will be available at http://localhost:6006 when running the development server.
+
+### Chromatic Integration
+
+Chromatic is used for visual testing and UI review. It captures snapshots of your Storybook components and allows for visual regression testing.
+
+```bash
+# Publish to Chromatic (requires CHROMATIC_PROJECT_TOKEN)
+npm run chromatic
+```
+
+### CI/CD Integration
+
+The GitHub Actions workflow automatically builds Storybook and publishes to Chromatic on each push to main and pull request:
+
+1. Builds Storybook with proper environment variables
+2. Publishes to Chromatic for visual testing
+3. Provides a link to review UI changes
+
+### Environment Variables for Storybook/Chromatic
+
+These environment variables are required for Storybook and Chromatic:
+
+```bash
+# Supabase credentials (required for components that use Supabase)
+VITE_SUPABASE_URL=your_supabase_project_url
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+
+# Chromatic project token
+CHROMATIC_PROJECT_TOKEN=your_chromatic_project_token
 ```
 
 ### Database Migrations
