@@ -27,7 +27,7 @@ jobs:
       - name: Build Storybook
         run: npm run build-storybook
         
-      - name: Publish Storybook to Chromatic
+      - name: Publish Storybook
         env:
           CHROMATIC_PROJECT_TOKEN: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
         run: npm run chromatic

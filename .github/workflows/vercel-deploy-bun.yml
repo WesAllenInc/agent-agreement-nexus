@@ -26,7 +26,7 @@ jobs:
       - name: Build Storybook
         run: bun run build-storybook
         
-      - name: Publish Storybook to Chromatic
+      - name: Publish Storybook
         env:
           CHROMATIC_PROJECT_TOKEN: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
         run: bunx chromatic --project-token=$CHROMATIC_PROJECT_TOKEN --storybook-build-dir=storybook-static --skip-storybook-build --exit-zero-on-changes --allow-console-errors
