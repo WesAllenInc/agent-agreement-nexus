@@ -300,6 +300,9 @@ Chromatic is used for visual testing and UI review. It captures snapshots of you
 ```bash
 # Publish to Chromatic (requires CHROMATIC_PROJECT_TOKEN)
 npm run chromatic
+
+# Alternative: Use the PowerShell script with the token already set
+./run-chromatic-direct.ps1
 ```
 
 ### CI/CD Integration
@@ -310,6 +313,8 @@ The GitHub Actions workflow automatically builds Storybook and publishes to Chro
 2. Publishes to Chromatic for visual testing
 3. Provides a link to review UI changes
 
+The workflow is defined in `.github/workflows/chromatic.yml`.
+
 ### Environment Variables for Storybook/Chromatic
 
 These environment variables are required for Storybook and Chromatic:
@@ -319,9 +324,20 @@ These environment variables are required for Storybook and Chromatic:
 VITE_SUPABASE_URL=your_supabase_project_url
 VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
 
-# Chromatic project token
-CHROMATIC_PROJECT_TOKEN=your_chromatic_project_token
+# Chromatic project token (current token: chpt_3572d277628e6a4)
+CHROMATIC_PROJECT_TOKEN=chpt_3572d277628e6a4
 ```
+
+### Running Chromatic Manually
+
+There are several ways to run Chromatic:
+
+1. **Using npm script**: `npm run chromatic` (requires CHROMATIC_PROJECT_TOKEN in .env.local)
+2. **Using PowerShell script**: `./run-chromatic-direct.ps1` (token already configured)
+3. **Direct execution**: 
+   ```bash
+   npx chromatic --project-token=chpt_3572d277628e6a4 --storybook-build-dir=storybook-static --exit-zero-on-changes --allow-console-errors
+   ```
 
 ### Database Migrations
 
