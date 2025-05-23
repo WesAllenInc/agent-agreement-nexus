@@ -1,5 +1,6 @@
 import React from 'react';
 import { BrowserRouter } from 'react-router-dom';
+import { fn } from '@storybook/test';
 import '../src/index.css';
 
 // Check for Supabase credentials
@@ -18,7 +19,10 @@ if (typeof window !== 'undefined') {
 /** @type { import('@storybook/react').Preview } */
 const preview = {
   parameters: {
-    actions: { argTypesRegex: "^on[A-Z].*" },
+    actions: { 
+      // Using explicit action assignments with fn instead of argTypesRegex
+      // as recommended for better compatibility with visual testing
+    },
     controls: {
       matchers: {
         color: /(background|color)$/i,

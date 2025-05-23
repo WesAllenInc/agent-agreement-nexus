@@ -1,0 +1,8 @@
+{
+  "$schema": "https://www.chromatic.com/config-file.schema.json",
+  "projectId": "682f555bbf2ec7df24580cf4",
+  "storybookBuildDir": "storybook-static",
+  "exitOnceUploaded": true,
+  "onlyChanged": true,
+  "externals": ["public/**"]
+}

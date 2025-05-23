@@ -14,6 +14,10 @@ export default defineConfig(({ mode }) => ({
       filename: 'dist/stats.html',
       gzipSize: true,
       brotliSize: true,
+      template: 'treemap', // Use treemap template which is more stable
+      sourcemap: false,    // Disable sourcemap to avoid parsing issues
+      projectRoot: path.resolve(__dirname),
+      emitFile: true,
     }),
     // PWA plugin with injectManifest strategy for better offline support
     // Disable for Storybook builds

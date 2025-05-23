@@ -24,11 +24,12 @@ jobs:
       - name: Install dependencies
         run: npm ci
         
+      - name: Build Storybook
+        run: npm run build-storybook
+        
       - name: Publish to Chromatic
         uses: chromaui/action@latest
         with:
           projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
-          storybookBuildDir: storybook-static
-          exitZeroOnChanges: true # Exit with status 0 even if there are UI changes
-          allowConsoleErrors: true # Don't fail on console errors
-          onlyChanged: true # Only test stories affected by changes
+          # Using chromatic.config.json for configuration
+          configFile: chromatic.config.json

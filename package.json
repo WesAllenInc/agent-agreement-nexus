@@ -18,7 +18,7 @@
     "test:e2e:training": "playwright test training.spec.ts",
     "storybook": "dotenv -e .env.local -- storybook dev -p 6006",
     "build-storybook": "dotenv -e .env.local -- storybook build -o storybook-static",
-    "chromatic": "dotenv -e .env.local -- npx chromatic --project-token=$CHROMATIC_PROJECT_TOKEN --storybook-build-dir=storybook-static --exit-zero-on-changes --allow-console-errors --skip-storybook-build",
+    "chromatic": "dotenv -e .env.local -- npx chromatic --project-token=$CHROMATIC_PROJECT_TOKEN",
     "bun:dev": "bun run --bun dev",
     "bun:build": "bun run --bun build",
     "bun:test": "bun test",
