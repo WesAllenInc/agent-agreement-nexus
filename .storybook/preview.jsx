@@ -1,15 +1,19 @@
 import React from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import { fn } from '@storybook/test';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ThemeProvider } from 'next-themes';
+import { Toaster } from 'sonner';
+
+// Import mock data and providers
+import { setupMockSupabase, withMockSupabase } from './mockData';
+
+// Import global styles
 import '../src/index.css';
 
 // Check for Supabase credentials (Vite/Storybook)
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://example.supabase.co';
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'mock-key-for-storybook';
-
-// Log environment variables for debugging
-console.log('VITE_SUPABASE_URL:', supabaseUrl);
-console.log('VITE_SUPABASE_ANON_KEY:', supabaseAnonKey);
 
 // Create mocks for Storybook environment
 if (typeof window !== 'undefined') {
@@ -17,30 +21,20 @@ if (typeof window !== 'undefined') {
   window.SUPABASE_URL = supabaseUrl;
   window.SUPABASE_ANON_KEY = supabaseAnonKey;
   
+  // Mark environment as Storybook for component mocking
+  window.STORYBOOK_ENV = true;
+  
   // Mock for customEqualityTesters
   // This fixes "Cannot read properties of undefined (reading 'customEqualityTesters')"
   window.jasmine = window.jasmine || {};
   window.jasmine.customEqualityTesters = [];
 }
 
-// Mark environment as Storybook for component mocking
-if (typeof window !== 'undefined') {
-  window.STORYBOOK_ENV = true;
-}
-
 /** @type { import('@storybook/react').Preview } */
 const preview = {
   parameters: {
-    actions: { 
-      // Using explicit action assignments with fn instead of argTypesRegex
-      // as recommended for better compatibility with visual testing
-    },
-    controls: {
-      matchers: {
-        color: /(background|color)$/i,
-        date: /Date$/i,
-      },
-    },
+    actions: { argTypesRegex: "^on[A-Z].*" },
+    controls: { expanded: true },
     backgrounds: {
       default: 'light',
       values: [
@@ -85,8 +79,33 @@ const preview = {
       },
     },
   },
-  // Removed BrowserRouter decorator to prevent double Router errors
-  decorators: [],
+  // Decorators for the stories
+  decorators: [
+    (Story) => {
+      // Create a new QueryClient for each story
+      const queryClient = new QueryClient({
+        defaultOptions: {
+          queries: {
+            retry: false,
+            refetchOnWindowFocus: false,
+          },
+        },
+      });
+      
+      return (
+        <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
+          <QueryClientProvider client={queryClient}>
+            <BrowserRouter>
+              <Toaster position="top-right" closeButton richColors />
+              <div className="min-h-screen bg-background">
+                <Story />
+              </div>
+            </BrowserRouter>
+          </QueryClientProvider>
+        </ThemeProvider>
+      );
+    },
+  ],
 };
 
 export default preview;

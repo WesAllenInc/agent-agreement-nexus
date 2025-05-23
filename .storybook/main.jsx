@@ -1,23 +1,38 @@
 /** @type { import('@storybook/react-vite').StorybookConfig } */
 const config = {
-  stories: [
-    '../src/**/*.mdx', 
-    '../src/**/*.stories.@(js|jsx|mjs|ts|tsx)'
-  ],
-  addons: [
-    '@storybook/addon-essentials',
-    '@storybook/addon-links',
-    '@storybook/addon-interactions',
-    '@storybook/addon-viewport',
-  ],
   framework: {
     name: '@storybook/react-vite',
-    options: {},
+    options: {
+      builder: {
+        viteConfigPath: 'vite.config.ts',
+      },
+    },
   },
-  docs: {
-    autodocs: 'tag',
+  typescript: {
+    reactDocgen: 'react-docgen-typescript',
+    reactDocgenTypescriptOptions: {
+      compilerOptions: {
+        allowSyntheticDefaultImports: false,
+        esModuleInterop: false,
+      },
+      propFilter: (prop) => {
+        return prop.parent ? !/node_modules/.test(prop.parent.fileName) : true;
+      },
+    },
   },
+  stories: ['../src/components/**/*.stories.@(js|jsx|ts|tsx)'],
+  addons: [
+    '@storybook/addon-essentials',
+    '@storybook/addon-interactions',
+    '@storybook/addon-a11y',
+    '@storybook/addon-viewport',
+    '@storybook/addon-controls',
+  ],
   staticDirs: ['../public'],
+  docs: {
+    autodocs: true,
+    defaultName: 'Documentation',
+  },
   viteFinal: async (config) => {
     // In Vite, environment variables are automatically loaded from .env files
     // We don't need to manually inject them as Vite does this automatically

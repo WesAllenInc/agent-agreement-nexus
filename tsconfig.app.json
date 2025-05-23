@@ -29,6 +29,6 @@
     /* Type Definitions */
     "types": ["node"]
   },
-  "include": ["src/**/*", "src/env.d.ts"],
+  "include": ["src/**/*", "src/env.d.ts", ".storybook/**/*"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

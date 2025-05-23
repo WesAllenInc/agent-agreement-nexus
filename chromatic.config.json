@@ -4,5 +4,9 @@
   "storybookBuildDir": "storybook-static",
   "exitOnceUploaded": true,
   "onlyChanged": true,
-  "externals": ["public/**"]
+  "externals": ["public/**"],
+  "zip": true,
+  "skip": "**/node_modules/**,**/dist/**,**/*.test.js",
+  "buildScriptName": "build-storybook",
+  "storybookBaseDir": "."
 }
