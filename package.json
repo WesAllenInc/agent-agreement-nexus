@@ -9,7 +9,7 @@
     "build:docs": "echo 'Generating documentation...' && bun run build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "postinstall": "bun run build",
+    "postinstall": "npm run build",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
