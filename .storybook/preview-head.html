@@ -1,0 +1,40 @@
+<script>
+  // IMPORTANT: This script runs before any other scripts in the Storybook iframe
+  
+  // Create jasmine global object with all required properties
+  window.jasmine = {
+    customEqualityTesters: [],
+    createSpy: function() { return function() {}; },
+    createSpyObj: function() { return {}; },
+    any: function() { return true; },
+    objectContaining: function() { return true; },
+    stringMatching: function() { return true; }
+  };
+  
+  // Create Jest mocks
+  window.jest = {
+    fn: function() { return function() {}; },
+    spyOn: function() { return { mockImplementation: function() {} }; }
+  };
+  
+  // Add testing utilities
+  window.test = function() {};
+  window.it = function() {};
+  window.describe = function() {};
+  window.beforeEach = function() {};
+  window.afterEach = function() {};
+  
+  // Create expect with all common matchers
+  window.expect = function() { 
+    return { 
+      toBe: function() {}, 
+      toEqual: function() {},
+      toHaveBeenCalled: function() {},
+      toHaveBeenCalledWith: function() {},
+      toContain: function() {},
+      not: { toBe: function() {}, toEqual: function() {} }
+    }; 
+  };
+  
+  console.log('Enhanced testing mocks initialized in preview-head');
+</script>

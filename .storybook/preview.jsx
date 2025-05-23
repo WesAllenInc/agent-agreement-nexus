@@ -1,16 +1,26 @@
 import React from 'react';
 import { BrowserRouter } from 'react-router-dom';
-console.log('VITE_SUPABASE_URL:', import.meta.env.VITE_SUPABASE_URL);
-console.log('VITE_SUPABASE_ANON_KEY:', import.meta.env.VITE_SUPABASE_ANON_KEY);
 import { fn } from '@storybook/test';
 import '../src/index.css';
 
 // Check for Supabase credentials (Vite/Storybook)
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://example.supabase.co';
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'mock-key-for-storybook';
 
-if (!supabaseUrl || !supabaseAnonKey) {
-  console.warn('Missing Supabase credentials in environment variables');
+// Log environment variables for debugging
+console.log('VITE_SUPABASE_URL:', supabaseUrl);
+console.log('VITE_SUPABASE_ANON_KEY:', supabaseAnonKey);
+
+// Create mocks for Storybook environment
+if (typeof window !== 'undefined') {
+  // Supabase mocks
+  window.SUPABASE_URL = supabaseUrl;
+  window.SUPABASE_ANON_KEY = supabaseAnonKey;
+  
+  // Mock for customEqualityTesters
+  // This fixes "Cannot read properties of undefined (reading 'customEqualityTesters')"
+  window.jasmine = window.jasmine || {};
+  window.jasmine.customEqualityTesters = [];
 }
 
 // Mark environment as Storybook for component mocking

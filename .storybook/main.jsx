@@ -1,4 +1,4 @@
-y/** @type { import('@storybook/react-vite').StorybookConfig } */
+/** @type { import('@storybook/react-vite').StorybookConfig } */
 const config = {
   stories: [
     '../src/**/*.mdx', 
@@ -19,19 +19,16 @@ const config = {
   },
   staticDirs: ['../public'],
   viteFinal: async (config) => {
-    // Check for required environment variables
-    const supabaseUrl = process.env.VITE_SUPABASE_URL;
-    const supabaseAnonKey = process.env.VITE_SUPABASE_ANON_KEY;
-
-    if (!supabaseUrl || !supabaseAnonKey) {
-      console.warn('Missing Supabase credentials in environment variables');
-    }
-
-    // Add environment variables for Supabase
+    // In Vite, environment variables are automatically loaded from .env files
+    // We don't need to manually inject them as Vite does this automatically
+    // Just ensure your .env.local file exists with VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY
+    
+    // For Storybook in development mode, we'll provide fallbacks
     config.define = {
       ...config.define,
-      'import.meta.env.VITE_SUPABASE_URL': JSON.stringify(supabaseUrl || ''),
-      'import.meta.env.VITE_SUPABASE_ANON_KEY': JSON.stringify(supabaseAnonKey || ''),
+      // These will be used if the env vars aren't found
+      'import.meta.env.VITE_SUPABASE_URL': JSON.stringify(process.env.VITE_SUPABASE_URL || 'https://example.supabase.co'),
+      'import.meta.env.VITE_SUPABASE_ANON_KEY': JSON.stringify(process.env.VITE_SUPABASE_ANON_KEY || 'mock-key-for-storybook'),
     };
 
     // Add path aliases
