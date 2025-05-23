@@ -1,167 +1,30 @@
 {
-  "activity": {},
   "announcedBuild": {
-    "id": "682f5c41cfdfa47712f0c288",
-    "number": 7,
-    "status": "PUBLISHED",
+    "id": "68309b5fc081a00fa48b8ced",
+    "number": 5,
+    "status": "ANNOUNCED",
     "autoAcceptChanges": false,
     "app": {
-      "id": "682f555bbf2ec7df24580cf4",
+      "id": "683090422f29cdb5189dc15e",
       "turboSnapAvailability": "UNAVAILABLE"
-    },
-    "storybookUrl": "https://682f555bbf2ec7df24580cf4-dlwqtprjcf.chromatic.com/"
+    }
   },
-  "configuration": {},
+  "configuration": {
+    "configFile": "chromatic.config.json",
+    "$schema": "https://www.chromatic.com/config-file.schema.json",
+    "projectId": "682f555bbf2ec7df24580cf4",
+    "onlyChanged": true,
+    "externals": [
+      "public/**"
+    ],
+    "exitOnceUploaded": true,
+    "storybookBuildDir": "storybook-static"
+  },
   "environment": {},
-  "exitCode": 23,
-  "exitCodeKey": "STORYBOOK_BROKEN",
+  "exitCode": 255,
+  "exitCodeKey": "UNKNOWN_ERROR",
   "fileInfo": {
     "lengths": [
-      {
-        "pathname": "assets\\ActivityLogs.stories-BnAGPhaE.js",
-        "contentLength": 102811,
-        "knownAs": "assets/ActivityLogs.stories-BnAGPhaE.js"
-      },
-      {
-        "pathname": "assets\\browser-BO8OcDR-.js",
-        "contentLength": 295,
-        "knownAs": "assets/browser-BO8OcDR-.js"
-      },
-      {
-        "pathname": "assets\\chunk-XP5HYGXS-BpfKkqn7.js",
-        "contentLength": 710,
-        "knownAs": "assets/chunk-XP5HYGXS-BpfKkqn7.js"
-      },
-      {
-        "pathname": "assets\\Color-YHDXOIA2-HOqZXqa9.js",
-        "contentLength": 29335,
-        "knownAs": "assets/Color-YHDXOIA2-HOqZXqa9.js"
-      },
-      {
-        "pathname": "assets\\Dashboard.stories-B4khXlq9.js",
-        "contentLength": 31829,
-        "knownAs": "assets/Dashboard.stories-B4khXlq9.js"
-      },
-      {
-        "pathname": "assets\\DocsRenderer-CFRXHY34-DrGj7Frh.js",
-        "contentLength": 893527,
-        "knownAs": "assets/DocsRenderer-CFRXHY34-DrGj7Frh.js"
-      },
-      {
-        "pathname": "assets\\entry-preview-docs-BHxG-my-.js",
-        "contentLength": 247072,
-        "knownAs": "assets/entry-preview-docs-BHxG-my-.js"
-      },
-      {
-        "pathname": "assets\\entry-preview-fDE4gUWK.js",
-        "contentLength": 29748,
-        "knownAs": "assets/entry-preview-fDE4gUWK.js"
-      },
-      {
-        "pathname": "assets\\iframe-Cp77XSgM.js",
-        "contentLength": 211894,
-        "knownAs": "assets/iframe-Cp77XSgM.js"
-      },
-      {
-        "pathname": "assets\\index-CoXXcpNP.js",
-        "contentLength": 7808,
-        "knownAs": "assets/index-CoXXcpNP.js"
-      },
-      {
-        "pathname": "assets\\index-D-o_yYFz.js",
-        "contentLength": 422,
-        "knownAs": "assets/index-D-o_yYFz.js"
-      },
-      {
-        "pathname": "assets\\index-DrFu-skq.js",
-        "contentLength": 767,
-        "knownAs": "assets/index-DrFu-skq.js"
-      },
-      {
-        "pathname": "assets\\index-flPjeQwW.js",
-        "contentLength": 53717,
-        "knownAs": "assets/index-flPjeQwW.js"
-      },
-      {
-        "pathname": "assets\\index-i7od9_os.js",
-        "contentLength": 662277,
-        "knownAs": "assets/index-i7od9_os.js"
-      },
-      {
-        "pathname": "assets\\index-S3NOQ7Fp.js",
-        "contentLength": 133959,
-        "knownAs": "assets/index-S3NOQ7Fp.js"
-      },
-      {
-        "pathname": "assets\\jsx-runtime-CiKstLBL.js",
-        "contentLength": 918,
-        "knownAs": "assets/jsx-runtime-CiKstLBL.js"
-      },
-      {
-        "pathname": "assets\\magic-string.es-DITi049v.js",
-        "contentLength": 21384,
-        "knownAs": "assets/magic-string.es-DITi049v.js"
-      },
-      {
-        "pathname": "assets\\preview-B8lJiyuQ.js",
-        "contentLength": 5064,
-        "knownAs": "assets/preview-B8lJiyuQ.js"
-      },
-      {
-        "pathname": "assets\\preview-BBWR9nbA.js",
-        "contentLength": 8117,
-        "knownAs": "assets/preview-BBWR9nbA.js"
-      },
-      {
-        "pathname": "assets\\preview-BUBlL-Mu.js",
-        "contentLength": 891,
-        "knownAs": "assets/preview-BUBlL-Mu.js"
-      },
-      {
-        "pathname": "assets\\preview-BWzBA1C2.js",
-        "contentLength": 7623,
-        "knownAs": "assets/preview-BWzBA1C2.js"
-      },
-      {
-        "pathname": "assets\\preview-CvbIS5ZJ.js",
-        "contentLength": 184,
-        "knownAs": "assets/preview-CvbIS5ZJ.js"
-      },
-      {
-        "pathname": "assets\\preview-DD_OYowb.js",
-        "contentLength": 3507,
-        "knownAs": "assets/preview-DD_OYowb.js"
-      },
-      {
-        "pathname": "assets\\preview-DGUiP6tS.js",
-        "contentLength": 711,
-        "knownAs": "assets/preview-DGUiP6tS.js"
-      },
-      {
-        "pathname": "assets\\preview-S7dVFkBh.css",
-        "contentLength": 92583,
-        "knownAs": "assets/preview-S7dVFkBh.css"
-      },
-      {
-        "pathname": "assets\\preview-ye6WEAmp.js",
-        "contentLength": 389,
-        "knownAs": "assets/preview-ye6WEAmp.js"
-      },
-      {
-        "pathname": "assets\\react-18-BitlzpKN.js",
-        "contentLength": 797,
-        "knownAs": "assets/react-18-BitlzpKN.js"
-      },
-      {
-        "pathname": "assets\\test-utils-BfEZPJQV.js",
-        "contentLength": 12942,
-        "knownAs": "assets/test-utils-BfEZPJQV.js"
-      },
-      {
-        "pathname": "assets\\vi.ClIskdbk-B47bHBmX.js",
-        "contentLength": 572565,
-        "knownAs": "assets/vi.ClIskdbk-B47bHBmX.js"
-      },
       {
         "pathname": "favicon.ico",
         "contentLength": 913,
@@ -173,18 +36,13 @@
         "knownAs": "favicon.svg"
       },
       {
-        "pathname": "iframe.html",
-        "contentLength": 17965,
-        "knownAs": "iframe.html"
-      },
-      {
         "pathname": "index.html",
-        "contentLength": 4224,
+        "contentLength": 4759,
         "knownAs": "index.html"
       },
       {
         "pathname": "index.json",
-        "contentLength": 1963,
+        "contentLength": 4299,
         "knownAs": "index.json"
       },
       {
@@ -196,11 +54,6 @@
         "pathname": "lovable-uploads\\692c0e22-35ce-4558-9822-df60e105764d.png",
         "contentLength": 33145,
         "knownAs": "lovable-uploads/692c0e22-35ce-4558-9822-df60e105764d.png"
-      },
-      {
-        "pathname": "manifest.webmanifest",
-        "contentLength": 449,
-        "knownAs": "manifest.webmanifest"
       },
       {
         "pathname": "nunito-sans-bold-italic.woff2",
@@ -234,7 +87,7 @@
       },
       {
         "pathname": "project.json",
-        "contentLength": 1476,
+        "contentLength": 1574,
         "knownAs": "project.json"
       },
       {
@@ -248,49 +101,64 @@
         "knownAs": "pwa-512x512.png"
       },
       {
-        "pathname": "registerSW.js",
-        "contentLength": 148,
-        "knownAs": "registerSW.js"
-      },
-      {
         "pathname": "robots.txt",
         "contentLength": 174,
         "knownAs": "robots.txt"
       },
       {
-        "pathname": "sb-addons\\controls-7\\manager-bundle.js",
-        "contentLength": 420817,
-        "knownAs": "sb-addons/controls-7/manager-bundle.js"
+        "pathname": "sb-addons\\chromatic-com-storybook-11\\manager-bundle.js",
+        "contentLength": 571623,
+        "knownAs": "sb-addons/chromatic-com-storybook-11/manager-bundle.js"
       },
       {
-        "pathname": "sb-addons\\docs-8\\manager-bundle.js",
-        "contentLength": 375803,
-        "knownAs": "sb-addons/docs-8/manager-bundle.js"
+        "pathname": "sb-addons\\chromatic-com-storybook-11\\manager-bundle.js.LEGAL.txt",
+        "contentLength": 1999,
+        "knownAs": "sb-addons/chromatic-com-storybook-11/manager-bundle.js.LEGAL.txt"
       },
       {
-        "pathname": "sb-addons\\essentials-actions-1\\manager-bundle.js",
+        "pathname": "sb-addons\\essentials-actions-2\\manager-bundle.js",
         "contentLength": 41416,
-        "knownAs": "sb-addons/essentials-actions-1/manager-bundle.js"
+        "knownAs": "sb-addons/essentials-actions-2/manager-bundle.js"
       },
       {
-        "pathname": "sb-addons\\essentials-backgrounds-2\\manager-bundle.js",
+        "pathname": "sb-addons\\essentials-backgrounds-4\\manager-bundle.js",
         "contentLength": 15164,
-        "knownAs": "sb-addons/essentials-backgrounds-2/manager-bundle.js"
+        "knownAs": "sb-addons/essentials-backgrounds-4/manager-bundle.js"
       },
       {
-        "pathname": "sb-addons\\essentials-measure-4\\manager-bundle.js",
+        "pathname": "sb-addons\\essentials-controls-1\\manager-bundle.js",
+        "contentLength": 420829,
+        "knownAs": "sb-addons/essentials-controls-1/manager-bundle.js"
+      },
+      {
+        "pathname": "sb-addons\\essentials-docs-3\\manager-bundle.js",
+        "contentLength": 375815,
+        "knownAs": "sb-addons/essentials-docs-3/manager-bundle.js"
+      },
+      {
+        "pathname": "sb-addons\\essentials-measure-6\\manager-bundle.js",
         "contentLength": 6668,
-        "knownAs": "sb-addons/essentials-measure-4/manager-bundle.js"
+        "knownAs": "sb-addons/essentials-measure-6/manager-bundle.js"
       },
       {
-        "pathname": "sb-addons\\essentials-outline-5\\manager-bundle.js",
+        "pathname": "sb-addons\\essentials-outline-7\\manager-bundle.js",
         "contentLength": 6710,
-        "knownAs": "sb-addons/essentials-outline-5/manager-bundle.js"
+        "knownAs": "sb-addons/essentials-outline-7/manager-bundle.js"
       },
       {
-        "pathname": "sb-addons\\essentials-toolbars-3\\manager-bundle.js",
+        "pathname": "sb-addons\\essentials-toolbars-5\\manager-bundle.js",
         "contentLength": 5389,
-        "knownAs": "sb-addons/essentials-toolbars-3/manager-bundle.js"
+        "knownAs": "sb-addons/essentials-toolbars-5/manager-bundle.js"
+      },
+      {
+        "pathname": "sb-addons\\interactions-9\\manager-bundle.js",
+        "contentLength": 289723,
+        "knownAs": "sb-addons/interactions-9/manager-bundle.js"
+      },
+      {
+        "pathname": "sb-addons\\links-8\\manager-bundle.js",
+        "contentLength": 988,
+        "knownAs": "sb-addons/links-8/manager-bundle.js"
       },
       {
         "pathname": "sb-addons\\storybook-core-core-server-presets-0\\common-manager-bundle.js",
@@ -298,9 +166,9 @@
         "knownAs": "sb-addons/storybook-core-core-server-presets-0/common-manager-bundle.js"
       },
       {
-        "pathname": "sb-addons\\viewport-6\\manager-bundle.js",
+        "pathname": "sb-addons\\viewport-10\\manager-bundle.js",
         "contentLength": 16858,
-        "knownAs": "sb-addons/viewport-6/manager-bundle.js"
+        "knownAs": "sb-addons/viewport-10/manager-bundle.js"
       },
       {
         "pathname": "sb-common-assets\\favicon.svg",
@@ -348,11 +216,6 @@
         "knownAs": "sb-manager/runtime.js"
       },
       {
-        "pathname": "service-worker.js",
-        "contentLength": 29003,
-        "knownAs": "service-worker.js"
-      },
-      {
         "pathname": "test-files\\test.pdf",
         "contentLength": 1560,
         "knownAs": "test-files/test.pdf"
@@ -364,43 +227,12 @@
       }
     ],
     "paths": [
-      "assets/ActivityLogs.stories-BnAGPhaE.js",
-      "assets/browser-BO8OcDR-.js",
-      "assets/chunk-XP5HYGXS-BpfKkqn7.js",
-      "assets/Color-YHDXOIA2-HOqZXqa9.js",
-      "assets/Dashboard.stories-B4khXlq9.js",
-      "assets/DocsRenderer-CFRXHY34-DrGj7Frh.js",
-      "assets/entry-preview-docs-BHxG-my-.js",
-      "assets/entry-preview-fDE4gUWK.js",
-      "assets/iframe-Cp77XSgM.js",
-      "assets/index-CoXXcpNP.js",
-      "assets/index-D-o_yYFz.js",
-      "assets/index-DrFu-skq.js",
-      "assets/index-flPjeQwW.js",
-      "assets/index-i7od9_os.js",
-      "assets/index-S3NOQ7Fp.js",
-      "assets/jsx-runtime-CiKstLBL.js",
-      "assets/magic-string.es-DITi049v.js",
-      "assets/preview-B8lJiyuQ.js",
-      "assets/preview-BBWR9nbA.js",
-      "assets/preview-BUBlL-Mu.js",
-      "assets/preview-BWzBA1C2.js",
-      "assets/preview-CvbIS5ZJ.js",
-      "assets/preview-DD_OYowb.js",
-      "assets/preview-DGUiP6tS.js",
-      "assets/preview-S7dVFkBh.css",
-      "assets/preview-ye6WEAmp.js",
-      "assets/react-18-BitlzpKN.js",
-      "assets/test-utils-BfEZPJQV.js",
-      "assets/vi.ClIskdbk-B47bHBmX.js",
       "favicon.ico",
       "favicon.svg",
-      "iframe.html",
       "index.html",
       "index.json",
       "ireland-pay-logo.png",
       "lovable-uploads/692c0e22-35ce-4558-9822-df60e105764d.png",
-      "manifest.webmanifest",
       "nunito-sans-bold-italic.woff2",
       "nunito-sans-bold.woff2",
       "nunito-sans-italic.woff2",
@@ -410,17 +242,20 @@
       "project.json",
       "pwa-192x192.png",
       "pwa-512x512.png",
-      "registerSW.js",
       "robots.txt",
-      "sb-addons/controls-7/manager-bundle.js",
-      "sb-addons/docs-8/manager-bundle.js",
-      "sb-addons/essentials-actions-1/manager-bundle.js",
-      "sb-addons/essentials-backgrounds-2/manager-bundle.js",
-      "sb-addons/essentials-measure-4/manager-bundle.js",
-      "sb-addons/essentials-outline-5/manager-bundle.js",
-      "sb-addons/essentials-toolbars-3/manager-bundle.js",
+      "sb-addons/chromatic-com-storybook-11/manager-bundle.js",
+      "sb-addons/chromatic-com-storybook-11/manager-bundle.js.LEGAL.txt",
+      "sb-addons/essentials-actions-2/manager-bundle.js",
+      "sb-addons/essentials-backgrounds-4/manager-bundle.js",
+      "sb-addons/essentials-controls-1/manager-bundle.js",
+      "sb-addons/essentials-docs-3/manager-bundle.js",
+      "sb-addons/essentials-measure-6/manager-bundle.js",
+      "sb-addons/essentials-outline-7/manager-bundle.js",
+      "sb-addons/essentials-toolbars-5/manager-bundle.js",
+      "sb-addons/interactions-9/manager-bundle.js",
+      "sb-addons/links-8/manager-bundle.js",
       "sb-addons/storybook-core-core-server-presets-0/common-manager-bundle.js",
-      "sb-addons/viewport-6/manager-bundle.js",
+      "sb-addons/viewport-10/manager-bundle.js",
       "sb-common-assets/favicon.svg",
       "sb-common-assets/nunito-sans-bold-italic.woff2",
       "sb-common-assets/nunito-sans-bold.woff2",
@@ -430,90 +265,16 @@
       "sb-manager/globals-runtime.js",
       "sb-manager/globals.js",
       "sb-manager/runtime.js",
-      "service-worker.js",
       "test-files/test.pdf",
       "_headers"
     ],
     "statsPath": "",
-    "total": 6422318,
-    "hashes": {
-      "assets/ActivityLogs.stories-BnAGPhaE.js": "2e136c4a1c968f11",
-      "assets/browser-BO8OcDR-.js": "4763ba9f831ff6b0",
-      "assets/chunk-XP5HYGXS-BpfKkqn7.js": "ddc66446ebb7bb54",
-      "assets/Color-YHDXOIA2-HOqZXqa9.js": "98fe2a955e14836e",
-      "assets/Dashboard.stories-B4khXlq9.js": "337b273c6ece8155",
-      "assets/DocsRenderer-CFRXHY34-DrGj7Frh.js": "8bdd67f6355c9d79",
-      "assets/entry-preview-docs-BHxG-my-.js": "f57457b35efb56cc",
-      "assets/entry-preview-fDE4gUWK.js": "95394a21a6d2002f",
-      "assets/iframe-Cp77XSgM.js": "b67dd089cdb53058",
-      "assets/index-CoXXcpNP.js": "fde741f300955d2d",
-      "assets/index-D-o_yYFz.js": "a7e4a0644b5ea1dc",
-      "assets/index-DrFu-skq.js": "894f6b01402f1ee1",
-      "assets/index-flPjeQwW.js": "7fd47fe494ec5631",
-      "assets/index-i7od9_os.js": "50890669178e7cd8",
-      "assets/index-S3NOQ7Fp.js": "b7602131d2a43f1b",
-      "assets/jsx-runtime-CiKstLBL.js": "32aaaaea62494127",
-      "assets/magic-string.es-DITi049v.js": "ce75d442b75f6a90",
-      "assets/preview-B8lJiyuQ.js": "2afc69637deabd49",
-      "assets/preview-BBWR9nbA.js": "d20389d560f62749",
-      "assets/preview-BUBlL-Mu.js": "0be150be6a632e86",
-      "assets/preview-BWzBA1C2.js": "067312486ad98caf",
-      "assets/preview-CvbIS5ZJ.js": "154bca787b590aeb",
-      "assets/preview-DD_OYowb.js": "58bbf742cc2b222c",
-      "assets/preview-DGUiP6tS.js": "5dd583d5eeac4996",
-      "assets/preview-S7dVFkBh.css": "3581cd0be0ed9c29",
-      "assets/preview-ye6WEAmp.js": "e63eabb8270318ca",
-      "assets/react-18-BitlzpKN.js": "1fd562a697ec9d18",
-      "assets/test-utils-BfEZPJQV.js": "9efa7e25533732b1",
-      "assets/vi.ClIskdbk-B47bHBmX.js": "f536a2dba1a7fd64",
-      "favicon.ico": "0b855218cb2f932c",
-      "favicon.svg": "293aff65db45e6c4",
-      "iframe.html": "c2ca57d8506a9490",
-      "index.html": "7aab1271537025bc",
-      "index.json": "4524f5289a223518",
-      "ireland-pay-logo.png": "274d3f875472bd13",
-      "lovable-uploads/692c0e22-35ce-4558-9822-df60e105764d.png": "40bc8fe9da2a9e9a",
-      "manifest.webmanifest": "dc73201dec4ec143",
-      "nunito-sans-bold-italic.woff2": "d64464b3594b3fb9",
-      "nunito-sans-bold.woff2": "0bd5b61b7fb7f7d5",
-      "nunito-sans-italic.woff2": "b7807d9de055e9a0",
-      "nunito-sans-regular.woff2": "6687b7be04c2debe",
-      "offline.html": "740c257e853a9541",
-      "placeholder.svg": "300ac90ce268435d",
-      "project.json": "c9d98418c8a96b55",
-      "pwa-192x192.png": "cafc7706cee4572b",
-      "pwa-512x512.png": "cafc7706cee4572b",
-      "registerSW.js": "39630bcc5d25ccb7",
-      "robots.txt": "ff9196e34c92cf7b",
-      "sb-addons/controls-7/manager-bundle.js": "1a452bc0be0041be",
-      "sb-addons/docs-8/manager-bundle.js": "3a94263850217b9f",
-      "sb-addons/essentials-actions-1/manager-bundle.js": "f92b168e8d0dd308",
-      "sb-addons/essentials-backgrounds-2/manager-bundle.js": "67db1eb58fd99faa",
-      "sb-addons/essentials-measure-4/manager-bundle.js": "ddae718763c7447c",
-      "sb-addons/essentials-outline-5/manager-bundle.js": "21a0d84dccfb4f01",
-      "sb-addons/essentials-toolbars-3/manager-bundle.js": "a9f8543a5c82883c",
-      "sb-addons/storybook-core-core-server-presets-0/common-manager-bundle.js": "ef2e3e7219133909",
-      "sb-addons/viewport-6/manager-bundle.js": "a5c34ea957887e79",
-      "sb-common-assets/favicon.svg": "293aff65db45e6c4",
-      "sb-common-assets/nunito-sans-bold-italic.woff2": "d64464b3594b3fb9",
-      "sb-common-assets/nunito-sans-bold.woff2": "0bd5b61b7fb7f7d5",
-      "sb-common-assets/nunito-sans-italic.woff2": "b7807d9de055e9a0",
-      "sb-common-assets/nunito-sans-regular.woff2": "6687b7be04c2debe",
-      "sb-manager/globals-module-info.js": "e8c0a7123d838271",
-      "sb-manager/globals-runtime.js": "66d333104b494caa",
-      "sb-manager/globals.js": "dbb1adbc9aebc9d2",
-      "sb-manager/runtime.js": "ab889320d3ec775e",
-      "service-worker.js": "3081c747256dce3f",
-      "test-files/test.pdf": "7d55c76a97317365",
-      "_headers": "794c6aec83968a14"
-    }
+    "total": 4108233
   },
   "flags": {
-    "storybookBuildDir": [
-      "storybook-static"
-    ],
     "debug": true,
     "outputDir": [],
+    "storybookBuildDir": [],
     "externals": [],
     "onlyStoryFiles": [],
     "onlyStoryNames": [],
@@ -527,8 +288,8 @@
     "gitUserEmail": "jake@wesallencompany.com",
     "uncommittedHash": "fatal: ambiguous argument 'diff': unknown revision or path not in the working tree.\nUse '--' to separate paths from revisions, like this:\n'git <command> [<revision>...] -- [<file>...]'\ne69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
     "rootPath": "C:/App DEV/agent-agreement-nexus/agent-agreement-nexus",
-    "commit": "9b6bb7083e85afbcd4fb6637c94fa44e0c70e62e",
-    "committedAt": 1747933957000,
+    "commit": "4b2475d75277e28bd14509e04c348ce7a5048c7b",
+    "committedAt": 1748014630000,
     "committerEmail": "jake@wesallencompany.com",
     "committerName": "WesAllenInc",
     "branch": "main",
@@ -545,21 +306,27 @@
     "debug": true,
     "autoAcceptChanges": false,
     "exitZeroOnChanges": false,
-    "exitOnceUploaded": false,
+    "exitOnceUploaded": true,
     "diagnosticsFile": "chromatic-diagnostics.json",
     "fileHashing": true,
     "interactive": false,
     "isLocalBuild": false,
     "originalArgv": [
-      "--project-token=chpt_29d9d3f461ad26f",
-      "--storybook-build-dir=storybook-static",
+      "--project-token=chpt_3572d277628e6a4",
       "--debug"
+    ],
+    "onlyChanged": true,
+    "externals": [
+      "public/**"
     ],
     "logFile": "chromatic.log",
     "forceRebuild": true,
     "storybookBuildDir": "storybook-static",
     "storybookLogFile": "build-storybook.log",
-    "branchName": ""
+    "branchName": "",
+    "configFile": "chromatic.config.json",
+    "$schema": "https://www.chromatic.com/config-file.schema.json",
+    "projectId": "682f555bbf2ec7df24580cf4"
   },
   "packageJson": {
     "name": "vite_react_shadcn_ts",
@@ -572,20 +339,20 @@
       "build:docs": "echo 'Generating documentation...' && bun run build",
       "lint": "eslint .",
       "preview": "vite preview",
-      "postinstall": "bun run build",
+      "postinstall": "npm run build",
       "test": "vitest run",
       "test:watch": "vitest",
       "test:coverage": "vitest run --coverage",
       "test:ui": "vitest --ui",
       "test:e2e": "playwright test",
       "test:e2e:training": "playwright test training.spec.ts",
-      "storybook": "storybook dev -p 6006",
-      "build-storybook": "storybook build -o storybook-static",
-      "chromatic": "chromatic --exit-zero-on-changes --storybook-build-dir=storybook-static",
+      "storybook": "dotenv -e .env.local -- storybook dev -p 6006",
+      "build-storybook": "dotenv -e .env.local -- storybook build -o storybook-static",
+      "chromatic": "dotenv -e .env.local -- npx chromatic --project-token=$CHROMATIC_PROJECT_TOKEN",
       "bun:dev": "bun run --bun dev",
       "bun:build": "bun run --bun build",
       "bun:test": "bun test",
-      "bun:storybook": "bunx storybook dev -p 6006"
+      "bun:storybook": "bunx cross-env VITE_SUPABASE_URL=$VITE_SUPABASE_URL VITE_SUPABASE_ANON_KEY=$VITE_SUPABASE_ANON_KEY storybook dev -p 6006"
     },
     "engines": {
       "node": ">=18.0.0",
@@ -674,6 +441,8 @@
       "@storybook/addon-controls": "^8.6.14",
       "@storybook/addon-docs": "^8.6.14",
       "@storybook/addon-essentials": "^8.6.14",
+      "@storybook/addon-interactions": "^8.6.14",
+      "@storybook/addon-links": "^8.6.14",
       "@storybook/addon-onboarding": "^8.6.14",
       "@storybook/addon-viewport": "^8.6.14",
       "@storybook/blocks": "^8.6.14",
@@ -695,7 +464,9 @@
       "@vitest/coverage-v8": "^3.1.4",
       "autoprefixer": "^10.4.17",
       "chromatic": "^11.28.2",
+      "cross-env": "^7.0.3",
       "dotenv": "^16.5.0",
+      "dotenv-cli": "^8.0.0",
       "eslint": "^9.9.0",
       "eslint-plugin-react-hooks": "^5.1.0-rc.0",
       "eslint-plugin-react-refresh": "^0.4.9",
@@ -730,19 +501,17 @@
     "creationDate": {},
     "storybookCreationDate": {},
     "numberOfCommitters": 2,
-    "numberOfAppFiles": 40
+    "numberOfAppFiles": 41
   },
   "runtimeMetadata": {
     "nodePlatform": "win32",
     "nodeVersion": "22.15.0",
-    "packageManager": "bun"
+    "packageManager": "bun",
+    "packageManagerVersion": "1.2.14"
   },
-  "sentinelUrls": [
-    "https://chromatic-builds.s3.us-west-2.amazonaws.com/682f555bbf2ec7df24580cf4-dlwqtprjcf/.chromatic/files-copied.2829561024.txt?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIAJVVEQEOBEEPXSNNQ%2F20250522%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20250522T171753Z&X-Amz-Expires=1800&X-Amz-Signature=6e2a4399dea4f5833c35f618335326359efeda87e4f534c78656edb4b6cee21d&X-Amz-SignedHeaders=host&x-id=GetObject"
-  ],
-  "sessionId": "d8cbb25d-b9e5-4b66-bc7f-355fe0ba96b0",
+  "sessionId": "18106256-4156-4872-a1c4-9ce777e7d481",
   "sourceDir": "storybook-static",
-  "startedAt": 1747934276409,
+  "startedAt": 1748015967446,
   "storybook": {
     "version": "",
     "builder": {
@@ -750,9 +519,12 @@
     },
     "baseDir": "."
   },
-  "storybookUrl": "https://682f555bbf2ec7df24580cf4-dlwqtprjcf.chromatic.com/",
-  "task": "verify",
-  "uploadedBytes": 0,
-  "uploadedFiles": 0,
-  "userError": true
+  "task": "upload",
+  "turboSnap": {
+    "bailReason": {
+      "noAncestorBuild": true
+    },
+    "unavailable": true
+  },
+  "userError": false
 }

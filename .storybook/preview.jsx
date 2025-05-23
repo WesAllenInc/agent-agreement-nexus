@@ -3,9 +3,9 @@ import { BrowserRouter } from 'react-router-dom';
 import { fn } from '@storybook/test';
 import '../src/index.css';
 
-// Check for Supabase credentials
-const supabaseUrl = process.env.VITE_SUPABASE_URL;
-const supabaseAnonKey = process.env.VITE_SUPABASE_ANON_KEY;
+// Check for Supabase credentials (Vite/Storybook)
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
 if (!supabaseUrl || !supabaseAnonKey) {
   console.warn('Missing Supabase credentials in environment variables');
@@ -73,13 +73,8 @@ const preview = {
       },
     },
   },
-  decorators: [
-    (Story) => (
-      <BrowserRouter>
-        <Story />
-      </BrowserRouter>
-    ),
-  ],
+  // Removed BrowserRouter decorator to prevent double Router errors
+  decorators: [],
 };
 
 export default preview;

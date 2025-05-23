@@ -1,4 +1,4 @@
-/** @type { import('@storybook/react-vite').StorybookConfig } */
+y/** @type { import('@storybook/react-vite').StorybookConfig } */
 const config = {
   stories: [
     '../src/**/*.mdx', 
@@ -9,7 +9,6 @@ const config = {
     '@storybook/addon-links',
     '@storybook/addon-interactions',
     '@storybook/addon-viewport',
-    '@chromatic-com/storybook',
   ],
   framework: {
     name: '@storybook/react-vite',
