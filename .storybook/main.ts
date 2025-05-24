@@ -18,6 +18,7 @@ const config: StorybookConfig = {
   // Pick up every `*.stories.*` file in src plus MDX docs.
   stories: [
     '../src/**/*.mdx',
+    '../src/**/*.stories.mdx',
     '../src/**/*.stories.@(js|jsx|ts|tsx)'
   ],
 
@@ -30,7 +31,9 @@ const config: StorybookConfig = {
     '@storybook/addon-essentials',
     '@storybook/addon-interactions',
     '@storybook/addon-a11y',
-    '@storybook/addon-viewport'
+    '@storybook/addon-viewport',
+    '@storybook/addon-docs',
+    '@storybook/addon-mdx-gfm'
   ],
 
   framework: {
