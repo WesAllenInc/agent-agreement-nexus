@@ -12,8 +12,8 @@ import { setupMockSupabase, withMockSupabase } from './mockData';
 import '../src/index.css';
 
 // Check for Supabase credentials (Vite/Storybook)
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://example.supabase.co';
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'mock-key-for-storybook';
+const supabaseUrl = 'https://clluedtbnphgwikytoil.supabase.co';
+const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNsbHVlZHRibnBoZ3dpa3l0b2lsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDU1MTAwMDMsImV4cCI6MjA2MTA4NjAwM30.Q9pL9k0OSv1R7ld-Tqb_TLZ1ppwexCtM_X2IE5nWRT8';
 
 // Create mocks for Storybook environment
 if (typeof window !== 'undefined') {

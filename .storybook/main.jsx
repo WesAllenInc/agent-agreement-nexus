@@ -20,7 +20,12 @@ const config = {
       },
     },
   },
-  stories: ['../src/components/**/*.stories.@(js|jsx|ts|tsx)'],
+  stories: [
+    '../src/components/**/*.stories.@(js|jsx|ts|tsx|mdx)',
+    '../src/pages/**/*.stories.@(js|jsx|ts|tsx|mdx)',
+    '../src/stories/**/*.stories.@(js|jsx|ts|tsx|mdx)'
+  ],
+  staticDirs: ['../public'],
   addons: [
     '@storybook/addon-essentials',
     '@storybook/addon-interactions',
@@ -28,13 +33,15 @@ const config = {
     '@storybook/addon-viewport',
     '@storybook/addon-controls',
   ],
-  staticDirs: ['../public'],
   docs: {
     autodocs: true,
     defaultName: 'Documentation',
   },
-  viteFinal: async (config) => {
-    // In Vite, environment variables are automatically loaded from .env files
+  viteFinal: async (config, { configType }) => {
+    // Set environment variables for both development and production
+    // Provide default values for required environment variables
+    process.env.VITE_SUPABASE_URL = process.env.VITE_SUPABASE_URL || 'https://clluedtbnphgwikytoil.supabase.co';
+    process.env.VITE_SUPABASE_ANON_KEY = process.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNsbHVlZHRibnBoZ3dpa3l0b2lsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDU1MTAwMDMsImV4cCI6MjA2MTA4NjAwM30.Q9pL9k0OSv1R7ld-Tqb_TLZ1ppwexCtM_X2IE5nWRT8';
     // We don't need to manually inject them as Vite does this automatically
     // Just ensure your .env.local file exists with VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY
     
