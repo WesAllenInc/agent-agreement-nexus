@@ -77,14 +77,116 @@ registerRoute(
   })
 );
 
-// Handle offline fallbacks
+// Background sync for failed POST requests to /api/
+const BG_SYNC_QUEUE = 'bg-sync-queue';
+
+async function queueRequest(request: Request) {
+  const db = await openQueueDB();
+  const tx = db.transaction(BG_SYNC_QUEUE, 'readwrite');
+  const store = tx.objectStore(BG_SYNC_QUEUE);
+  const cloned = {
+    url: request.url,
+    method: request.method,
+    headers: Array.from(request.headers.entries()),
+    body: await request.clone().text(),
+    timestamp: Date.now()
+  };
+  await store.add(cloned);
+  await new Promise<void>((resolve, reject) => {
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
+  });
+  db.close();
+}
+
+async function openQueueDB() {
+  return await new Promise<IDBDatabase>((resolve, reject) => {
+    const req = indexedDB.open('pwa-bg-sync', 1);
+    req.onupgradeneeded = () => {
+      req.result.createObjectStore(BG_SYNC_QUEUE, { autoIncrement: true });
+    };
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+async function replayQueue() {
+  const db = await openQueueDB();
+  const tx = db.transaction(BG_SYNC_QUEUE, 'readwrite');
+  const store = tx.objectStore(BG_SYNC_QUEUE);
+  const all = await new Promise<any[]>((resolve) => {
+    const req = store.getAll();
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => resolve([]);
+  });
+  for (const reqData of all) {
+    try {
+      await fetch(reqData.url, {
+        method: reqData.method,
+        headers: reqData.headers,
+        body: reqData.body,
+      });
+      // Remove from queue after successful replay
+      // Find by timestamp (unique enough for demo)
+      const cursorReq = store.openCursor();
+      cursorReq.onsuccess = (ev) => {
+        const cursor = (ev.target as IDBRequest).result;
+        if (cursor && cursor.value.timestamp === reqData.timestamp) {
+          cursor.delete();
+        } else if (cursor) {
+          cursor.continue();
+        }
+      };
+    } catch (err) {
+      // Keep in queue if failed
+    }
+  }
+  await new Promise<void>((resolve, reject) => {
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
+  });
+  db.close();
+}
+
+self.addEventListener('sync', (event) => {
+  if (event.tag === 'bg-sync') {
+    event.waitUntil(replayQueue());
+  }
+});
+
+self.addEventListener('online', () => {
+  replayQueue();
+});
+
+// Handle offline fallbacks and queue failed POSTs
 self.addEventListener('fetch', (event) => {
-  // Skip cross-origin requests
-  if (event.request.mode === 'navigate') {
+  const req = event.request;
+  if (
+    req.method === 'POST' &&
+    req.url.includes('/api/')
+  ) {
     event.respondWith(
-      fetch(event.request).catch(() => {
-        return caches.match('/offline.html');
+      fetch(req.clone()).catch(async () => {
+        await queueRequest(req.clone());
+        // TypeScript: Background Sync API is not in standard DOM types, so we cast for compatibility
+if ('sync' in self.registration) {
+  await (self.registration.sync as unknown as { register: (tag: string) => Promise<void> }).register('bg-sync');
+}
+        return new Response(
+          JSON.stringify({
+            queued: true,
+            message: 'Request queued for background sync.'
+          }),
+          { status: 202, headers: { 'Content-Type': 'application/json' } }
+        );
       })
+    );
+    return;
+  }
+  // Offline fallback for navigation
+  if (req.mode === 'navigate') {
+    event.respondWith(
+      fetch(req).catch(() => caches.match('/offline.html'))
     );
   }
 });

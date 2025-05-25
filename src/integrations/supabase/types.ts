@@ -9,7 +9,7 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      activity_log: {
+      activity_log: {,
         Row: {
           agreement_id: string | null
           created_at: string
@@ -143,6 +143,36 @@ export type Database = {
         }
         Relationships: []
       }
+      agreement_comments: {
+        Row: {
+          id: string;
+          agreement_id: string;
+          user_id: string;
+          username: string;
+          avatar_url?: string | null;
+          text: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          agreement_id: string;
+          user_id: string;
+          username: string;
+          avatar_url?: string | null;
+          text: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          agreement_id?: string;
+          user_id?: string;
+          username?: string;
+          avatar_url?: string | null;
+          text?: string;
+          created_at?: string;
+        };
+        Relationships: [];
+      },
       personal_guarantees: {
         Row: {
           agreement_id: string | null
