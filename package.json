@@ -18,7 +18,7 @@
     "test:e2e:training": "playwright test training.spec.ts",
     "storybook": "dotenv -e .env.storybook -- cross-env STORYBOOK=true storybook dev -p 6006",
     "build-storybook": "dotenv -e .env.storybook -- cross-env STORYBOOK=true storybook build --output-dir storybook-static",
-    "chromatic": "rimraf storybook-static && npm run build-storybook && cross-env STORYBOOK=true chromatic --project-token=chpt_3572d277628e6a4 --storybook-build-dir=storybook-static",
+    "chromatic": "rimraf storybook-static && npm run build-storybook && cross-env STORYBOOK=true chromatic --storybook-build-dir=storybook-static",
     "bun:dev": "bun run --bun dev",
     "bun:build": "bun run --bun build",
     "bun:test": "bun test",

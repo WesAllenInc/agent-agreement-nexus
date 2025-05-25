@@ -3,29 +3,141 @@
 @tailwind utilities;
 
 @layer base {
-  :root {
-    --radius: 0.5rem;
-  }
-
+  /* Base styles */
   html {
-    @apply antialiased;
+    @apply antialiased scroll-smooth;
   }
 
-  h1, h2, h3, h4, h5, h6 {
-    @apply font-sans font-semibold;
+  /* Typography */
+  h1 {
+    @apply text-h1 font-heading font-semibold tracking-tight;
+  }
+  
+  h2 {
+    @apply text-h2 font-heading font-semibold tracking-tight;
+  }
+  
+  h3 {
+    @apply text-h3 font-heading font-semibold tracking-tight;
+  }
+  
+  p {
+    @apply text-body font-body;
+  }
+  
+  small {
+    @apply text-small font-body;
+  }
+  
+  /* Focus styles for accessibility */
+  :focus-visible {
+    @apply outline-none ring-2 ring-primary-500 ring-offset-2;
+  }
+  
+  /* Smooth transitions for theme switching */
+  body {
+    @apply transition-colors duration-300 ease-in-out bg-background text-foreground;
   }
 }
 
 @layer components {
+  /* Legacy button styles - use the Button component instead */
   .btn {
-    @apply px-4 py-2 rounded-md font-medium transition-colors;
+    @apply px-4 py-2 rounded-md font-medium transition-all;
   }
 
   .btn-primary {
-    @apply bg-primary-500 text-white hover:bg-primary-600;
+    @apply bg-primary-500 text-white hover:bg-primary-600 active:bg-primary-700;
   }
 
   .btn-secondary {
-    @apply bg-secondary-100 text-secondary-900 hover:bg-secondary-200;
+    @apply bg-secondary-500 text-white hover:bg-secondary-600 active:bg-secondary-700;
+  }
+  
+  .btn-accent {
+    @apply bg-accent-500 text-white hover:bg-accent-600 active:bg-accent-700;
+  }
+  
+  /* Glass card styles */
+  .glass-card {
+    @apply glass rounded-lg border border-transparent shadow-md;
+  }
+  
+  .glass-card-primary {
+    @apply glass-primary rounded-lg border border-transparent shadow-primary-sm;
+  }
+  
+  .glass-card-accent {
+    @apply glass-accent rounded-lg border border-transparent shadow-accent-sm;
+  }
+  
+  /* Gradient text */
+  .gradient-text {
+    @apply bg-clip-text text-transparent bg-primary-to-accent;
+  }
+  
+  /* Shimmer effect for loading states */
+  .shimmer {
+    @apply relative overflow-hidden bg-gray-100 dark:bg-gray-800;
+  }
+  
+  .shimmer::after {
+    @apply absolute inset-0 -translate-x-full bg-shimmer animate-shimmer;
+    content: '';
+  }
+  
+  /* Responsive container with fluid padding */
+  .container-fluid {
+    @apply w-full px-4 sm:px-6 lg:px-8 mx-auto max-w-7xl;
+  }
+}
+
+@layer utilities {
+  /* Animation utilities */
+  .animate-fade-up {
+    animation: fade-up 0.5s ease-out;
+  }
+  
+  .animate-slide-in {
+    animation: slide-in 0.3s ease-out;
+  }
+  
+  .animate-float {
+    animation: float 3s ease-in-out infinite;
+  }
+  
+  .animate-pulse-border {
+    animation: pulse-border 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+  
+  /* Hover effects */
+  .hover-scale {
+    @apply transition-transform duration-200 hover:scale-[1.02] active:scale-[0.98];
+  }
+  
+  .hover-shadow {
+    @apply transition-shadow duration-200 hover:shadow-lg;
+  }
+  
+  .hover-border {
+    @apply transition-colors duration-200 hover:border-primary-300 dark:hover:border-primary-700;
+  }
+  
+  /* Fluid spacing utilities */
+  .fluid-mt {
+    margin-top: clamp(1rem, 2vw, 2rem);
+  }
+  
+  .fluid-mb {
+    margin-bottom: clamp(1rem, 2vw, 2rem);
+  }
+  
+  .fluid-my {
+    margin-top: clamp(1rem, 2vw, 2rem);
+    margin-bottom: clamp(1rem, 2vw, 2rem);
+  }
+  
+  .fluid-p {
+    padding: clamp(1rem, 2vw, 2rem);
   }
 }
