@@ -15,6 +15,7 @@ import path from 'path';
 //    script loads with `dotenv -e`.
 
 const config: StorybookConfig = {
+  // Configure Storybook for proper iframe.html generation
   // Pick up every `*.stories.*` file in src plus MDX docs.
   stories: [
     '../src/**/*.mdx',
@@ -75,8 +76,33 @@ const config: StorybookConfig = {
       'process.env': process.env,
       'import.meta.env': process.env
     };
+    
+    // Critical: Ensure proper build output structure for Chromatic
+    // This ensures iframe.html is generated correctly
+    const customConfig = {
+      build: {
+        outDir: viteConfig.build?.outDir || 'storybook-static',
+        emptyOutDir: true,
+        sourcemap: true,
+        rollupOptions: {
+          output: {
+            manualChunks: undefined
+          }
+        }
+      }
+    };
 
-    return mergeConfig(viteConfig, {});
+    // Filter out PWA plugin which can interfere with the Storybook build
+    if (viteConfig.plugins) {
+      viteConfig.plugins = viteConfig.plugins.filter(plugin => {
+        if (!plugin || typeof plugin !== 'object') return true;
+        // Safe access to the name property if it exists
+        const pluginObj = plugin as { name?: string };
+        return pluginObj.name !== 'vite-plugin-pwa';
+      });
+    }
+
+    return mergeConfig(viteConfig, customConfig);
   }
 };
 

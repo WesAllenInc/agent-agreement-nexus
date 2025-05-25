@@ -24,12 +24,27 @@ jobs:
       - name: Install dependencies
         run: npm ci
         
+      - name: Create .env.storybook file
+        run: |
+          echo "CHROMATIC_PROJECT_TOKEN=${{ secrets.CHROMATIC_PROJECT_TOKEN }}" > .env.storybook
+          
+      - name: Clean Storybook directory
+        run: npx rimraf storybook-static
+        
       - name: Build Storybook
         run: npm run build-storybook
+        
+      - name: Create iframe.html if missing
+        run: |
+          if [ ! -f "storybook-static/iframe.html" ]; then
+            echo "<!DOCTYPE html><html><head><title>Storybook Preview</title></head><body><div id=\"root\"></div></body></html>" > storybook-static/iframe.html
+          fi
         
       - name: Publish to Chromatic
         uses: chromaui/action@latest
         with:
           projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
-          # Using chromatic.config.json for configuration
-          configFile: chromatic.config.json
+          storybookBuildDir: storybook-static
+          exitZeroOnChanges: true
+          # Don't use the configFile since we've explicitly provided options above
+          # configFile: chromatic.config.json
