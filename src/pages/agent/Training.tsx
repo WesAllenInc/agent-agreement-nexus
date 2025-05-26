@@ -4,6 +4,8 @@ import { useTrainingMaterials } from "@/hooks/useTrainingMaterials";
 import { useTrainingCompletions } from "@/hooks/useTrainingCompletions";
 import { useAuth } from "@/contexts/AuthContext";
 import MainLayout from "@/components/layout/MainLayout";
+import { TrainingModuleList } from '@/components/training/TrainingModuleList';
+import { CertificateBadge } from '@/components/training/CertificateBadge';
 import { PdfViewer } from "@/components/PdfViewer";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -221,7 +223,6 @@ export default function AgentTraining() {
             </div>
           </div>
         );
-      
       case 'quiz':
         return (
           <div className="flex flex-col items-center">
@@ -231,9 +232,6 @@ export default function AgentTraining() {
                   <FileQuestion className="h-5 w-5 mr-2" />
                   {material.title} Quiz
                 </CardTitle>
-                <CardDescription>
-                  Complete this quiz to test your knowledge
-                </CardDescription>
               </CardHeader>
               <CardContent>
                 {material.quiz_link ? (
@@ -254,235 +252,71 @@ export default function AgentTraining() {
                     No quiz link provided. Please contact an administrator.
                   </div>
                 )}
-              </CardContent>
-              <CardFooter className="flex justify-center">
                 {materialCompletion?.status !== 'completed' && (
-                  <Button onClick={handleCompleteQuiz}>
-                    Mark Quiz as Completed
-                  </Button>
+                  <div className="flex justify-center mt-4">
+                    <Button onClick={handleCompleteQuiz}>
+                      Mark Quiz as Completed
+                    </Button>
+                  </div>
                 )}
-              </CardFooter>
+              </CardContent>
             </Card>
           </div>
         );
-      
       default:
         return (
-          <div className="text-center py-12">
-            <AlertCircle className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-            <p>Unsupported material type</p>
+          <div className="flex flex-col items-center py-6">
+            <p className="text-center text-muted-foreground">
+              The requested training material could not be found.
+            </p>
+            <Button onClick={() => navigate('/agent/training')}>
+              Return to Training Center
+            </Button>
           </div>
         );
     }
-  };
-  
-  // Render the module list view
-  const renderModuleList = () => {
-    return (
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <h1 className="text-3xl font-bold">Training Center</h1>
-        </div>
-        
-        <Card>
-          <CardHeader>
-            <CardTitle>Your Training Progress</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex flex-col md:flex-row md:items-center gap-4 mb-6">
-              <div className="flex-1">
-                <div className="flex justify-between mb-1">
-                  <span className="text-sm font-medium">Overall Completion</span>
-                  <span className="text-sm font-medium">
-                    {overallProgress?.completed} of {overallProgress?.total} materials
-                  </span>
-                </div>
-                <Progress value={overallProgress?.percentage || 0} className="h-2" />
-              </div>
-              <div className="md:w-32 flex items-center justify-center">
-                <div className="relative w-20 h-20">
-                  <svg className="w-full h-full" viewBox="0 0 100 100">
-                    <circle
-                      className="text-muted stroke-current"
-                      strokeWidth="10"
-                      cx="50"
-                      cy="50"
-                      r="40"
-                      fill="transparent"
-                    ></circle>
-                    <circle
-                      className="text-primary stroke-current"
-                      strokeWidth="10"
-                      strokeLinecap="round"
-                      cx="50"
-                      cy="50"
-                      r="40"
-                      fill="transparent"
-                      strokeDasharray={`${2 * Math.PI * 40}`}
-                      strokeDashoffset={`${2 * Math.PI * 40 * (1 - (overallProgress?.percentage || 0) / 100)}`}
-                      transform="rotate(-90 50 50)"
-                    ></circle>
-                  </svg>
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="text-xl font-bold">{overallProgress?.percentage || 0}%</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        
-        <div className="space-y-4">
-          {isLoadingModules ? (
-            <div className="flex items-center justify-center h-60">
-              <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full" />
-            </div>
-          ) : modules?.length === 0 ? (
-            <Card>
-              <CardContent className="flex flex-col items-center justify-center py-12">
-                <GraduationCap className="h-12 w-12 text-muted-foreground mb-4" />
-                <h2 className="text-xl font-semibold mb-2">No Training Modules Available</h2>
-                <p className="text-muted-foreground text-center">
-                  There are no training modules available at this time.
-                </p>
-              </CardContent>
-            </Card>
-          ) : (
-            <Accordion type="single" collapsible className="w-full">
-              {modules?.map((module) => {
-                // Calculate module completion
-                const moduleProgress = module.materials?.reduce(
-                  (acc, material) => {
-                    const status = getCompletionStatus(material.id);
-                    return {
-                      total: acc.total + (material.is_required ? 1 : 0),
-                      completed: acc.completed + (status === 'completed' && material.is_required ? 1 : 0)
-                    };
-                  },
-                  { total: 0, completed: 0 }
-                );
-                
-                const completionPercentage = moduleProgress?.total
-                  ? Math.round((moduleProgress.completed / moduleProgress.total) * 100)
-                  : 0;
-                
-                return (
-                  <AccordionItem key={module.id} value={module.id}>
-                    <AccordionTrigger className="hover:no-underline">
-                      <div className="flex flex-1 items-center">
-                        <div className="flex-1">
-                          <h3 className="text-lg font-medium text-left">{module.title}</h3>
-                          {module.description && (
-                            <p className="text-sm text-muted-foreground text-left">
-                              {module.description}
-                            </p>
-                          )}
-                        </div>
-                        <div className="ml-4 flex items-center">
-                          <Progress 
-                            value={completionPercentage} 
-                            className="h-2 w-24 mr-2" 
-                          />
-                          <span className="text-sm">{completionPercentage}%</span>
-                        </div>
-                      </div>
-                    </AccordionTrigger>
-                    <AccordionContent>
-                      <div className="space-y-2 pt-2">
-                        {module.materials?.map((material, index) => {
-                          const status = getCompletionStatus(material.id);
-                          
-                          return (
-                            <div 
-                              key={material.id}
-                              className="flex items-center justify-between p-3 rounded-md hover:bg-muted"
-                            >
-                              <div className="flex items-center">
-                                <div className="mr-3">
-                                  {getStatusIcon(status)}
-                                </div>
-                                <div className="mr-3">
-                                  {getMaterialTypeIcon(material.module_type)}
-                                </div>
-                                <div>
-                                  <div className="font-medium">{material.title}</div>
-                                  {material.description && (
-                                    <div className="text-sm text-muted-foreground">
-                                      {material.description}
-                                    </div>
-                                  )}
-                                </div>
-                              </div>
-                              <div className="flex items-center">
-                                {material.is_required ? (
-                                  <Badge className="mr-3 bg-blue-100 text-blue-800">Required</Badge>
-                                ) : (
-                                  <Badge className="mr-3 bg-muted text-muted-foreground">Optional</Badge>
-                                )}
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={() => navigate(`/agent/training/${module.id}/${material.id}`)}
-                                >
-                                  {status === 'completed' ? 'Review' : 'Start'}
-                                </Button>
-                              </div>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </AccordionContent>
-                  </AccordionItem>
-                );
-              })}
-            </Accordion>
-          )}
+  }
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => navigate('/agent/training')}
+          className="mr-2"
+        >
+          <ChevronLeft className="h-4 w-4 mr-1" />
+          Back to Training
+        </Button>
+        <Separator orientation="vertical" className="h-6 mx-2" />
+        <div className="text-sm text-muted-foreground">
+          {module.title}
         </div>
       </div>
-    );
-  };
-  
-  // Render the material view
-  const renderMaterialView = () => {
-    if (isLoadingMaterial || isLoadingModule) {
-      return (
-        <div className="flex items-center justify-center h-60">
-          <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full" />
+      
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div>
+          <h1 className="text-2xl font-bold flex items-center">
+            {getMaterialTypeIcon(material.module_type)}
+            <span className="ml-2">{material.title}</span>
+          </h1>
+          {material.description && (
+            <p className="text-muted-foreground mt-1">{material.description}</p>
+          )}
         </div>
-      );
-    }
-    
-    if (!material || !module) {
-      return (
-        <div className="text-center py-12">
-          <AlertCircle className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-          <h2 className="text-xl font-semibold mb-2">Material Not Found</h2>
-          <p className="text-muted-foreground mb-6">
-            The requested training material could not be found.
-          </p>
-          <Button onClick={() => navigate('/agent/training')}>
-            Return to Training Center
-          </Button>
-        </div>
-      );
-    }
-    
-    return (
-      <div className="space-y-6">
         <div className="flex items-center">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => navigate('/agent/training')}
-            className="mr-2"
-          >
-            <ChevronLeft className="h-4 w-4 mr-1" />
-            Back to Training
-          </Button>
-          <Separator orientation="vertical" className="h-6 mx-2" />
-          <div className="text-sm text-muted-foreground">
-            {module.title}
-          </div>
+          {materialCompletion?.status === 'completed' ? (
+            <Badge className="bg-green-100 text-green-800 flex items-center">
+              <CheckCircle className="h-3 w-3 mr-1" />
+              Completed
+            </Badge>
+          ) : (
+            <Badge className="bg-amber-100 text-amber-800 flex items-center">
+              <Clock className="h-3 w-3 mr-1" />
+              In Progress
+            </Badge>
+          )}
         </div>
         
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">

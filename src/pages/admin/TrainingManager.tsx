@@ -1,5 +1,8 @@
 import { useState } from "react";
 import { useTrainingMaterials, TrainingModule, TrainingMaterial } from "@/hooks/useTrainingMaterials";
+import { TrainingModuleList } from '@/components/training/TrainingModuleList';
+import { TrainingMaterialCard } from '@/components/training/TrainingMaterialCard';
+import { CertificateBadge } from '@/components/training/CertificateBadge';
 import { useTrainingCompletions } from "@/hooks/useTrainingCompletions";
 import { AssignTrainingForm } from "@/components/admin/AssignTrainingForm";
 import MainLayout from "@/components/layout/MainLayout";

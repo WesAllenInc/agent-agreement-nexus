@@ -117,6 +117,12 @@ export default function Navigation() {
           requiredRoles: ['admin'],
         },
         {
+          name: "Training",
+          path: "/training",
+          icon: <GraduationCap className="h-5 w-5" />,
+          requiredRoles: ['admin'],
+        },
+        {
           name: "Logs",
           path: "/activity-logs",
           icon: <FileText className="h-5 w-5" />,
