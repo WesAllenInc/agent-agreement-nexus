@@ -1,0 +1,1 @@
+Temporarily keep only ButtonOnly.stories.tsx in this folder. Move all other stories (AgreementTable.stories.tsx, CertificateBadge.stories.tsx, etc.) to a backup folder outside src/stories. This isolates the build for iframe.html troubleshooting.

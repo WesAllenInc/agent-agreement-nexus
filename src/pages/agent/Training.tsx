@@ -3,6 +3,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useTrainingMaterials } from "@/hooks/useTrainingMaterials";
 import { useTrainingCompletions } from "@/hooks/useTrainingCompletions";
 import { useAuth } from "@/contexts/AuthContext";
+// Add Module type import if it exists
+// import type { Module } from '@/types/Module';
 import MainLayout from "@/components/layout/MainLayout";
 import { TrainingModuleList } from '@/components/training/TrainingModuleList';
 import { CertificateBadge } from '@/components/training/CertificateBadge';
@@ -207,125 +209,34 @@ export default function AgentTraining() {
                 onTimeUpdate={handleVideoTimeUpdate}
                 onEnded={() => completeMaterial.mutate({ materialId: material.id })}
               >
-                <source src={fileUrl} type={material.mime_type} />
+                <source src={fileUrl || ''} type="video/mp4" />
                 Your browser does not support the video tag.
               </video>
             </div>
-            <div className="mt-4 text-sm text-muted-foreground text-center">
-              {materialCompletion?.status === 'completed' ? (
-                <div className="flex items-center text-green-600">
-                  <CheckCircle className="h-4 w-4 mr-1" />
-                  You've completed this video
-                </div>
-              ) : (
-                <p>Watch the video to mark it as completed</p>
-              )}
-            </div>
-          </div>
-        );
-      case 'quiz':
-        return (
-          <div className="flex flex-col items-center">
-            <Card className="w-full max-w-3xl">
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <FileQuestion className="h-5 w-5 mr-2" />
-                  {material.title} Quiz
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {material.quiz_link ? (
-                  <div className="flex flex-col items-center py-6">
-                    <p className="mb-4 text-center">
-                      This quiz is hosted on an external platform. Click the button below to take the quiz.
-                    </p>
-                    <Button
-                      onClick={() => window.open(material.quiz_link || '', '_blank')}
-                      className="flex items-center"
-                    >
-                      <ExternalLink className="h-4 w-4 mr-2" />
-                      Open Quiz
-                    </Button>
-                  </div>
-                ) : (
-                  <div className="text-center py-6 text-muted-foreground">
-                    No quiz link provided. Please contact an administrator.
-                  </div>
-                )}
-                {materialCompletion?.status !== 'completed' && (
-                  <div className="flex justify-center mt-4">
-                    <Button onClick={handleCompleteQuiz}>
-                      Mark Quiz as Completed
-                    </Button>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </div>
-        );
-      default:
-        return (
-          <div className="flex flex-col items-center py-6">
-            <p className="text-center text-muted-foreground">
-              The requested training material could not be found.
-            </p>
-            <Button onClick={() => navigate('/agent/training')}>
-              Return to Training Center
-            </Button>
           </div>
         );
     }
-  }
-
-  return (
-    <div className="space-y-6">
-      <div className="flex items-center">
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => navigate('/agent/training')}
-          className="mr-2"
-        >
-          <ChevronLeft className="h-4 w-4 mr-1" />
-          Back to Training
-        </Button>
-        <Separator orientation="vertical" className="h-6 mx-2" />
-        <div className="text-sm text-muted-foreground">
-          {module.title}
+  };
+  
+  // Render material view
+  const renderMaterialView = () => {
+    return (
+      <div className="flex flex-col h-full">
+        <div className="flex items-center mb-4">
+          <Button onClick={() => navigate('/agent/training')}>
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back to Training Center
+          </Button>
+          <Separator orientation="vertical" className="h-6 mx-4" />
+          <div className="text-sm text-muted-foreground">{module.title}</div>
         </div>
-      </div>
-      
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <div>
-          <h1 className="text-2xl font-bold flex items-center">
-            {getMaterialTypeIcon(material.module_type)}
-            <span className="ml-2">{material.title}</span>
-          </h1>
-          {material.description && (
-            <p className="text-muted-foreground mt-1">{material.description}</p>
-          )}
-        </div>
-        <div className="flex items-center">
-          {materialCompletion?.status === 'completed' ? (
-            <Badge className="bg-green-100 text-green-800 flex items-center">
-              <CheckCircle className="h-3 w-3 mr-1" />
-              Completed
-            </Badge>
-          ) : (
-            <Badge className="bg-amber-100 text-amber-800 flex items-center">
-              <Clock className="h-3 w-3 mr-1" />
-              In Progress
-            </Badge>
-          )}
-        </div>
-        
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
             <h1 className="text-2xl font-bold flex items-center">
-              {getMaterialTypeIcon(material.module_type)}
-              <span className="ml-2">{material.title}</span>
+              {material ? getMaterialTypeIcon(material.module_type) : null}
+              <span className="ml-2">{material?.title}</span>
             </h1>
-            {material.description && (
+            {material?.description && (
               <p className="text-muted-foreground mt-1">{material.description}</p>
             )}
           </div>
@@ -343,38 +254,137 @@ export default function AgentTraining() {
             )}
           </div>
         </div>
-        
-        <div className="min-h-[600px]">
-          {renderMaterialContent()}
-        </div>
-        
+        <div className="min-h-[600px] mt-6">{renderMaterialContent && renderMaterialContent()}</div>
         <div className="flex justify-between pt-4">
           <Button
+            </CardContent>
+          </Card>
+        </div>
+      );
+    default:
+      return (
+        <div className="flex flex-col items-center py-6">
+          <p className="text-center text-muted-foreground">
+            The requested training material could not be found.
+          </p>
+          <Button onClick={() => navigate('/agent/training')}>
+            Return to Training Center
+          </Button>
+        </div>
+      );
+  }
+};
+
+const getCompletionStatus = (materialId: string) => {
+  if (!user) return 'not-started';
+
+  const completion = materialCompletion;
+
+  if (!completion) return 'not-started';
+  if (completion.status === 'completed') return 'completed';
+  if (completion.status === 'in_progress') return 'in-progress';
+  return 'started';
+};
+
+const getStatusIcon = (status: string) => {
+  switch (status) {
+    case 'completed':
+      return <CheckCircle className="h-4 w-4 text-green-500" />;
+    case 'in-progress':
+      return <Clock className="h-4 w-4 text-amber-500" />;
+    case 'started':
+      return <Play className="h-4 w-4 text-blue-500" />;
+    default:
+      return <AlertCircle className="h-4 w-4 text-muted-foreground" />;
+  }
+};
+
+const getMaterialTypeIcon = (type: string) => {
+  switch (type) {
+    case 'pdf':
+      return <FileText className="h-5 w-5" />;
+    case 'video':
+      return <Video className="h-5 w-5" />;
+    case 'quiz':
+      return <FileQuestion className="h-5 w-5" />;
+    default:
+      return <FileText className="h-5 w-5" />;
+  }
+};
+
+// Render material view
+// (removed duplicate definition, only one renderMaterialView should exist)
+
+  return (
+    <div className="flex flex-col h-full">
+      <div className="flex items-center mb-4">
+        <Button onClick={() => navigate('/agent/training')}>
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          Back to Training Center
+        </Button>
+        <Separator orientation="vertical" className="h-6 mx-4" />
+        <div className="text-sm text-muted-foreground">{module.title}</div>
+      </div>
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div>
+          <h1 className="text-2xl font-bold flex items-center">
+            {material ? getMaterialTypeIcon(material.module_type) : null}
+            <span className="ml-2">{material?.title}</span>
+          </h1>
+          {material?.description && (
+            <p className="text-muted-foreground mt-1">{material.description}</p>
+          )}
+        </div>
+        <div className="flex items-center">
+          {materialCompletion?.status === 'completed' ? (
+            <Badge className="bg-green-100 text-green-800 flex items-center">
+              <CheckCircle className="h-3 w-3 mr-1" />
+              Completed
+            </Badge>
+          ) : (
+            <Badge className="bg-amber-100 text-amber-800 flex items-center">
+              <Clock className="h-3 w-3 mr-1" />
+              In Progress
+            </Badge>
+          )}
+        </div>
+      </div>
+      <div className="min-h-[600px] mt-6">{renderMaterialContent && renderMaterialContent()}</div>
+      <div className="flex justify-between pt-4">
+        <div className="flex gap-2">
+          <Button
             variant="outline"
-            onClick={() => navigateToMaterial('prev')}
-            disabled={!module.materials || module.materials[0].id === material.id}
+            onClick={() => navigateToMaterial && navigateToMaterial('prev')}
+            disabled={!module?.materials || module.materials[0]?.id === material?.id}
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
             Previous
           </Button>
-          
           <Button
-            onClick={() => navigateToMaterial('next')}
-            disabled={!module.materials || module.materials[module.materials.length - 1].id === material.id}
+            onClick={() => navigateToMaterial && navigateToMaterial('next')}
+            disabled={!module?.materials || module.materials[module.materials.length - 1]?.id === material?.id}
           >
             Next
             <ArrowRight className="h-4 w-4 ml-2" />
           </Button>
         </div>
       </div>
-    );
-  };
-  
-  return (
-    <MainLayout>
-      <div className="container max-w-6xl py-6">
-        {materialId && moduleId ? renderMaterialView() : renderModuleList()}
-      </div>
-    </MainLayout>
+    </div>
   );
-}
+};
+
+// ... (rest of the code remains the same)
+return (
+  <MainLayout>
+    <div className="container max-w-6xl py-6">
+      {materialId && moduleId ? 
+        <div>
+          {renderMaterialView()}
+        </div> 
+      : 
+        <div>
+          {renderModuleList()}
+        </div>}
+    </div>
+  </MainLayout>
+);
